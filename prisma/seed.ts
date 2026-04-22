@@ -225,6 +225,43 @@ async function main() {
       },
     });
   }
+
+  if (process.env.SEED_ACCESS_EMAIL) {
+    const accessUser = await prisma.user.upsert({
+      where: { email: process.env.SEED_ACCESS_EMAIL },
+      update: {},
+      create: {
+        email: process.env.SEED_ACCESS_EMAIL,
+        roleKey: "USUARIO_PAGO",
+      },
+    });
+
+    if (accessUser.roleKey !== "ADMIN") {
+      await prisma.user.update({
+        where: { id: accessUser.id },
+        data: { roleKey: "USUARIO_PAGO" },
+      });
+    }
+
+    await prisma.access.upsert({
+      where: {
+        userId_productId: {
+          userId: accessUser.id,
+          productId: product.id,
+        },
+      },
+      update: {
+        status: "ACTIVE",
+        startsAt: new Date(),
+        expiresAt: null,
+      },
+      create: {
+        userId: accessUser.id,
+        productId: product.id,
+        status: "ACTIVE",
+      },
+    });
+  }
 }
 
 main()

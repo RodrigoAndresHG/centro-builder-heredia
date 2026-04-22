@@ -1,23 +1,36 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
+import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionBlock } from "@/components/shared/section-block";
-import { getProgramLessonCount, listVisiblePrograms } from "@/lib/services";
+import { auth } from "@/lib/auth";
+import { getProgramLessonCount, listProgramsForViewer } from "@/lib/services";
 
 export default async function ProgramasPage() {
-  const programs = await listVisiblePrograms();
+  const session = await auth();
+  const user = session?.user;
+
+  if (!user) {
+    redirect("/login?callbackUrl=/app/programas");
+  }
+
+  const { availablePrograms, lockedPrograms } = await listProgramsForViewer({
+    id: user.id,
+    role: user.role,
+  });
 
   return (
     <div className="space-y-8">
       <PageHeader
         eyebrow="Usuario"
         title="Mis programas"
-        description="Programas visibles para tu cuenta. La restriccion fina por compra se conectara en una fase posterior."
+        description="Programas disponibles segun los permisos activos de tu cuenta."
       />
       <SectionBlock title="Disponibles ahora">
         <div className="grid gap-4 lg:grid-cols-2">
-          {programs.map((program) => (
+          {availablePrograms.map((program) => (
             <Card key={program.id} className="flex flex-col justify-between gap-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
@@ -45,14 +58,29 @@ export default async function ProgramasPage() {
             </Card>
           ))}
         </div>
-        {programs.length === 0 ? (
+        {availablePrograms.length === 0 ? (
           <Card>
             <p className="text-sm leading-6 text-neutral-600">
-              No hay programas publicados todavia.
+              No tienes programas disponibles en este momento.
             </p>
           </Card>
         ) : null}
       </SectionBlock>
+
+      {lockedPrograms.length > 0 ? (
+        <SectionBlock title="Requieren acceso">
+          <div className="grid gap-4 lg:grid-cols-2">
+            {lockedPrograms.map((program) => (
+              <AccessRequiredCard
+                key={program.id}
+                compact
+                title={program.title}
+                description="Programa publicado, pero bloqueado para tu cuenta hasta activar acceso."
+              />
+            ))}
+          </div>
+        </SectionBlock>
+      ) : null}
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
+import { auth } from "@/lib/auth";
 import { getLessonBySlug } from "@/lib/services";
 
 type LessonPageProps = {
@@ -11,9 +13,36 @@ type LessonPageProps = {
 
 export default async function LessonPage({ params }: LessonPageProps) {
   const { programSlug, lessonSlug } = await params;
-  const lessonData = await getLessonBySlug(programSlug, lessonSlug);
+  const session = await auth();
+  const user = session?.user;
 
-  if (!lessonData) {
+  if (!user) {
+    redirect(`/login?callbackUrl=/app/programas/${programSlug}/lecciones/${lessonSlug}`);
+  }
+
+  const lessonData = await getLessonBySlug(programSlug, lessonSlug, {
+    id: user.id,
+    role: user.role,
+  });
+
+  if (lessonData.access === "not-found") {
+    notFound();
+  }
+
+  if (lessonData.access === "locked" && lessonData.program) {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          eyebrow={lessonData.program.product?.name ?? "Programa"}
+          title={lessonData.program.title}
+          description="Tu cuenta no tiene acceso activo para abrir esta leccion."
+        />
+        <AccessRequiredCard title={lessonData.program.title} />
+      </div>
+    );
+  }
+
+  if (!lessonData.lesson) {
     notFound();
   }
 

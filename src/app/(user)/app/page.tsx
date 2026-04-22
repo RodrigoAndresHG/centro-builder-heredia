@@ -1,15 +1,27 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
+import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { auth } from "@/lib/auth";
-import { getPrimaryProgram, getProgramLessonCount } from "@/lib/services";
+import { getProgramLessonCount, listProgramsForViewer } from "@/lib/services";
 
 export default async function UserDashboardPage() {
   const session = await auth();
   const user = session?.user;
-  const program = await getPrimaryProgram();
+
+  if (!user) {
+    redirect("/login?callbackUrl=/app");
+  }
+
+  const { availablePrograms, lockedPrograms } = await listProgramsForViewer({
+    id: user.id,
+    role: user.role,
+  });
+  const program = availablePrograms[0] ?? null;
+  const lockedProgram = lockedPrograms[0] ?? null;
   const lessonCount = getProgramLessonCount(program);
   const firstModule = program?.modules[0] ?? null;
   const firstLesson = firstModule?.lessons[0] ?? null;
@@ -65,7 +77,7 @@ export default async function UserDashboardPage() {
                     Acceso
                   </p>
                   <p className="mt-2 text-sm font-medium text-foreground">
-                    Disponible por sesion activa
+                    Acceso activo
                   </p>
                 </div>
                 <div>
@@ -88,6 +100,11 @@ export default async function UserDashboardPage() {
             </div>
           </div>
         </Card>
+      ) : lockedProgram ? (
+        <AccessRequiredCard
+          title={lockedProgram.title}
+          description="Tu cuenta no tiene acceso activo a este producto todavia. Cuando el acceso este habilitado, el programa aparecera como disponible."
+        />
       ) : (
         <Card>
           <p className="text-sm leading-6 text-neutral-600">

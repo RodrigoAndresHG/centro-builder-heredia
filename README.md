@@ -117,6 +117,8 @@ Los roles base son:
 
 Los usuarios nuevos entran como `INVITADO`. El seed crea/actualiza roles base y, si existe `SEED_ADMIN_EMAIL`, crea o promueve ese correo a `ADMIN`.
 
+Para probar acceso premium, define `SEED_ACCESS_EMAIL`. El seed crea o actualiza ese usuario como `USUARIO_PAGO` y le da `Access` activo al producto `Build IdeaCash — Founder Access`.
+
 ## Proteccion inicial
 
 Next.js 16 usa `src/proxy.ts` como reemplazo de middleware. La proteccion actual es:
@@ -124,9 +126,18 @@ Next.js 16 usa `src/proxy.ts` como reemplazo de middleware. La proteccion actual
 - `/app/*`: requiere sesion.
 - `/admin/*`: requiere sesion y rol `ADMIN`.
 
+## Acceso a contenido
+
+El area de aprendizaje valida permisos del lado servidor:
+
+- programas sin producto asociado: visibles para usuarios autenticados.
+- programas asociados a producto: requieren `Access` activo al producto o al programa.
+- usuarios `ADMIN`: pueden abrir el area privada sin bloqueo comercial.
+- contenido no publicado no aparece en el area de usuario.
+
 ## Proximas fases
 
-- Validar permisos finos en servicios de servidor.
-- Construir primera vertical slice de programas, modulos y lecciones.
+- Conectar compras reales a `Access`.
+- Agregar progreso por leccion.
 - Integrar Stripe y webhooks.
-- Implementar CRUD admin y reglas de acceso.
+- Mejorar reporting de acceso y permisos en admin.

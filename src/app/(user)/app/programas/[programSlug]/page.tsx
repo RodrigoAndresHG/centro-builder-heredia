@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionBlock } from "@/components/shared/section-block";
+import { auth } from "@/lib/auth";
 import { getProgramBySlug, getProgramLessonCount } from "@/lib/services";
 
 type ProgramPageProps = {
@@ -12,12 +14,36 @@ type ProgramPageProps = {
 
 export default async function ProgramPage({ params }: ProgramPageProps) {
   const { programSlug } = await params;
-  const program = await getProgramBySlug(programSlug);
+  const session = await auth();
+  const user = session?.user;
 
-  if (!program) {
+  if (!user) {
+    redirect(`/login?callbackUrl=/app/programas/${programSlug}`);
+  }
+
+  const programResult = await getProgramBySlug(programSlug, {
+    id: user.id,
+    role: user.role,
+  });
+
+  if (programResult.access === "not-found" || !programResult.program) {
     notFound();
   }
 
+  if (programResult.access === "locked") {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          eyebrow={programResult.program.product?.name ?? "Programa"}
+          title={programResult.program.title}
+          description="Este programa existe, pero tu cuenta no tiene acceso activo para abrirlo."
+        />
+        <AccessRequiredCard title={programResult.program.title} />
+      </div>
+    );
+  }
+
+  const program = programResult.program;
   const firstModule = program.modules[0] ?? null;
   const firstLesson = firstModule?.lessons[0] ?? null;
 

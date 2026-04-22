@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionBlock } from "@/components/shared/section-block";
+import { auth } from "@/lib/auth";
 import { getModuleBySlug } from "@/lib/services";
 
 type ModulePageProps = {
@@ -12,18 +14,46 @@ type ModulePageProps = {
 
 export default async function ModulePage({ params }: ModulePageProps) {
   const { programSlug, moduleSlug } = await params;
-  const programModule = await getModuleBySlug(programSlug, moduleSlug);
+  const session = await auth();
+  const user = session?.user;
 
-  if (!programModule) {
+  if (!user) {
+    redirect(`/login?callbackUrl=/app/programas/${programSlug}/modulos/${moduleSlug}`);
+  }
+
+  const moduleResult = await getModuleBySlug(programSlug, moduleSlug, {
+    id: user.id,
+    role: user.role,
+  });
+
+  if (moduleResult.access === "not-found") {
     notFound();
   }
 
+  if (moduleResult.access === "locked" && moduleResult.program) {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          eyebrow={moduleResult.program.product?.name ?? "Programa"}
+          title={moduleResult.program.title}
+          description="Tu cuenta no tiene acceso activo para abrir este modulo."
+        />
+        <AccessRequiredCard title={moduleResult.program.title} />
+      </div>
+    );
+  }
+
+  if (!moduleResult.module) {
+    notFound();
+  }
+
+  const programModule = moduleResult.module;
   const firstLesson = programModule.lessons[0] ?? null;
 
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow={programModule.program.title}
+        eyebrow={moduleResult.program.title}
         title={programModule.title}
         description={programModule.description ?? undefined}
         action={
