@@ -76,6 +76,7 @@ export default async function ProgramasPage() {
                 compact
                 title={program.title}
                 description="Programa publicado, pero bloqueado para tu cuenta hasta activar acceso."
+                productSlug={program.product?.slug}
               />
             ))}
           </div>

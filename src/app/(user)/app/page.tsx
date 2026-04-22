@@ -104,6 +104,7 @@ export default async function UserDashboardPage() {
         <AccessRequiredCard
           title={lockedProgram.title}
           description="Tu cuenta no tiene acceso activo a este producto todavia. Cuando el acceso este habilitado, el programa aparecera como disponible."
+          productSlug={lockedProgram.product?.slug}
         />
       ) : (
         <Card>

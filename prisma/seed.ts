@@ -26,6 +26,7 @@ const ideaCashProgram = {
     name: "Build IdeaCash — Founder Access",
     description:
       "Acceso fundador al programa para convertir una idea en una oferta vendible y validable.",
+    stripePriceId: process.env.STRIPE_IDEACASH_PRICE_ID ?? null,
   },
   program: {
     slug: "build-ideacash-founder-access",
@@ -132,12 +133,14 @@ async function main() {
     update: {
       name: ideaCashProgram.product.name,
       description: ideaCashProgram.product.description,
+      stripePriceId: ideaCashProgram.product.stripePriceId,
       isActive: true,
     },
     create: {
       slug: ideaCashProgram.product.slug,
       name: ideaCashProgram.product.name,
       description: ideaCashProgram.product.description,
+      stripePriceId: ideaCashProgram.product.stripePriceId,
       isActive: true,
     },
   });

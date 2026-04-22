@@ -37,7 +37,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
           title={lessonData.program.title}
           description="Tu cuenta no tiene acceso activo para abrir esta leccion."
         />
-        <AccessRequiredCard title={lessonData.program.title} />
+        <AccessRequiredCard
+          title={lessonData.program.title}
+          productSlug={lessonData.program.product?.slug}
+        />
       </div>
     );
   }

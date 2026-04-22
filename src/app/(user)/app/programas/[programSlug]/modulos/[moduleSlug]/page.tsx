@@ -38,7 +38,10 @@ export default async function ModulePage({ params }: ModulePageProps) {
           title={moduleResult.program.title}
           description="Tu cuenta no tiene acceso activo para abrir este modulo."
         />
-        <AccessRequiredCard title={moduleResult.program.title} />
+        <AccessRequiredCard
+          title={moduleResult.program.title}
+          productSlug={moduleResult.program.product?.slug}
+        />
       </div>
     );
   }

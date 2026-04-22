@@ -38,7 +38,10 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
           title={programResult.program.title}
           description="Este programa existe, pero tu cuenta no tiene acceso activo para abrirlo."
         />
-        <AccessRequiredCard title={programResult.program.title} />
+        <AccessRequiredCard
+          title={programResult.program.title}
+          productSlug={programResult.program.product?.slug}
+        />
       </div>
     );
   }

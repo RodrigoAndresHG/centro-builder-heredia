@@ -11,6 +11,7 @@ Bootstrap tecnico inicial del SaaS Centro Builder HeredIA. Esta base deja una so
 - PostgreSQL
 - Vercel
 - Auth.js / NextAuth
+- Stripe Checkout
 
 ## Como correrlo
 
@@ -72,9 +73,9 @@ src/components/learning       Componentes de aprendizaje
 src/components/admin          Componentes admin
 src/lib/auth                  Integracion auth futura
 src/lib/db                    Prisma y acceso a datos
-src/lib/stripe                Integracion Stripe futura
-src/lib/permissions           Permisos futuros
-src/lib/services              Servicios de dominio futuros
+src/lib/stripe                Cliente Stripe server-side
+src/lib/permissions           Helpers de rol
+src/lib/services              Servicios de dominio
 src/lib/validators            Validadores futuros
 src/types                     Tipos compartidos
 prisma/schema.prisma          Schema Prisma inicial
@@ -85,7 +86,7 @@ prisma/schema.prisma          Schema Prisma inicial
 - Publicas: `/`, `/login`, `/registro`, `/acceso-confirmado`
 - Usuario: `/app`, `/app/programas`, `/app/programas/[programSlug]`, `/app/programas/[programSlug]/modulos/[moduleSlug]`, `/app/programas/[programSlug]/lecciones/[lessonSlug]`, `/app/updates`, `/app/perfil`, `/app/soporte`
 - Admin: `/admin`, `/admin/programas`, `/admin/modulos`, `/admin/lecciones`, `/admin/videos`, `/admin/updates`, `/admin/usuarios`, `/admin/accesos`
-- API: `/api/health`
+- API: `/api/health`, `/api/stripe/checkout`, `/api/stripe/webhook`
 
 ## Auth y variables
 
@@ -98,6 +99,9 @@ Variables requeridas:
 - `AUTH_URL`: URL base local o productiva.
 - `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`: credenciales OAuth de Google.
 - `EMAIL_SERVER` y `EMAIL_FROM`: SMTP para magic links por correo.
+- `STRIPE_SECRET_KEY`: clave secreta de Stripe.
+- `STRIPE_WEBHOOK_SECRET`: secreto del webhook de Stripe.
+- `STRIPE_IDEACASH_PRICE_ID`: Price ID para el producto sembrado.
 
 Callback local de Google:
 
@@ -135,9 +139,24 @@ El area de aprendizaje valida permisos del lado servidor:
 - usuarios `ADMIN`: pueden abrir el area privada sin bloqueo comercial.
 - contenido no publicado no aparece en el area de usuario.
 
+## Stripe y accesos
+
+El circuito comercial minimo usa Stripe Checkout:
+
+- `/api/stripe/checkout`: crea una sesion de pago para un producto activo con `stripePriceId`.
+- `/api/stripe/webhook`: valida la firma de Stripe y procesa `checkout.session.completed` y `checkout.session.async_payment_succeeded`.
+- `Purchase`: se registra o actualiza por `stripeCheckoutSessionId`.
+- `Access`: se activa por `userId + productId` usando upsert para evitar duplicados.
+- `/admin/accesos`: permite crear, editar, activar y desactivar accesos manualmente.
+
+Para probar webhooks localmente, configura `STRIPE_WEBHOOK_SECRET` con el secreto entregado por Stripe CLI o Dashboard y apunta el endpoint a:
+
+```text
+http://localhost:3000/api/stripe/webhook
+```
+
 ## Proximas fases
 
-- Conectar compras reales a `Access`.
 - Agregar progreso por leccion.
-- Integrar Stripe y webhooks.
-- Mejorar reporting de acceso y permisos en admin.
+- Mejorar reporting comercial y conciliacion de pagos.
+- Conectar estados de compra mas avanzados si el modelo comercial lo requiere.
