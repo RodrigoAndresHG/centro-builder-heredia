@@ -18,11 +18,16 @@ export async function listVisiblePrograms() {
   return prisma.program.findMany({
     where: {
       isPublished: true,
-      product: {
-        is: {
-          isActive: true,
+      OR: [
+        { productId: null },
+        {
+          product: {
+            is: {
+              isActive: true,
+            },
+          },
         },
-      },
+      ],
     },
     orderBy: { createdAt: "asc" },
     include: programInclude,
@@ -40,11 +45,16 @@ export async function getProgramBySlug(programSlug: string) {
     where: {
       slug: programSlug,
       isPublished: true,
-      product: {
-        is: {
-          isActive: true,
+      OR: [
+        { productId: null },
+        {
+          product: {
+            is: {
+              isActive: true,
+            },
+          },
         },
-      },
+      ],
     },
     include: programInclude,
   });
@@ -58,11 +68,16 @@ export async function getModuleBySlug(programSlug: string, moduleSlug: string) {
       program: {
         slug: programSlug,
         isPublished: true,
-        product: {
-          is: {
-            isActive: true,
+        OR: [
+          { productId: null },
+          {
+            product: {
+              is: {
+                isActive: true,
+              },
+            },
           },
-        },
+        ],
       },
     },
     include: {

@@ -8,14 +8,14 @@ type AdminShellProps = {
 };
 
 const adminItems = [
-  "Dashboard",
-  "Programas",
-  "Modulos",
-  "Lecciones",
-  "Videos",
-  "Updates",
-  "Usuarios",
-  "Accesos",
+  { label: "Dashboard", href: "/admin" },
+  { label: "Programas", href: "/admin/programas" },
+  { label: "Modulos", href: "/admin/modulos" },
+  { label: "Lecciones", href: "/admin/lecciones" },
+  { label: "Videos", href: "/admin/videos" },
+  { label: "Updates", href: "/admin/updates" },
+  { label: "Usuarios", href: "/admin/usuarios" },
+  { label: "Accesos", href: "/admin/accesos" },
 ];
 
 export function AdminShell({ children }: AdminShellProps) {
