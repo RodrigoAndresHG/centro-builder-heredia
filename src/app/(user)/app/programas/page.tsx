@@ -2,11 +2,16 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
+import { ProgressMeter } from "@/components/app/progress-meter";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionBlock } from "@/components/shared/section-block";
 import { auth } from "@/lib/auth";
-import { getProgramLessonCount, listProgramsForViewer } from "@/lib/services";
+import {
+  getProgramLessonCount,
+  getProgramProgress,
+  listProgramsForViewer,
+} from "@/lib/services";
 
 export default async function ProgramasPage() {
   const session = await auth();
@@ -20,6 +25,12 @@ export default async function ProgramasPage() {
     id: user.id,
     role: user.role,
   });
+  const programsWithProgress = await Promise.all(
+    availablePrograms.map(async (program) => ({
+      program,
+      progress: await getProgramProgress(user.id, program),
+    })),
+  );
 
   return (
     <div className="space-y-8">
@@ -30,7 +41,7 @@ export default async function ProgramasPage() {
       />
       <SectionBlock title="Disponibles ahora">
         <div className="grid gap-4 lg:grid-cols-2">
-          {availablePrograms.map((program) => (
+          {programsWithProgress.map(({ program, progress }) => (
             <Card key={program.id} className="flex flex-col justify-between gap-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
@@ -42,6 +53,12 @@ export default async function ProgramasPage() {
                 <p className="mt-3 text-sm leading-6 text-neutral-600">
                   {program.description}
                 </p>
+                <div className="mt-5">
+                  <ProgressMeter
+                    percent={progress.percent}
+                    label={`${progress.completedCount}/${progress.totalCount} lecciones`}
+                  />
+                </div>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="text-sm text-neutral-600">
@@ -49,10 +66,10 @@ export default async function ProgramasPage() {
                   {getProgramLessonCount(program)} lecciones
                 </div>
                 <Link
-                  href={`/app/programas/${program.slug}`}
+                  href={progress.nextLesson?.href ?? `/app/programas/${program.slug}`}
                   className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
                 >
-                  Abrir programa
+                  {progress.completedCount > 0 ? "Continuar" : "Abrir programa"}
                 </Link>
               </div>
             </Card>

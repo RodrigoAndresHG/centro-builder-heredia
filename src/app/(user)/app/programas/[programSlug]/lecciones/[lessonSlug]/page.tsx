@@ -2,10 +2,16 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
+import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
+import { completeLesson } from "@/lib/actions/progress";
 import { auth } from "@/lib/auth";
-import { getLessonBySlug } from "@/lib/services";
+import {
+  getLessonBySlug,
+  getProgramProgress,
+  isLessonCompleted,
+} from "@/lib/services";
 
 type LessonPageProps = {
   params: Promise<{ programSlug: string; lessonSlug: string }>;
@@ -50,6 +56,13 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   const { program, lesson, previousLesson, nextLesson } = lessonData;
+  const [programProgress, completed] = await Promise.all([
+    getProgramProgress(user.id, program),
+    isLessonCompleted(user.id, lesson.id),
+  ]);
+  const nextHref = nextLesson
+    ? `/app/programas/${program.slug}/lecciones/${nextLesson.slug}`
+    : undefined;
 
   return (
     <div className="space-y-8">
@@ -117,6 +130,43 @@ export default async function LessonPage({ params }: LessonPageProps) {
         </div>
 
         <aside className="space-y-4">
+          <Card>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                Estado
+              </p>
+              <LessonStatusPill isCompleted={completed} />
+            </div>
+            <div className="mt-4">
+              <ProgressMeter
+                percent={programProgress.percent}
+                label={`${programProgress.completedCount}/${programProgress.totalCount} del programa`}
+              />
+            </div>
+            {completed ? (
+              <p className="mt-4 text-sm leading-6 text-neutral-600">
+                Esta leccion ya esta marcada como completada.
+              </p>
+            ) : (
+              <form
+                action={completeLesson.bind(
+                  null,
+                  program.slug,
+                  lesson.slug,
+                  nextHref,
+                )}
+                className="mt-4"
+              >
+                <button
+                  type="submit"
+                  className="w-full rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+                >
+                  {nextHref ? "Completar y seguir" : "Marcar completada"}
+                </button>
+              </form>
+            )}
+          </Card>
+
           <Card>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
               Modulo

@@ -24,6 +24,7 @@ model User {
   sessions  Session[]
   accesses  Access[]
   purchases Purchase[]
+  lessonProgress LessonProgress[]
 
   @@map("users")
 }
@@ -147,6 +148,7 @@ model Lesson {
 
   program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
   module  Module? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  progress LessonProgress[]
 
   @@unique([programId, slug])
   @@map("lessons")
@@ -190,4 +192,21 @@ model Purchase {
   product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@map("purchases")
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  lessonId    String   @map("lesson_id")
+  completedAt DateTime @default(now()) @map("completed_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+  @@map("lesson_progress")
 }

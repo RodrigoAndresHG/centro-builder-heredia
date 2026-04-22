@@ -2,11 +2,16 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
+import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionBlock } from "@/components/shared/section-block";
 import { auth } from "@/lib/auth";
-import { getModuleBySlug } from "@/lib/services";
+import {
+  getModuleBySlug,
+  getModuleProgress,
+  getProgramProgress,
+} from "@/lib/services";
 
 type ModulePageProps = {
   params: Promise<{ programSlug: string; moduleSlug: string }>;
@@ -51,7 +56,12 @@ export default async function ModulePage({ params }: ModulePageProps) {
   }
 
   const programModule = moduleResult.module;
-  const firstLesson = programModule.lessons[0] ?? null;
+  const programProgress = await getProgramProgress(user.id, moduleResult.program);
+  const moduleProgress = getModuleProgress(
+    programModule,
+    programProgress.completedLessonIds,
+  );
+  const nextLesson = moduleProgress.nextLesson;
 
   return (
     <div className="space-y-8">
@@ -60,12 +70,12 @@ export default async function ModulePage({ params }: ModulePageProps) {
         title={programModule.title}
         description={programModule.description ?? undefined}
         action={
-          firstLesson ? (
+          nextLesson ? (
             <Link
-              href={`/app/programas/${programSlug}/lecciones/${firstLesson.slug}`}
+              href={`/app/programas/${programSlug}/lecciones/${nextLesson.slug}`}
               className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
             >
-              Empezar modulo
+              {moduleProgress.completedCount > 0 ? "Continuar modulo" : "Empezar modulo"}
             </Link>
           ) : null
         }
@@ -79,6 +89,12 @@ export default async function ModulePage({ params }: ModulePageProps) {
           Salir con una decision mas concreta: que promesa trabajar, con quien
           validarla y que pieza preparar para la siguiente conversacion.
         </p>
+        <div className="mt-5 max-w-xl">
+          <ProgressMeter
+            percent={moduleProgress.percent}
+            label={`${moduleProgress.completedCount}/${moduleProgress.totalCount} lecciones completadas`}
+          />
+        </div>
       </Card>
 
       <SectionBlock title="Lecciones">
@@ -101,9 +117,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
                     {lesson.description}
                   </p>
                 </div>
-                <span className="text-sm font-semibold text-foreground">
-                  Abrir
-                </span>
+                <LessonStatusPill
+                  isCompleted={programProgress.completedLessonIds.has(lesson.id)}
+                />
               </div>
             </Link>
           ))}

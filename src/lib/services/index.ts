@@ -3,3 +3,4 @@ export * from "./admin-access";
 export * from "./admin-content";
 export * from "./commerce";
 export * from "./learning";
+export * from "./progress";

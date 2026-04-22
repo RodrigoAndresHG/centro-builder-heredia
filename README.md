@@ -139,6 +139,16 @@ El area de aprendizaje valida permisos del lado servidor:
 - usuarios `ADMIN`: pueden abrir el area privada sin bloqueo comercial.
 - contenido no publicado no aparece en el area de usuario.
 
+## Progreso basico
+
+El MVP guarda progreso minimo por usuario y leccion:
+
+- `LessonProgress`: una fila por `userId + lessonId`.
+- La leccion se marca como completada desde la vista de leccion.
+- Dashboard, programa, modulo y leccion muestran avance basico.
+- El dashboard recomienda la siguiente leccion pendiente del programa activo.
+- Si el programa esta completo, la continuidad vuelve al cierre del programa.
+
 ## Stripe y accesos
 
 El circuito comercial minimo usa Stripe Checkout:
@@ -157,6 +167,6 @@ http://localhost:3000/api/stripe/webhook
 
 ## Proximas fases
 
-- Agregar progreso por leccion.
 - Mejorar reporting comercial y conciliacion de pagos.
 - Conectar estados de compra mas avanzados si el modelo comercial lo requiere.
+- Agregar QA funcional con usuarios piloto y escenarios reales de compra.

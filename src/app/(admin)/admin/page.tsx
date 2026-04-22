@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SignOutButton } from "@/components/shared/sign-out-button";
@@ -38,6 +40,46 @@ export default async function AdminDashboardPage() {
           </p>
           <p className="mt-2 text-sm font-medium text-foreground">
             Proteccion inicial activa
+          </p>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+            Contenido
+          </p>
+          <p className="mt-2 text-sm leading-6 text-neutral-600">
+            Revisa programas, modulos y lecciones antes de publicar.
+          </p>
+          <Link
+            href="/admin/programas"
+            className="mt-4 inline-flex rounded-md border border-border px-3 py-2 text-sm font-semibold text-foreground"
+          >
+            Gestionar contenido
+          </Link>
+        </Card>
+        <Card>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+            Accesos
+          </p>
+          <p className="mt-2 text-sm leading-6 text-neutral-600">
+            Activa, desactiva o corrige accesos cuando Stripe o soporte lo pidan.
+          </p>
+          <Link
+            href="/admin/accesos"
+            className="mt-4 inline-flex rounded-md border border-border px-3 py-2 text-sm font-semibold text-foreground"
+          >
+            Gestionar accesos
+          </Link>
+        </Card>
+        <Card>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+            Salida controlada
+          </p>
+          <p className="mt-2 text-sm leading-6 text-neutral-600">
+            Antes de invitar usuarios, confirma seed, price de Stripe, webhook y
+            contenido publicado.
           </p>
         </Card>
       </div>
