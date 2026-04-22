@@ -137,6 +137,7 @@ model Lesson {
   slug        String
   title       String
   description String?
+  content     String?  @db.Text
   videoUrl    String?  @map("video_url")
   sortOrder   Int      @default(0) @map("sort_order")
   isPublished Boolean  @default(false) @map("is_published")
