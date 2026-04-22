@@ -1,0 +1,12 @@
+// Centro Builder HeredIA MVP
+// Initial Prisma schema prepared for PostgreSQL.
+// Domain models will be added in the data-modeling phase.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
