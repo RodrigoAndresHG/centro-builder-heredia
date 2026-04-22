@@ -1,11 +1,5 @@
-import { PlaceholderPage } from "@/components/shared/placeholder-page";
+import { AuthPanel } from "@/components/public/auth-panel";
 
 export default function RegistroPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="Acceso"
-      title="Registro"
-      description="Pantalla base para el futuro inicio del flujo de registro."
-    />
-  );
+  return <AuthPanel mode="registro" />;
 }

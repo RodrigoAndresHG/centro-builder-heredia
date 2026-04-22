@@ -10,6 +10,7 @@ Bootstrap tecnico inicial del SaaS Centro Builder HeredIA. Esta base deja una so
 - Prisma
 - PostgreSQL
 - Vercel
+- Auth.js / NextAuth
 
 ## Como correrlo
 
@@ -29,6 +30,19 @@ Actualiza `DATABASE_URL` y el resto de secretos locales. Luego genera Prisma Cli
 
 ```bash
 npm run prisma:generate
+```
+
+Ejecuta migraciones y seed base:
+
+```bash
+npm run prisma:migrate
+npm run prisma:seed
+```
+
+En produccion/Vercel usa:
+
+```bash
+npm run prisma:deploy
 ```
 
 Levanta desarrollo:
@@ -73,11 +87,46 @@ prisma/schema.prisma          Schema Prisma inicial
 - Admin: `/admin`, `/admin/programas`, `/admin/modulos`, `/admin/lecciones`, `/admin/videos`, `/admin/updates`, `/admin/usuarios`, `/admin/accesos`
 - API: `/api/health`
 
+## Auth y variables
+
+Auth.js esta configurado con Google OAuth y magic link por correo.
+
+Variables requeridas:
+
+- `DATABASE_URL`: conexion PostgreSQL.
+- `AUTH_SECRET`: secreto largo para Auth.js. Puede generarse con `npx auth secret`.
+- `AUTH_URL`: URL base local o productiva.
+- `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`: credenciales OAuth de Google.
+- `EMAIL_SERVER` y `EMAIL_FROM`: SMTP para magic links por correo.
+
+Callback local de Google:
+
+```text
+http://localhost:3000/api/auth/callback/google
+```
+
+Apple queda preparado solo como placeholder de variables para una fase posterior.
+
+## Roles iniciales
+
+Los roles base son:
+
+- `INVITADO`
+- `USUARIO_PAGO`
+- `ADMIN`
+
+Los usuarios nuevos entran como `INVITADO`. El seed crea/actualiza roles base y, si existe `SEED_ADMIN_EMAIL`, crea o promueve ese correo a `ADMIN`.
+
+## Proteccion inicial
+
+Next.js 16 usa `src/proxy.ts` como reemplazo de middleware. La proteccion actual es:
+
+- `/app/*`: requiere sesion.
+- `/admin/*`: requiere sesion y rol `ADMIN`.
+
 ## Proximas fases
 
-- Definir modelos Prisma y migraciones iniciales.
-- Implementar autenticacion real.
-- Conectar permisos por rol.
+- Validar permisos finos en servicios de servidor.
 - Construir primera vertical slice de programas, modulos y lecciones.
 - Integrar Stripe y webhooks.
 - Implementar CRUD admin y reglas de acceso.

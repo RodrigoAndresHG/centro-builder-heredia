@@ -1,6 +1,5 @@
 // Centro Builder HeredIA MVP
-// Initial Prisma schema prepared for PostgreSQL.
-// Domain models will be added in the data-modeling phase.
+// Initial data model for auth, roles, products, programs, access and purchases.
 
 generator client {
   provider = "prisma-client"
@@ -9,4 +8,184 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  roleKey       String    @default("INVITADO") @map("role_key")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  accounts  Account[]
+  sessions  Session[]
+  accesses  Access[]
+  purchases Purchase[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Role {
+  key         String   @id
+  label       String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  programs  Program[]
+  accesses  Access[]
+  purchases Purchase[]
+
+  @@map("products")
+}
+
+model Program {
+  id          String   @id @default(cuid())
+  productId   String?  @map("product_id")
+  slug        String   @unique
+  title       String
+  description String?
+  isPublished Boolean  @default(false) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  product  Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  modules  Module[]
+  lessons  Lesson[]
+  accesses Access[]
+
+  @@map("programs")
+}
+
+model Module {
+  id          String   @id @default(cuid())
+  programId   String   @map("program_id")
+  slug        String
+  title       String
+  description String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(false) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  program Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@unique([programId, slug])
+  @@map("modules")
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  programId   String   @map("program_id")
+  moduleId    String?  @map("module_id")
+  slug        String
+  title       String
+  description String?
+  videoUrl    String?  @map("video_url")
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(false) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  module  Module? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+
+  @@unique([programId, slug])
+  @@map("lessons")
+}
+
+model Access {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  productId String?   @map("product_id")
+  programId String?   @map("program_id")
+  status    String    @default("ACTIVE")
+  startsAt  DateTime  @default(now()) @map("starts_at")
+  expiresAt DateTime? @map("expires_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  program Program? @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@unique([userId, programId])
+  @@map("accesses")
+}
+
+model Purchase {
+  id                      String    @id @default(cuid())
+  userId                  String    @map("user_id")
+  productId               String?   @map("product_id")
+  status                  String    @default("PENDING")
+  amountCents             Int?      @map("amount_cents")
+  currency                String?
+  stripeCustomerId        String?   @map("stripe_customer_id")
+  stripeCheckoutSessionId String?   @unique @map("stripe_checkout_session_id")
+  stripePaymentIntentId   String?   @map("stripe_payment_intent_id")
+  purchasedAt             DateTime? @map("purchased_at")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@map("purchases")
 }

@@ -1,11 +1,5 @@
-import { PlaceholderPage } from "@/components/shared/placeholder-page";
+import { AuthPanel } from "@/components/public/auth-panel";
 
 export default function LoginPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="Acceso"
-      title="Login"
-      description="Placeholder para autenticacion futura. No incluye flujo real en esta fase."
-    />
-  );
+  return <AuthPanel mode="login" />;
 }
