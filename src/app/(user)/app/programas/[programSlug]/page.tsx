@@ -3,9 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
-import { Card } from "@/components/shared/card";
-import { PageHeader } from "@/components/shared/page-header";
-import { SectionBlock } from "@/components/shared/section-block";
+import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 import {
   getModuleProgress,
@@ -38,10 +36,10 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
   if (programResult.access === "locked") {
     return (
       <div className="space-y-8">
-        <PageHeader
+        <WorkspaceHero
           eyebrow={programResult.program.product?.name ?? "Programa"}
           title={programResult.program.title}
-          description="Este programa existe, pero tu cuenta no tiene acceso activo para abrirlo."
+          description="Este programa existe, pero tu cuenta todavía no tiene acceso activo para abrirlo."
         />
         <AccessRequiredCard
           title={programResult.program.title}
@@ -56,7 +54,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
 
   return (
     <div className="space-y-8">
-      <PageHeader
+      <WorkspaceHero
         eyebrow={program.product?.name ?? "Programa"}
         title={program.title}
         description={program.description ?? undefined}
@@ -64,48 +62,48 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
           progress.nextLesson ? (
             <Link
               href={progress.nextLesson.href}
-              className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+              className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
             >
               {progress.completedCount > 0 ? "Continuar" : "Empezar"}
             </Link>
           ) : null
         }
-      />
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-            Enfoque
-          </p>
-          <p className="mt-2 text-sm leading-6 text-foreground">
-            Convertir una idea en una oferta inicial clara, conversable y vendible.
-          </p>
-        </Card>
-        <Card>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-            Progreso
-          </p>
-          <div className="mt-3">
+      >
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+              Estado
+            </p>
+            <p className="mt-2 text-lg font-semibold text-emerald-300">
+              Acceso activo
+            </p>
+          </div>
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
             <ProgressMeter
               percent={progress.percent}
               label={`${progress.completedCount}/${progress.totalCount} lecciones`}
             />
           </div>
-        </Card>
-        <Card>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-            Siguiente paso
-          </p>
-          <p className="mt-2 text-sm font-medium text-foreground">
-            {progress.nextLesson?.lesson.title ?? "Programa completado"}
-          </p>
-        </Card>
-      </div>
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+              Siguiente paso
+            </p>
+            <p className="mt-2 text-sm font-semibold leading-6 text-white">
+              {progress.nextLesson?.lesson.title ?? "Programa completado"}
+            </p>
+          </div>
+        </div>
+      </WorkspaceHero>
 
-      <SectionBlock
-        title="Ruta del programa"
-        description="Avanza modulo por modulo. Cada leccion completada queda guardada en tu cuenta."
-      >
+      <section className="space-y-5">
+        <div>
+          <h2 className="text-2xl font-semibold text-white">Mapa del programa</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-neutral-400">
+            Recorre los módulos como una ruta guiada. Cada lección completada queda
+            guardada en tu cuenta.
+          </p>
+        </div>
+
         <div className="space-y-4">
           {program.modules.map((module) => {
             const moduleProgress = getModuleProgress(
@@ -117,19 +115,19 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
               : `/app/programas/${program.slug}/modulos/${module.slug}`;
 
             return (
-              <Card key={module.id}>
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+              <WorkspaceCard key={module.id}>
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                   <div className="max-w-2xl">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-                      Modulo {module.sortOrder}
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                      Módulo {module.sortOrder}
                     </p>
-                    <h2 className="mt-2 text-xl font-semibold text-foreground">
+                    <h3 className="mt-3 text-2xl font-semibold text-white">
                       {module.title}
-                    </h2>
-                    <p className="mt-2 text-sm leading-6 text-neutral-600">
+                    </h3>
+                    <p className="mt-3 text-sm leading-7 text-neutral-300">
                       {module.description}
                     </p>
-                    <div className="mt-4 max-w-md">
+                    <div className="mt-5 max-w-md">
                       <ProgressMeter
                         percent={moduleProgress.percent}
                         label={`${moduleProgress.completedCount}/${moduleProgress.totalCount} completadas`}
@@ -138,19 +136,20 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
                   </div>
                   <Link
                     href={moduleHref}
-                    className="rounded-md border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground"
+                    className="rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
                   >
                     {moduleProgress.completedCount > 0
-                      ? "Continuar modulo"
-                      : "Abrir modulo"}
+                      ? "Continuar módulo"
+                      : "Abrir módulo"}
                   </Link>
                 </div>
-                <div className="mt-5 grid gap-2">
+
+                <div className="mt-6 grid gap-2">
                   {module.lessons.map((lesson) => (
                     <Link
                       key={lesson.id}
                       href={`/app/programas/${program.slug}/lecciones/${lesson.slug}`}
-                      className="rounded-md border border-border bg-background px-4 py-3 text-sm font-medium text-neutral-700 transition hover:border-accent hover:text-foreground"
+                      className="rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-300 transition hover:border-teal-400/50 hover:text-white"
                     >
                       <span className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <span>
@@ -163,11 +162,11 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
                     </Link>
                   ))}
                 </div>
-              </Card>
+              </WorkspaceCard>
             );
           })}
         </div>
-      </SectionBlock>
+      </section>
     </div>
   );
 }

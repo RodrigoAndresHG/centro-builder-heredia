@@ -3,8 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
-import { Card } from "@/components/shared/card";
-import { PageHeader } from "@/components/shared/page-header";
+import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
 import { completeLesson } from "@/lib/actions/progress";
 import { auth } from "@/lib/auth";
 import {
@@ -38,10 +37,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
   if (lessonData.access === "locked" && lessonData.program) {
     return (
       <div className="space-y-8">
-        <PageHeader
+        <WorkspaceHero
           eyebrow={lessonData.program.product?.name ?? "Programa"}
           title={lessonData.program.title}
-          description="Tu cuenta no tiene acceso activo para abrir esta leccion."
+          description="Tu cuenta no tiene acceso activo para abrir esta lección."
         />
         <AccessRequiredCard
           title={lessonData.program.title}
@@ -66,26 +65,43 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <div className="space-y-8">
-      <PageHeader
+      <WorkspaceHero
         eyebrow={`${program.title} · ${lesson.moduleTitle}`}
         title={lesson.title}
         description={lesson.description ?? undefined}
         action={
           <Link
             href={`/app/programas/${program.slug}`}
-            className="rounded-md border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground"
+            className="rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
           >
             Ver programa
           </Link>
         }
-      />
+      >
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                Estado
+              </p>
+              <LessonStatusPill isCompleted={completed} />
+            </div>
+          </div>
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5 md:col-span-2">
+            <ProgressMeter
+              percent={programProgress.percent}
+              label={`${programProgress.completedCount}/${programProgress.totalCount} del programa`}
+            />
+          </div>
+        </div>
+      </WorkspaceHero>
 
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.6fr]">
+      <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <div className="space-y-6">
-          <div className="aspect-video rounded-lg border border-border bg-neutral-950 p-6 text-accent-foreground shadow-sm shadow-neutral-950/10">
+          <div className="aspect-video rounded-2xl border border-neutral-800 bg-neutral-950 p-6 text-white shadow-xl shadow-black/20">
             {lesson.videoUrl ? (
               <div className="flex h-full flex-col justify-between">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
                   Video
                 </p>
                 <a
@@ -94,58 +110,49 @@ export default async function LessonPage({ params }: LessonPageProps) {
                   rel="noreferrer"
                   className="text-sm font-semibold text-white underline underline-offset-4"
                 >
-                  Abrir video de la leccion
+                  Abrir video de la lección
                 </a>
               </div>
             ) : (
               <div className="flex h-full flex-col justify-between">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-300">
-                  Video pendiente
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                  Contenido del build
                 </p>
                 <div>
                   <p className="text-2xl font-semibold text-white">
-                    Contenido base disponible
+                    Lección textual lista para consumir
                   </p>
-                  <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-300">
-                    Esta leccion ya puede consumirse en texto. El video se
-                    conectara cuando el activo este listo.
+                  <p className="mt-3 max-w-xl text-sm leading-7 text-neutral-300">
+                    Esta pieza forma parte de la ruta guiada. El video se puede
+                    conectar después sin romper la continuidad del programa.
                   </p>
                 </div>
               </div>
             )}
           </div>
 
-          <Card>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
+          <WorkspaceCard className="p-7">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
               Nota de trabajo
             </p>
-            <div className="mt-4 space-y-4 text-base leading-8 text-neutral-700">
-              {(lesson.content ?? "Contenido en preparacion.")
+            <div className="mt-5 space-y-5 text-base leading-8 text-neutral-200">
+              {(lesson.content ?? "Contenido en preparación.")
                 .split("\n")
                 .map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
             </div>
-          </Card>
+          </WorkspaceCard>
         </div>
 
         <aside className="space-y-4">
-          <Card>
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                Estado
-              </p>
-              <LessonStatusPill isCompleted={completed} />
-            </div>
-            <div className="mt-4">
-              <ProgressMeter
-                percent={programProgress.percent}
-                label={`${programProgress.completedCount}/${programProgress.totalCount} del programa`}
-              />
-            </div>
+          <WorkspaceCard>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+              Acción de progreso
+            </p>
             {completed ? (
-              <p className="mt-4 text-sm leading-6 text-neutral-600">
-                Esta leccion ya esta marcada como completada.
+              <p className="mt-3 text-sm leading-7 text-neutral-300">
+                Esta lección ya está marcada como completada.
               </p>
             ) : (
               <form
@@ -159,61 +166,61 @@ export default async function LessonPage({ params }: LessonPageProps) {
               >
                 <button
                   type="submit"
-                  className="w-full rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+                  className="w-full rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
                 >
                   {nextHref ? "Completar y seguir" : "Marcar completada"}
                 </button>
               </form>
             )}
-          </Card>
+          </WorkspaceCard>
 
-          <Card>
+          <WorkspaceCard>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-              Modulo
+              Módulo
             </p>
-            <p className="mt-2 text-sm font-semibold text-foreground">
+            <p className="mt-2 text-base font-semibold text-white">
               {lesson.moduleTitle}
             </p>
             <Link
               href={`/app/programas/${program.slug}/modulos/${lesson.moduleSlug}`}
-              className="mt-4 inline-flex rounded-md border border-border bg-surface px-3 py-2 text-sm font-semibold text-foreground"
+              className="mt-4 inline-flex rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
             >
-              Ver modulo
+              Ver módulo
             </Link>
-          </Card>
+          </WorkspaceCard>
 
-          <Card>
+          <WorkspaceCard>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-              Navegacion
+              Navegación
             </p>
             <div className="mt-4 space-y-3">
               {previousLesson ? (
                 <Link
                   href={`/app/programas/${program.slug}/lecciones/${previousLesson.slug}`}
-                  className="block rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground"
+                  className="block rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm font-medium text-neutral-200 transition hover:border-neutral-600"
                 >
                   Anterior: {previousLesson.title}
                 </Link>
               ) : (
-                <p className="rounded-md border border-border bg-background px-3 py-2 text-sm text-neutral-500">
-                  Primera leccion del programa
+                <p className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-neutral-500">
+                  Primera lección del programa
                 </p>
               )}
 
               {nextLesson ? (
                 <Link
                   href={`/app/programas/${program.slug}/lecciones/${nextLesson.slug}`}
-                  className="block rounded-md bg-accent px-3 py-2 text-sm font-semibold text-accent-foreground"
+                  className="block rounded-md bg-teal-400 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
                 >
                   Siguiente: {nextLesson.title}
                 </Link>
               ) : (
-                <p className="rounded-md border border-border bg-background px-3 py-2 text-sm text-neutral-500">
-                  Ultima leccion del programa
+                <p className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-neutral-500">
+                  Última lección del programa
                 </p>
               )}
             </div>
-          </Card>
+          </WorkspaceCard>
         </aside>
       </div>
     </div>

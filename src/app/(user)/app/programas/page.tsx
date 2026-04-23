@@ -3,9 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { ProgressMeter } from "@/components/app/progress-meter";
-import { Card } from "@/components/shared/card";
-import { PageHeader } from "@/components/shared/page-header";
-import { SectionBlock } from "@/components/shared/section-block";
+import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 import {
   getProgramLessonCount,
@@ -34,26 +32,37 @@ export default async function ProgramasPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        eyebrow="Usuario"
-        title="Mis programas"
-        description="Programas disponibles segun los permisos activos de tu cuenta."
+      <WorkspaceHero
+        eyebrow="Programas"
+        title="Tu mapa de aprendizaje dentro del workspace."
+        description="Aquí ves qué productos tienes disponibles, qué sigue y qué contenido requiere activar acceso."
       />
-      <SectionBlock title="Disponibles ahora">
+
+      <section className="space-y-5">
+        <div>
+          <h2 className="text-2xl font-semibold text-white">Disponibles ahora</h2>
+          <p className="mt-2 text-sm leading-7 text-neutral-400">
+            Programas habilitados según tus permisos activos.
+          </p>
+        </div>
+
         <div className="grid gap-4 lg:grid-cols-2">
           {programsWithProgress.map(({ program, progress }) => (
-            <Card key={program.id} className="flex flex-col justify-between gap-6">
+            <WorkspaceCard
+              key={program.id}
+              className="flex flex-col justify-between gap-6"
+            >
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
                   {program.product?.name ?? "Programa"}
                 </p>
-                <h2 className="mt-2 text-xl font-semibold text-foreground">
+                <h3 className="mt-3 text-2xl font-semibold text-white">
                   {program.title}
-                </h2>
-                <p className="mt-3 text-sm leading-6 text-neutral-600">
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-neutral-300">
                   {program.description}
                 </p>
-                <div className="mt-5">
+                <div className="mt-6">
                   <ProgressMeter
                     percent={progress.percent}
                     label={`${progress.completedCount}/${progress.totalCount} lecciones`}
@@ -61,31 +70,38 @@ export default async function ProgramasPage() {
                 </div>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="text-sm text-neutral-600">
-                  {program.modules.length} modulos ·{" "}
+                <div className="text-sm text-neutral-400">
+                  {program.modules.length} módulos ·{" "}
                   {getProgramLessonCount(program)} lecciones
                 </div>
                 <Link
                   href={progress.nextLesson?.href ?? `/app/programas/${program.slug}`}
-                  className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+                  className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
                 >
                   {progress.completedCount > 0 ? "Continuar" : "Abrir programa"}
                 </Link>
               </div>
-            </Card>
+            </WorkspaceCard>
           ))}
         </div>
+
         {availablePrograms.length === 0 ? (
-          <Card>
-            <p className="text-sm leading-6 text-neutral-600">
+          <WorkspaceCard>
+            <p className="text-sm leading-7 text-neutral-300">
               No tienes programas disponibles en este momento.
             </p>
-          </Card>
+          </WorkspaceCard>
         ) : null}
-      </SectionBlock>
+      </section>
 
       {lockedPrograms.length > 0 ? (
-        <SectionBlock title="Requieren acceso">
+        <section className="space-y-5">
+          <div>
+            <h2 className="text-2xl font-semibold text-white">Requieren acceso</h2>
+            <p className="mt-2 text-sm leading-7 text-neutral-400">
+              Productos publicados que puedes activar para entrar al contenido.
+            </p>
+          </div>
           <div className="grid gap-4 lg:grid-cols-2">
             {lockedPrograms.map((program) => (
               <AccessRequiredCard
@@ -97,7 +113,7 @@ export default async function ProgramasPage() {
               />
             ))}
           </div>
-        </SectionBlock>
+        </section>
       ) : null}
     </div>
   );

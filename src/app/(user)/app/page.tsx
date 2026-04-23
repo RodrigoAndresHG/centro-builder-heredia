@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { ProgressMeter } from "@/components/app/progress-meter";
-import { Card } from "@/components/shared/card";
-import { PageHeader } from "@/components/shared/page-header";
+import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { auth } from "@/lib/auth";
 import {
@@ -44,156 +43,179 @@ export default async function UserDashboardPage({
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        eyebrow="Usuario"
-        title={`Hola${user?.name ? `, ${user.name}` : ""}`}
-        description="Tu espacio privado para convertir ideas en ofertas claras y vendibles."
-        action={<SignOutButton />}
-      />
-
       {checkout === "success" ? (
-        <Card>
-          <p className="text-sm font-semibold text-foreground">
+        <WorkspaceCard className="border-emerald-400/20 bg-emerald-400/10">
+          <p className="text-sm font-semibold text-emerald-200">
             Compra recibida. Si Stripe ya confirmo el pago, tu acceso queda activo
             automaticamente; si no lo ves, revisa soporte.
           </p>
-        </Card>
+        </WorkspaceCard>
       ) : null}
 
       {checkout === "cancelled" ? (
-        <Card>
-          <p className="text-sm font-semibold text-foreground">
+        <WorkspaceCard className="border-amber-400/20 bg-amber-400/10">
+          <p className="text-sm font-semibold text-amber-200">
             Checkout cancelado. Puedes intentarlo de nuevo desde el programa
             bloqueado o escribir a soporte si hubo un problema.
           </p>
-        </Card>
+        </WorkspaceCard>
       ) : null}
 
-      {program ? (
-        <Card className="p-0">
-          <div className="grid gap-0 lg:grid-cols-[1.4fr_0.8fr]">
-            <div className="space-y-5 p-6">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-                  Programa activo
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-foreground">
-                  {program.title}
-                </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-neutral-600">
-                  {program.description}
-                </p>
-                {progress?.nextLesson ? (
-                  <p className="mt-4 text-sm font-semibold text-foreground">
-                    Siguiente: {progress.nextLesson.lesson.title}
-                  </p>
-                ) : null}
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href={continueHref}
-                  className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
-                >
-                  Continuar
-                </Link>
-                <Link
-                  href={`/app/programas/${program.slug}`}
-                  className="rounded-md border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground"
-                >
-                  Ver programa
-                </Link>
-              </div>
-            </div>
-            <div className="border-t border-border bg-surface-muted p-6 lg:border-l lg:border-t-0">
-              <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                    Acceso
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-foreground">
-                    Acceso activo
-                  </p>
-                </div>
-                {progress ? (
-                  <div>
-                    <ProgressMeter
-                      percent={progress.percent}
-                      label={`${progress.completedCount}/${progress.totalCount} lecciones`}
-                    />
-                  </div>
-                ) : null}
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                    Modulos
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-foreground">
-                    {program.modules.length} publicados
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                    Lecciones
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-foreground">
-                    {lessonCount} disponibles
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-      ) : lockedProgram ? (
-        <AccessRequiredCard
-          title={lockedProgram.title}
-          description="Tu cuenta no tiene acceso activo a este producto todavia. Cuando el acceso este habilitado, el programa aparecera como disponible."
-          productSlug={lockedProgram.product?.slug}
-        />
-      ) : (
-        <Card>
-          <p className="text-sm leading-6 text-neutral-600">
-            Todavia no hay programas publicados. Ejecuta el seed para cargar la
-            vertical slice inicial.
-          </p>
-        </Card>
-      )}
-
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-            Nombre
-          </p>
-          <p className="mt-2 text-sm font-medium text-foreground">
-            {user?.name ?? "Sin nombre registrado"}
-          </p>
-        </Card>
-        <Card>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-            Correo
-          </p>
-          <p className="mt-2 text-sm font-medium text-foreground">
-            {user?.email ?? "Sin correo"}
-          </p>
-        </Card>
-        <Card>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-            Rol
-          </p>
-          <p className="mt-2 text-sm font-medium text-foreground">
-            {user?.role ?? "INVITADO"}
-          </p>
-        </Card>
-        <Card>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-            Ayuda
-          </p>
-          <Link
-            href="/app/soporte"
-            className="mt-2 inline-flex text-sm font-semibold text-foreground underline underline-offset-4"
+      {program && progress ? (
+        <>
+          <WorkspaceHero
+            eyebrow="Workspace privado"
+            title={`Hola${user.name ? `, ${user.name}` : ""}. Ya estás dentro de tu producto activo.`}
+            description="Tu acceso está habilitado. Retoma la siguiente lección, revisa el mapa del programa y mantén continuidad dentro del mismo entorno privado."
+            action={<SignOutButton variant="dark" />}
           >
-            Resolver acceso o pago
-          </Link>
-        </Card>
-      </div>
+            <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                  Siguiente paso recomendado
+                </p>
+                <h2 className="mt-3 text-2xl font-semibold text-white">
+                  {progress.nextLesson?.lesson.title ?? "Programa completado"}
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-neutral-400">
+                  {program.title}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link
+                    href={continueHref}
+                    className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
+                  >
+                    Continuar aprendizaje
+                  </Link>
+                  <Link
+                    href={`/app/programas/${program.slug}`}
+                    className="rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
+                  >
+                    Ver mapa del programa
+                  </Link>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+                <ProgressMeter
+                  percent={progress.percent}
+                  label={`${progress.completedCount}/${progress.totalCount} lecciones`}
+                />
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">
+                    <p className="text-xs text-neutral-500">Módulos</p>
+                    <p className="mt-1 text-2xl font-semibold text-white">
+                      {program.modules.length}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">
+                    <p className="text-xs text-neutral-500">Lecciones</p>
+                    <p className="mt-1 text-2xl font-semibold text-white">
+                      {lessonCount}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </WorkspaceHero>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <WorkspaceCard>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                Acceso
+              </p>
+              <p className="mt-2 text-lg font-semibold text-white">Activo</p>
+              <p className="mt-2 text-sm leading-6 text-neutral-400">
+                Tu cuenta puede consumir el producto asociado.
+              </p>
+            </WorkspaceCard>
+            <WorkspaceCard>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                Updates
+              </p>
+              <p className="mt-2 text-lg font-semibold text-white">
+                Dentro del workspace
+              </p>
+              <p className="mt-2 text-sm leading-6 text-neutral-400">
+                Nuevas publicaciones aparecerán en la misma experiencia.
+              </p>
+            </WorkspaceCard>
+            <WorkspaceCard>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                Soporte
+              </p>
+              <Link
+                href="/app/soporte"
+                className="mt-2 inline-flex text-lg font-semibold text-white underline decoration-neutral-600 underline-offset-4"
+              >
+                Resolver acceso o pago
+              </Link>
+              <p className="mt-2 text-sm leading-6 text-neutral-400">
+                Usa soporte si algo no se refleja como esperas.
+              </p>
+            </WorkspaceCard>
+          </div>
+        </>
+      ) : lockedProgram ? (
+        <div className="space-y-6">
+          <WorkspaceHero
+            eyebrow="Acceso pendiente"
+            title="Estás a un paso de entrar a un entorno privado de construcción real."
+            description="Tu cuenta ya existe. Ahora puedes activar el acceso al producto activo y entrar al programa, sus lecciones, progreso y soporte dentro del workspace."
+            action={<SignOutButton variant="dark" />}
+          >
+            <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+              <AccessRequiredCard
+                title={lockedProgram.title}
+                description="Activa el acceso para abrir el programa premium, ver los módulos publicados y continuar dentro de una experiencia guiada."
+                productSlug={lockedProgram.product?.slug}
+              />
+              <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                  Vista previa del contenido
+                </p>
+                <div className="mt-5 space-y-3">
+                  {lockedProgram.modules.slice(0, 3).map((module) => (
+                    <div
+                      key={module.id}
+                      className="rounded-xl border border-neutral-800 bg-neutral-900 p-4"
+                    >
+                      <p className="text-sm font-semibold text-white">
+                        {module.title}
+                      </p>
+                      <p className="mt-1 text-xs text-neutral-500">
+                        {module.lessons.length} lecciones publicadas
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </WorkspaceHero>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              ["Compra segura", "Checkout conectado y retorno automático."],
+              ["Acceso centralizado", "Tu dashboard refleja lo que tienes activo."],
+              ["Continuidad real", "El progreso queda dentro de tu cuenta."],
+            ].map(([title, description]) => (
+              <WorkspaceCard key={title}>
+                <p className="text-lg font-semibold text-white">{title}</p>
+                <p className="mt-2 text-sm leading-6 text-neutral-400">
+                  {description}
+                </p>
+              </WorkspaceCard>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <WorkspaceHero
+          eyebrow="Workspace privado"
+          title="Tu cuenta está lista. El contenido publicado aparecerá aquí."
+          description="Cuando haya programas disponibles para tu cuenta, verás el acceso activo, la continuidad y el siguiente paso recomendado."
+          action={<SignOutButton variant="dark" />}
+        />
+      )}
     </div>
   );
 }

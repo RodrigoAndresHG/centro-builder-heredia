@@ -3,9 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
-import { Card } from "@/components/shared/card";
-import { PageHeader } from "@/components/shared/page-header";
-import { SectionBlock } from "@/components/shared/section-block";
+import { WorkspaceHero } from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 import {
   getModuleBySlug,
@@ -38,10 +36,10 @@ export default async function ModulePage({ params }: ModulePageProps) {
   if (moduleResult.access === "locked" && moduleResult.program) {
     return (
       <div className="space-y-8">
-        <PageHeader
+        <WorkspaceHero
           eyebrow={moduleResult.program.product?.name ?? "Programa"}
           title={moduleResult.program.title}
-          description="Tu cuenta no tiene acceso activo para abrir este modulo."
+          description="Tu cuenta no tiene acceso activo para abrir este módulo."
         />
         <AccessRequiredCard
           title={moduleResult.program.title}
@@ -65,7 +63,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   return (
     <div className="space-y-8">
-      <PageHeader
+      <WorkspaceHero
         eyebrow={moduleResult.program.title}
         title={programModule.title}
         description={programModule.description ?? undefined}
@@ -73,47 +71,58 @@ export default async function ModulePage({ params }: ModulePageProps) {
           nextLesson ? (
             <Link
               href={`/app/programas/${programSlug}/lecciones/${nextLesson.slug}`}
-              className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+              className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
             >
-              {moduleProgress.completedCount > 0 ? "Continuar modulo" : "Empezar modulo"}
+              {moduleProgress.completedCount > 0 ? "Continuar módulo" : "Empezar módulo"}
             </Link>
           ) : null
         }
-      />
-
-      <Card>
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-          Objetivo del modulo
-        </p>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-neutral-700">
-          Salir con una decision mas concreta: que promesa trabajar, con quien
-          validarla y que pieza preparar para la siguiente conversacion.
-        </p>
-        <div className="mt-5 max-w-xl">
-          <ProgressMeter
-            percent={moduleProgress.percent}
-            label={`${moduleProgress.completedCount}/${moduleProgress.totalCount} lecciones completadas`}
-          />
+      >
+        <div className="grid gap-4 md:grid-cols-[1fr_1.2fr]">
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+              Objetivo del módulo
+            </p>
+            <p className="mt-3 text-sm leading-7 text-neutral-300">
+              Salir con una decisión más concreta: qué promesa trabajar, con
+              quién validarla y qué pieza preparar para la siguiente conversación.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+            <ProgressMeter
+              percent={moduleProgress.percent}
+              label={`${moduleProgress.completedCount}/${moduleProgress.totalCount} lecciones completadas`}
+            />
+          </div>
         </div>
-      </Card>
+      </WorkspaceHero>
 
-      <SectionBlock title="Lecciones">
+      <section className="space-y-5">
+        <div>
+          <h2 className="text-2xl font-semibold text-white">
+            Lecciones del módulo
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-neutral-400">
+            Consume cada pieza en orden y marca progreso cuando termines.
+          </p>
+        </div>
+
         <div className="grid gap-3">
           {programModule.lessons.map((lesson) => (
             <Link
               key={lesson.id}
               href={`/app/programas/${programSlug}/lecciones/${lesson.slug}`}
-              className="rounded-lg border border-border bg-surface p-4 shadow-sm shadow-neutral-950/5 transition hover:border-accent"
+              className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-xl shadow-black/10 transition hover:border-teal-400/50"
             >
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-                    Leccion {lesson.sortOrder}
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                    Lección {lesson.sortOrder}
                   </p>
-                  <h2 className="mt-1 text-base font-semibold text-foreground">
+                  <h3 className="mt-2 text-lg font-semibold text-white">
                     {lesson.title}
-                  </h2>
-                  <p className="mt-1 text-sm leading-6 text-neutral-600">
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-neutral-400">
                     {lesson.description}
                   </p>
                 </div>
@@ -124,11 +133,11 @@ export default async function ModulePage({ params }: ModulePageProps) {
             </Link>
           ))}
         </div>
-      </SectionBlock>
+      </section>
 
       <Link
         href={`/app/programas/${programSlug}`}
-        className="inline-flex rounded-md border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground"
+        className="inline-flex rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
       >
         Volver al programa
       </Link>
