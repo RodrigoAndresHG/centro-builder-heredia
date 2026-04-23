@@ -59,6 +59,8 @@ export async function createProductCheckoutSession({
 
   const stripe = getStripeClient();
   const baseUrl = appUrl();
+  const checkoutLogoFileId = process.env.STRIPE_CHECKOUT_LOGO_FILE_ID;
+  const checkoutIconFileId = process.env.STRIPE_CHECKOUT_ICON_FILE_ID;
 
   return stripe.checkout.sessions.create({
     mode: "payment",
@@ -72,6 +74,12 @@ export async function createProductCheckoutSession({
     client_reference_id: user.id,
     branding_settings: {
       display_name: "Rodrigo HeredIA",
+      logo: checkoutLogoFileId
+        ? { type: "file", file: checkoutLogoFileId }
+        : undefined,
+      icon: checkoutIconFileId
+        ? { type: "file", file: checkoutIconFileId }
+        : undefined,
     },
     success_url: `${baseUrl}/app?checkout=success`,
     cancel_url: `${baseUrl}/app?checkout=cancelled`,
