@@ -70,6 +70,9 @@ export async function createProductCheckoutSession({
     ],
     customer_email: user.email ?? undefined,
     client_reference_id: user.id,
+    branding_settings: {
+      display_name: "Rodrigo HeredIA",
+    },
     success_url: `${baseUrl}/app?checkout=success`,
     cancel_url: `${baseUrl}/app?checkout=cancelled`,
     metadata: {
