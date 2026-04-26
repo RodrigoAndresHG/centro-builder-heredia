@@ -143,34 +143,62 @@ function HeroSystemVisual() {
   );
 }
 
-function VideoPlaceholder() {
+function VideoShowcase() {
   return (
     <Reveal delay={140}>
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-3 shadow-2xl shadow-black/40 transition duration-500 hover:-translate-y-1 hover:border-teal-400/30">
-        <div className="aspect-video rounded-xl border border-neutral-800 bg-neutral-950 p-5">
-          <div className="flex h-full flex-col justify-between">
-            <div className="flex items-center justify-between">
-              <span className="rounded-md border border-teal-400/20 bg-teal-400/10 px-3 py-1 text-xs font-semibold text-teal-300">
-                Featured video
+      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 p-4 shadow-2xl shadow-black/40 transition duration-500 hover:-translate-y-1 hover:border-teal-400/30">
+        <div className="absolute inset-x-8 top-6 h-24 rounded-full bg-teal-300/10 blur-3xl" />
+
+        <div className="relative grid gap-5 lg:grid-cols-[0.78fr_1fr] lg:items-center">
+          <div className="order-2 rounded-xl border border-neutral-800 bg-neutral-950 p-4 lg:order-1">
+            <p className="text-xs font-semibold uppercase text-teal-300">
+              Preview real del LMS
+            </p>
+            <h3 className="mt-3 text-2xl font-semibold leading-tight text-white">
+              Una pieza vertical para sentir el producto antes de entrar.
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-neutral-400">
+              Vista de prueba del entorno Builder: contenido, foco y sensación
+              de producto privado en formato mobile-first.
+            </p>
+            <div className="mt-5 grid gap-2 text-xs font-semibold uppercase text-neutral-500">
+              <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
+                Autoplay silencioso
               </span>
-              <span className="text-xs font-semibold text-neutral-500">
-                Builder LMS / episodio 01
+              <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
+                Builder LMS / preview
               </span>
             </div>
-            <div>
-              <button
-                type="button"
-                className="flex h-20 w-20 items-center justify-center rounded-full border border-teal-300/50 bg-teal-300 text-sm font-bold text-neutral-950 shadow-xl shadow-teal-950/30 transition duration-300 hover:scale-105 hover:bg-teal-200"
-                aria-label="Reproducir video de presentación"
-              >
-                Play
-              </button>
-              <h3 className="mt-6 max-w-2xl text-2xl font-semibold text-white sm:text-3xl">
-                Por qué Builder no es una academia, sino un sistema de construcción.
-              </h3>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-neutral-300">
-                Espacio preparado para insertar el video oficial del lanzamiento.
-              </p>
+          </div>
+
+          <div className="order-1 mx-auto w-full max-w-[22rem] lg:order-2">
+            <div className="rounded-[2rem] border border-neutral-700 bg-neutral-950 p-2 shadow-2xl shadow-teal-950/20">
+              <div className="relative aspect-[9/16] overflow-hidden rounded-[1.55rem] border border-neutral-800 bg-black">
+                <video
+                  src="/video/builder-preview.mp4"
+                  className="h-full w-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-label="Vista previa vertical de Builder HeredIA"
+                />
+                <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/70 to-transparent p-4">
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase text-white backdrop-blur">
+                    Builder preview
+                  </span>
+                  <span className="h-2 w-2 rounded-full bg-teal-300 shadow-lg shadow-teal-300/50" />
+                </div>
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4">
+                  <p className="text-sm font-semibold text-white">
+                    IdeaCash HeredIA
+                  </p>
+                  <p className="mt-1 text-xs text-neutral-300">
+                    Primer programa del LMS oficial
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -277,7 +305,7 @@ export default function HomePage() {
             <PrimaryCta>Quiero acceso temprano</PrimaryCta>
           </Reveal>
         </div>
-        <VideoPlaceholder />
+        <VideoShowcase />
       </section>
 
       <section
