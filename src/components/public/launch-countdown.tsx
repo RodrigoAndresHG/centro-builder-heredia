@@ -32,18 +32,28 @@ export function LaunchCountdown() {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="space-y-4">
+      <div>
+        <p className="text-xs font-semibold uppercase text-teal-300">
+          Cuenta regresiva
+        </p>
+        <p className="mt-1 text-sm font-medium text-neutral-400">
+          Apertura del primer programa del LMS
+        </p>
+      </div>
+      <div className="grid grid-cols-3 gap-3">
       {items.map(([label, value]) => (
         <div
           key={label}
-          className="rounded-lg border border-neutral-800 bg-neutral-950 p-4 text-center"
+          className="rounded-xl border border-neutral-800 bg-neutral-950 p-4 text-center shadow-lg shadow-black/20 transition duration-300 hover:-translate-y-0.5 hover:border-teal-400/40"
         >
-          <p className="text-3xl font-semibold text-white">{value}</p>
+          <p className="text-4xl font-semibold text-white tabular-nums">{value}</p>
           <p className="mt-1 text-xs font-semibold uppercase text-neutral-500">
             {label}
           </p>
         </div>
       ))}
+      </div>
     </div>
   );
 }
