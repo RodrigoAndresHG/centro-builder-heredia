@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
+import {
+  WorkspaceCard,
+  WorkspaceHero,
+  WorkspaceTrail,
+} from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 
 export default async function SoportePage() {
@@ -9,6 +13,10 @@ export default async function SoportePage() {
 
   return (
     <div className="space-y-8">
+      <WorkspaceTrail
+        items={[{ label: "Workspace", href: "/app" }, { label: "Soporte" }]}
+      />
+
       <WorkspaceHero
         eyebrow="Soporte"
         title="Punto de control para acceso, compra y continuidad."

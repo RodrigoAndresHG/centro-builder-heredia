@@ -1,8 +1,16 @@
-import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
+import {
+  WorkspaceCard,
+  WorkspaceHero,
+  WorkspaceTrail,
+} from "@/components/app/workspace-card";
 
 export default function UserUpdatesPage() {
   return (
     <div className="space-y-8">
+      <WorkspaceTrail
+        items={[{ label: "Workspace", href: "/app" }, { label: "Updates" }]}
+      />
+
       <WorkspaceHero
         eyebrow="Updates"
         title="Novedades del build dentro del mismo workspace."

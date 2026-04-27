@@ -7,6 +7,7 @@ import {
   WorkspaceCard,
   WorkspaceHero,
   WorkspaceMetric,
+  WorkspaceTrail,
 } from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 import {
@@ -40,6 +41,14 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
   if (programResult.access === "locked") {
     return (
       <div className="space-y-8">
+        <WorkspaceTrail
+          items={[
+            { label: "Workspace", href: "/app" },
+            { label: "Programas", href: "/app/programas" },
+            { label: programResult.program.title },
+          ]}
+        />
+
         <WorkspaceHero
           eyebrow={programResult.program.product?.name ?? "Programa"}
           title={programResult.program.title}
@@ -58,6 +67,14 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
 
   return (
     <div className="space-y-8">
+      <WorkspaceTrail
+        items={[
+          { label: "Workspace", href: "/app" },
+          { label: "Programas", href: "/app/programas" },
+          { label: program.title },
+        ]}
+      />
+
       <WorkspaceHero
         eyebrow={program.product?.name ?? "Programa"}
         title={program.title}

@@ -3,7 +3,11 @@ import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
-import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
+import {
+  WorkspaceCard,
+  WorkspaceHero,
+  WorkspaceTrail,
+} from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 import {
   getModuleBySlug,
@@ -36,6 +40,17 @@ export default async function ModulePage({ params }: ModulePageProps) {
   if (moduleResult.access === "locked" && moduleResult.program) {
     return (
       <div className="space-y-8">
+        <WorkspaceTrail
+          items={[
+            { label: "Workspace", href: "/app" },
+            {
+              label: moduleResult.program.title,
+              href: `/app/programas/${programSlug}`,
+            },
+            { label: "Módulo bloqueado" },
+          ]}
+        />
+
         <WorkspaceHero
           eyebrow={moduleResult.program.product?.name ?? "Programa"}
           title={moduleResult.program.title}
@@ -63,6 +78,17 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   return (
     <div className="space-y-8">
+      <WorkspaceTrail
+        items={[
+          { label: "Workspace", href: "/app" },
+          {
+            label: moduleResult.program.title,
+            href: `/app/programas/${programSlug}`,
+          },
+          { label: programModule.title },
+        ]}
+      />
+
       <WorkspaceHero
         eyebrow={moduleResult.program.title}
         title={programModule.title}

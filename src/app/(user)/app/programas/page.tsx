@@ -3,7 +3,11 @@ import { redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { ProgressMeter } from "@/components/app/progress-meter";
-import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
+import {
+  WorkspaceCard,
+  WorkspaceHero,
+  WorkspaceTrail,
+} from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 import {
   getProgramLessonCount,
@@ -32,6 +36,10 @@ export default async function ProgramasPage() {
 
   return (
     <div className="space-y-8">
+      <WorkspaceTrail
+        items={[{ label: "Workspace", href: "/app" }, { label: "Programas" }]}
+      />
+
       <WorkspaceHero
         eyebrow="Programas"
         title="Tu mapa privado de construcción."

@@ -3,7 +3,11 @@ import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
-import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
+import {
+  WorkspaceCard,
+  WorkspaceHero,
+  WorkspaceTrail,
+} from "@/components/app/workspace-card";
 import { completeLesson } from "@/lib/actions/progress";
 import { auth } from "@/lib/auth";
 import {
@@ -37,6 +41,17 @@ export default async function LessonPage({ params }: LessonPageProps) {
   if (lessonData.access === "locked" && lessonData.program) {
     return (
       <div className="space-y-8">
+        <WorkspaceTrail
+          items={[
+            { label: "Workspace", href: "/app" },
+            {
+              label: lessonData.program.title,
+              href: `/app/programas/${programSlug}`,
+            },
+            { label: "Lección bloqueada" },
+          ]}
+        />
+
         <WorkspaceHero
           eyebrow={lessonData.program.product?.name ?? "Programa"}
           title={lessonData.program.title}
@@ -65,6 +80,21 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <div className="space-y-8">
+      <WorkspaceTrail
+        items={[
+          { label: "Workspace", href: "/app" },
+          {
+            label: program.title,
+            href: `/app/programas/${program.slug}`,
+          },
+          {
+            label: lesson.moduleTitle,
+            href: `/app/programas/${program.slug}/modulos/${lesson.moduleSlug}`,
+          },
+          { label: lesson.title },
+        ]}
+      />
+
       <WorkspaceHero
         eyebrow={`${program.title} · ${lesson.moduleTitle}`}
         title={lesson.title}

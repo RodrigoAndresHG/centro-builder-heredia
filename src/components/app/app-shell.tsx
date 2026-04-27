@@ -1,17 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { AppNavigation } from "@/components/app/app-navigation";
+
 type AppShellProps = {
   children: ReactNode;
 };
-
-const appItems = [
-  { label: "Inicio", href: "/app" },
-  { label: "Programas", href: "/app/programas" },
-  { label: "Updates", href: "/app/updates" },
-  { label: "Perfil", href: "/app/perfil" },
-  { label: "Soporte", href: "/app/soporte" },
-];
 
 export function AppShell({ children }: AppShellProps) {
   return (
@@ -24,17 +18,7 @@ export function AppShell({ children }: AppShellProps) {
           </p>
         </Link>
 
-        <nav className="mt-8 space-y-1" aria-label="Area privada">
-          {appItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="block rounded-lg border border-transparent px-3 py-2.5 text-sm font-semibold text-neutral-300 transition hover:border-teal-400/20 hover:bg-neutral-900 hover:text-white"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <AppNavigation variant="sidebar" />
 
         <div className="mt-8 rounded-2xl border border-teal-400/20 bg-teal-400/10 p-4 shadow-xl shadow-black/20">
           <p className="text-xs font-semibold uppercase text-teal-300">
@@ -71,17 +55,7 @@ export function AppShell({ children }: AppShellProps) {
               Plataforma activa
             </span>
           </div>
-          <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">
-            {appItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="shrink-0 rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs font-semibold text-neutral-300"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <AppNavigation variant="mobile" />
         </div>
         <main className="flex-1 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.08),transparent_34rem)] px-5 py-8 sm:px-8 lg:px-10">
           {children}
