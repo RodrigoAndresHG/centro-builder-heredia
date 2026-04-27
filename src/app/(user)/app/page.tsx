@@ -320,28 +320,6 @@ export default async function UserDashboardPage({
             </WorkspaceHero>
           </section>
 
-          <section id="acceso-prioritario" className="scroll-mt-8">
-            <WorkspaceCard className="flex flex-col gap-5 border-neutral-800 bg-neutral-900 p-6 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                  Acceso prioritario
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-white">
-                  ¿Aún no quieres activarlo? Reserva tu acceso prioritario
-                </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-neutral-400">
-                  Déjame tus datos y te avisaré antes de la apertura para que
-                  puedas entrar con prioridad y precio fundador.
-                </p>
-              </div>
-              <Link
-                href="/app#acceso-prioritario"
-                className="inline-flex shrink-0 justify-center rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-teal-400/40"
-              >
-                Quiero acceso prioritario
-              </Link>
-            </WorkspaceCard>
-          </section>
         </div>
       ) : (
         <WorkspaceHero

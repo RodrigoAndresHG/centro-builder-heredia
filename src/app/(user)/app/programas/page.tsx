@@ -301,12 +301,6 @@ export default async function ProgramasPage() {
                   label="Activar acceso fundador"
                 />
               ) : null}
-              <Link
-                href="/app#acceso-prioritario"
-                className="inline-flex justify-center rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-teal-400/40"
-              >
-                Quiero acceso prioritario
-              </Link>
             </div>
           </div>
         </WorkspaceHero>
