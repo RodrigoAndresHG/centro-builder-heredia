@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { AccessRequiredCard } from "@/components/app/access-required-card";
+import { CheckoutButton } from "@/components/app/checkout-button";
 import { ProgressMeter } from "@/components/app/progress-meter";
 import { WelcomeVideoCard } from "@/components/app/welcome-video-card";
 import {
@@ -16,6 +16,27 @@ import {
   getProgramProgress,
   listProgramsForViewer,
 } from "@/lib/services";
+
+const featuredProgramBullets = [
+  "Replica una app real desde cero",
+  "Conecta OpenAI, Anthropic y Gemini",
+  "Avanza dentro de un sistema con continuidad",
+  "Accede a updates y soporte dentro del LMS",
+];
+
+const premiumUnlockItems = [
+  "Programa activo completo",
+  "Módulos y lecciones estructuradas",
+  "Continuidad y progreso",
+  "Updates del build",
+  "Soporte dentro de la plataforma",
+];
+
+const activationReinforcements = [
+  "Precio fundador hoy: USD 47",
+  "Apertura oficial: 16 de mayo de 2026",
+  "Precio regular después: USD 67",
+];
 
 type UserDashboardPageProps = {
   searchParams: Promise<{ checkout?: string; intent?: string }>;
@@ -41,7 +62,6 @@ export default async function UserDashboardPage({
   const lockedProgram = lockedPrograms[0] ?? null;
   const lessonCount = getProgramLessonCount(program);
   const progress = program ? await getProgramProgress(user.id, program) : null;
-  const isBuyIntent = intent === "buy";
   const continueHref = progress?.nextLesson
     ? progress.nextLesson.href
     : program
@@ -166,87 +186,160 @@ export default async function UserDashboardPage({
           </div>
         </>
       ) : lockedProgram ? (
-        <div className="space-y-6">
+        <div className="space-y-8">
           <WelcomeVideoCard
-            badge={isBuyIntent ? "Acceso fundador" : "Bienvenido a Builder"}
-            title={
-              isBuyIntent
-                ? "Estás a un paso de activar Builder"
-                : "Antes de entrar, entiende cómo funciona Builder"
-            }
-            description={
-              isBuyIntent
-                ? "Tu cuenta ya está lista. Completa la compra del acceso fundador y entra al programa privado con módulos, lecciones, progreso y soporte dentro del LMS."
-                : "Mira esta introducción rápida para entender qué encontrarás dentro del LMS oficial de Rodrigo HeredIA y por qué el primer programa abre una forma distinta de aprender a construir productos Multi-IA reales."
-            }
-            primaryHref={isBuyIntent ? "#activar-acceso" : "/programas/build-ideacash"}
-            primaryLabel={isBuyIntent ? "Activar acceso fundador" : "Ver el programa activo"}
-            secondaryHref={isBuyIntent ? "/programas/build-ideacash" : "/#acceso-temprano"}
-            secondaryLabel={
-              isBuyIntent ? "Ver detalles del programa" : "Quiero acceso prioritario"
-            }
+            badge="Acceso premium pendiente"
+            title="Ya estás dentro de Builder. Ahora mira lo que desbloqueas al activar tu acceso."
+            description="Explora el entorno, entiende cómo funciona el sistema y descubre por qué el programa activo es el mejor punto de entrada al LMS oficial de Rodrigo HeredIA."
+            primaryHref="#activar-acceso"
+            primaryLabel="Activar acceso fundador"
+            secondaryHref="/programas/build-ideacash"
+            secondaryLabel="Ver el programa activo"
             videoSrc="/video/welcome-guest.mp4"
             videoLabel="Intro invitado"
           />
 
-          <WorkspaceHero
-            eyebrow={isBuyIntent ? "Compra iniciada" : "Acceso pendiente"}
-            title={
-              isBuyIntent
-                ? "Tu acceso está listo para activarse."
-                : "Ya estás dentro del sistema. El producto premium está a un paso."
-            }
-            description={
-              isBuyIntent
-                ? "Completa la entrada a Builder con el precio fundador y conserva compra, acceso y progreso en esta misma cuenta."
-                : "Activa el acceso al programa activo y entra al recorrido privado con módulos, lecciones, progreso y soporte dentro del mismo workspace."
-            }
-            action={<SignOutButton variant="dark" />}
-          >
-            <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
-              <div id="activar-acceso" className="scroll-mt-8">
-                <AccessRequiredCard
-                  title={lockedProgram.title}
-                  description={
-                    isBuyIntent
-                      ? "Completa la compra para abrir el programa premium, conservar tu acceso y comenzar el recorrido dentro del entorno privado."
-                      : "Activa el acceso para abrir el programa premium, ver los módulos publicados y continuar dentro de una experiencia guiada."
-                  }
-                  productSlug={lockedProgram.product?.slug}
-                />
+          <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+            <WorkspaceCard className="border-teal-400/20 bg-teal-400/10">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                Programa destacado
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold leading-tight text-white">
+                {lockedProgram.title}
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-neutral-300">
+                Empieza por el primer programa de Builder y aprende cómo se
+                estructura, conecta y convierte una app Multi-IA en un producto
+                real.
+              </p>
+              <p className="mt-4 rounded-xl border border-neutral-800 bg-neutral-950/70 p-4 text-sm leading-7 text-neutral-300">
+                Build IdeaCash — Founder Access
+              </p>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                {lockedProgram.product?.slug ? (
+                  <CheckoutButton
+                    productSlug={lockedProgram.product.slug}
+                    label="Activar acceso fundador"
+                  />
+                ) : null}
+                <Link
+                  href="/programas/build-ideacash"
+                  className="inline-flex justify-center rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-neutral-500"
+                >
+                  Ver el programa activo
+                </Link>
               </div>
-              <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
-                  Vista previa del contenido
-                </p>
-                <div className="mt-5 space-y-3">
-                  {lockedProgram.modules.slice(0, 3).map((module) => (
-                    <div
-                      key={module.id}
-                      className="rounded-xl border border-neutral-800 bg-neutral-900 p-4"
+            </WorkspaceCard>
+
+            <div className="grid gap-3">
+              {featuredProgramBullets.map((bullet) => (
+                <WorkspaceCard key={bullet} className="p-5">
+                  <p className="text-sm font-semibold leading-6 text-white">
+                    {bullet}
+                  </p>
+                </WorkspaceCard>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                Valor premium del LMS
+              </p>
+              <h2 className="mt-3 text-2xl font-semibold text-white">
+                Qué desbloquea tu acceso premium
+              </h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {premiumUnlockItems.map((item) => (
+                <WorkspaceCard key={item} className="p-5">
+                  <p className="text-sm font-semibold leading-6 text-white">
+                    {item}
+                  </p>
+                </WorkspaceCard>
+              ))}
+            </div>
+          </section>
+
+          <section id="activar-acceso" className="scroll-mt-8">
+            <WorkspaceHero
+              eyebrow="Activación"
+              title="Activa tu acceso antes del lanzamiento"
+              description="Entra hoy con el precio fundador y desbloquea el recorrido completo dentro de Builder antes del siguiente aumento."
+              action={<SignOutButton variant="dark" />}
+            >
+              <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+                <div>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    {activationReinforcements.map((item) => (
+                      <div
+                        key={item}
+                        className="rounded-xl border border-neutral-800 bg-neutral-950 p-4 text-sm font-semibold text-neutral-200"
+                      >
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                    {lockedProgram.product?.slug ? (
+                      <CheckoutButton
+                        productSlug={lockedProgram.product.slug}
+                        label="Activar acceso fundador"
+                      />
+                    ) : null}
+                    <Link
+                      href="/programas/build-ideacash"
+                      className="inline-flex justify-center rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-neutral-500"
                     >
-                      <p className="text-sm font-semibold text-white">
-                        {module.title}
-                      </p>
-                      <p className="mt-1 text-xs text-neutral-500">
-                        {module.lessons.length} lecciones publicadas
-                      </p>
-                    </div>
-                  ))}
+                      Ver el programa activo
+                    </Link>
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                    Vista previa del contenido
+                  </p>
+                  <div className="mt-5 space-y-3">
+                    {lockedProgram.modules.slice(0, 3).map((module) => (
+                      <div
+                        key={module.id}
+                        className="rounded-xl border border-neutral-800 bg-neutral-900 p-4"
+                      >
+                        <p className="text-sm font-semibold text-white">
+                          {module.title}
+                        </p>
+                        <p className="mt-1 text-xs text-neutral-500">
+                          {module.lessons.length} lecciones publicadas
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </WorkspaceHero>
+            </WorkspaceHero>
+          </section>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {[
-              ["Compra segura", "Checkout conectado y retorno automático."],
-              ["Acceso centralizado", "Tu dashboard refleja lo que tienes activo."],
-              ["Continuidad real", "El progreso queda dentro de tu cuenta."],
-            ].map(([title, description]) => (
-              <WorkspaceMetric key={title} label="Sistema" value={title} detail={description} />
-            ))}
-          </div>
+          <WorkspaceCard className="flex flex-col gap-5 border-neutral-800 bg-neutral-900 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                Acceso prioritario
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">
+                ¿Aún no quieres activarlo? Reserva tu acceso prioritario
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-neutral-400">
+                Déjame tus datos y te avisaré antes de la apertura para que
+                puedas entrar con prioridad y precio fundador.
+              </p>
+            </div>
+            <Link
+              href="/#acceso-temprano"
+              className="inline-flex shrink-0 justify-center rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-teal-400/40"
+            >
+              Quiero acceso prioritario
+            </Link>
+          </WorkspaceCard>
         </div>
       ) : (
         <WorkspaceHero
