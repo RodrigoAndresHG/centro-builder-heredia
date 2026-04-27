@@ -55,7 +55,7 @@ function PrimaryCta({ children }: { children: string }) {
 function SecondaryCta({ children }: { children: string }) {
   return (
     <Link
-      href="/programas/build-ideacash-founder-access"
+      href="/programas/build-ideacash"
       className="inline-flex min-h-12 items-center justify-center rounded-md border border-neutral-700 bg-neutral-950 px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:border-neutral-400 hover:bg-neutral-900"
     >
       {children}
