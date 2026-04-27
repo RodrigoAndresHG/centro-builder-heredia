@@ -193,10 +193,10 @@ export default async function UserDashboardPage({
             description="Explora el entorno, entiende cómo funciona el sistema y descubre por qué el programa activo es el mejor punto de entrada al LMS oficial de Rodrigo HeredIA."
             primaryHref="#activar-acceso"
             primaryLabel="Activar acceso fundador"
-            secondaryHref="/programas/build-ideacash"
+            secondaryHref={`/app/programas/${lockedProgram.slug}`}
             secondaryLabel="Ver el programa activo"
             videoSrc="/video/welcome-guest.mp4"
-            videoLabel="Intro invitado"
+            videoLabel="Bienvenida"
           />
 
           <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
@@ -223,7 +223,7 @@ export default async function UserDashboardPage({
                   />
                 ) : null}
                 <Link
-                  href="/programas/build-ideacash"
+                  href={`/app/programas/${lockedProgram.slug}`}
                   className="inline-flex justify-center rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-neutral-500"
                 >
                   Ver el programa activo
@@ -289,7 +289,7 @@ export default async function UserDashboardPage({
                       />
                     ) : null}
                     <Link
-                      href="/programas/build-ideacash"
+                      href={`/app/programas/${lockedProgram.slug}`}
                       className="inline-flex justify-center rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-neutral-500"
                     >
                       Ver el programa activo

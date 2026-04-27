@@ -101,13 +101,13 @@ export function WelcomeVideoCard({
                 {videoLabel}
               </span>
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-neutral-300">
-                Onboarding
+                Primer recorrido
               </span>
             </div>
 
             <div className="absolute inset-x-4 bottom-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
               <span className="rounded-full border border-white/10 bg-black/40 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-neutral-200 backdrop-blur">
-                Reproducción silenciosa
+                Audio desactivado
               </span>
               <button
                 type="button"
