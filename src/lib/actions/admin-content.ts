@@ -43,6 +43,18 @@ function readSortOrder(formData: FormData) {
   return Number.isFinite(parsedValue) ? parsedValue : 0;
 }
 
+function readOptionalInt(formData: FormData, key: string) {
+  const rawValue = readString(formData, key);
+
+  if (!rawValue) {
+    return null;
+  }
+
+  const parsedValue = Number.parseInt(rawValue, 10);
+
+  return Number.isFinite(parsedValue) ? parsedValue : null;
+}
+
 function requireField(value: string | null, label: string) {
   if (!value) {
     throw new Error(`${label} es requerido.`);
@@ -223,6 +235,11 @@ export async function createLesson(formData: FormData) {
       description: readOptionalString(formData, "description"),
       content: readOptionalString(formData, "content"),
       videoUrl: readOptionalString(formData, "videoUrl"),
+      videoProvider: readOptionalString(formData, "videoProvider"),
+      videoTitle: readOptionalString(formData, "videoTitle"),
+      videoThumbnailUrl: readOptionalString(formData, "videoThumbnailUrl"),
+      videoDuration: readOptionalInt(formData, "videoDuration"),
+      isPreview: readBoolean(formData, "isPreview"),
       sortOrder: readSortOrder(formData),
       isPublished: readBoolean(formData, "isPublished"),
     },
@@ -255,6 +272,11 @@ export async function updateLesson(id: string, formData: FormData) {
       description: readOptionalString(formData, "description"),
       content: readOptionalString(formData, "content"),
       videoUrl: readOptionalString(formData, "videoUrl"),
+      videoProvider: readOptionalString(formData, "videoProvider"),
+      videoTitle: readOptionalString(formData, "videoTitle"),
+      videoThumbnailUrl: readOptionalString(formData, "videoThumbnailUrl"),
+      videoDuration: readOptionalInt(formData, "videoDuration"),
+      isPreview: readBoolean(formData, "isPreview"),
       sortOrder: readSortOrder(formData),
       isPublished: readBoolean(formData, "isPublished"),
     },

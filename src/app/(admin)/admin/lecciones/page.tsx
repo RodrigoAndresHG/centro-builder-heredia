@@ -33,6 +33,7 @@ export default async function AdminLeccionesPage() {
                 <th className="px-5 py-3 font-semibold">Leccion</th>
                 <th className="px-5 py-3 font-semibold">Programa</th>
                 <th className="px-5 py-3 font-semibold">Modulo</th>
+                <th className="px-5 py-3 font-semibold">Video</th>
                 <th className="px-5 py-3 font-semibold">Orden</th>
                 <th className="px-5 py-3 font-semibold">Estado</th>
                 <th className="px-5 py-3 font-semibold">Acciones</th>
@@ -50,6 +51,22 @@ export default async function AdminLeccionesPage() {
                   </td>
                   <td className="px-5 py-4 text-sm text-neutral-600">
                     {lesson.module?.title ?? "Sin modulo"}
+                  </td>
+                  <td className="px-5 py-4">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                        lesson.videoUrl
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-neutral-100 text-neutral-600"
+                      }`}
+                    >
+                      {lesson.videoUrl ? "Con video" : "Sin video"}
+                    </span>
+                    {lesson.videoProvider ? (
+                      <p className="mt-1 text-xs text-neutral-500">
+                        {lesson.videoProvider}
+                      </p>
+                    ) : null}
                   </td>
                   <td className="px-5 py-4 text-sm text-neutral-600">
                     {lesson.sortOrder}

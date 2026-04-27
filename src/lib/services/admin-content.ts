@@ -68,6 +68,41 @@ export async function listAdminLessons() {
   });
 }
 
+export async function listAdminVideoLessons() {
+  return prisma.lesson.findMany({
+    where: {
+      videoUrl: {
+        not: null,
+      },
+    },
+    orderBy: [
+      { program: { title: "asc" } },
+      { module: { sortOrder: "asc" } },
+      { sortOrder: "asc" },
+    ],
+    include: {
+      program: true,
+      module: true,
+    },
+  });
+}
+
+export async function listAdminUsers() {
+  return prisma.user.findMany({
+    orderBy: [{ createdAt: "desc" }],
+    include: {
+      accounts: true,
+      accesses: {
+        include: {
+          product: true,
+          program: true,
+        },
+      },
+      purchases: true,
+    },
+  });
+}
+
 export async function getAdminLesson(id: string) {
   return prisma.lesson.findUnique({
     where: { id },

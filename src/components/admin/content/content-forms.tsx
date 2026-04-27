@@ -53,6 +53,11 @@ type LessonFormValue = {
   description?: string | null;
   content?: string | null;
   videoUrl?: string | null;
+  videoProvider?: string | null;
+  videoTitle?: string | null;
+  videoThumbnailUrl?: string | null;
+  videoDuration?: number | null;
+  isPreview?: boolean;
   sortOrder?: number;
   isPublished?: boolean;
 };
@@ -138,6 +143,22 @@ function PublishCheckbox({ defaultChecked }: { defaultChecked?: boolean }) {
         className="h-4 w-4 accent-[var(--accent)]"
       />
       <span className="text-sm font-semibold text-foreground">Publicado</span>
+    </label>
+  );
+}
+
+function PreviewCheckbox({ defaultChecked }: { defaultChecked?: boolean }) {
+  return (
+    <label className="flex items-center gap-3 rounded-md border border-border bg-background px-3 py-3">
+      <input
+        type="checkbox"
+        name="isPreview"
+        defaultChecked={defaultChecked}
+        className="h-4 w-4 accent-[var(--accent)]"
+      />
+      <span className="text-sm font-semibold text-foreground">
+        Video preview
+      </span>
     </label>
   );
 }
@@ -380,9 +401,74 @@ export function LessonForm({
         <TextInput
           name="videoUrl"
           defaultValue={lesson?.videoUrl}
-          placeholder="https://..."
+          placeholder="https://youtube.com/watch?v=..."
         />
       </label>
+
+      <div className="rounded-xl border border-border bg-surface-muted p-4">
+        <div>
+          <p className="text-sm font-semibold text-foreground">
+            Video de la lección
+          </p>
+          <p className="mt-1 text-sm leading-6 text-neutral-500">
+            La lección puede existir sin video. Si ya tienes el asset, deja aquí
+            la información necesaria para publicarlo dentro del LMS.
+          </p>
+        </div>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <label className="block space-y-2">
+            <FieldLabel>Proveedor</FieldLabel>
+            <select
+              name="videoProvider"
+              defaultValue={lesson?.videoProvider ?? ""}
+              className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+            >
+              <option value="">Sin proveedor</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Vimeo">Vimeo</option>
+              <option value="Loom">Loom</option>
+              <option value="Mux">Mux</option>
+              <option value="Directo">Archivo directo</option>
+            </select>
+          </label>
+
+          <label className="block space-y-2">
+            <FieldLabel>Título del video</FieldLabel>
+            <TextInput
+              name="videoTitle"
+              defaultValue={lesson?.videoTitle}
+              placeholder="Introducción al build"
+            />
+          </label>
+        </div>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_180px]">
+          <label className="block space-y-2">
+            <FieldLabel>Thumbnail opcional</FieldLabel>
+            <TextInput
+              name="videoThumbnailUrl"
+              defaultValue={lesson?.videoThumbnailUrl}
+              placeholder="https://..."
+            />
+          </label>
+
+          <label className="block space-y-2">
+            <FieldLabel>Duración en segundos</FieldLabel>
+            <TextInput
+              name="videoDuration"
+              defaultValue={
+                lesson?.videoDuration != null ? `${lesson.videoDuration}` : ""
+              }
+              placeholder="420"
+            />
+          </label>
+        </div>
+
+        <div className="mt-4">
+          <PreviewCheckbox defaultChecked={lesson?.isPreview} />
+        </div>
+      </div>
 
       <PublishCheckbox defaultChecked={lesson?.isPublished} />
 

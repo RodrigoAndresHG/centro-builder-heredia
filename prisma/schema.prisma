@@ -20,10 +20,10 @@ model User {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  accounts  Account[]
-  sessions  Session[]
-  accesses  Access[]
-  purchases Purchase[]
+  accounts       Account[]
+  sessions       Session[]
+  accesses       Access[]
+  purchases      Purchase[]
   lessonProgress LessonProgress[]
 
   @@map("users")
@@ -133,21 +133,26 @@ model Module {
 }
 
 model Lesson {
-  id          String   @id @default(cuid())
-  programId   String   @map("program_id")
-  moduleId    String?  @map("module_id")
-  slug        String
-  title       String
-  description String?
-  content     String?  @db.Text
-  videoUrl    String?  @map("video_url")
-  sortOrder   Int      @default(0) @map("sort_order")
-  isPublished Boolean  @default(false) @map("is_published")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id                String   @id @default(cuid())
+  programId         String   @map("program_id")
+  moduleId          String?  @map("module_id")
+  slug              String
+  title             String
+  description       String?
+  content           String?  @db.Text
+  videoUrl          String?  @map("video_url")
+  videoProvider     String?  @map("video_provider")
+  videoTitle        String?  @map("video_title")
+  videoThumbnailUrl String?  @map("video_thumbnail_url")
+  videoDuration     Int?     @map("video_duration")
+  isPreview         Boolean  @default(false) @map("is_preview")
+  sortOrder         Int      @default(0) @map("sort_order")
+  isPublished       Boolean  @default(false) @map("is_published")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
-  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
-  module  Module? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  program  Program          @relation(fields: [programId], references: [id], onDelete: Cascade)
+  module   Module?          @relation(fields: [moduleId], references: [id], onDelete: SetNull)
   progress LessonProgress[]
 
   @@unique([programId, slug])
