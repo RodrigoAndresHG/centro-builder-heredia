@@ -4,9 +4,9 @@ import { LaunchCountdown } from "@/components/public/launch-countdown";
 import { Reveal } from "@/components/public/reveal";
 
 const heroBullets = [
-  "Aprende a construir con OpenAI, Anthropic y Gemini",
-  "Accede al primer programa del LMS: IdeaCash HeredIA",
-  "Regístrate temprano para recibir acceso prioritario y precio fundador",
+  "Construye con OpenAI, Anthropic y Gemini",
+  "Primer programa: IdeaCash HeredIA",
+  "Acceso prioritario + precio fundador",
 ];
 
 const earlyBenefits = [
@@ -16,25 +16,25 @@ const earlyBenefits = [
 ];
 
 const builderPoints = [
-  ["Entorno privado premium", "Una experiencia cerrada, enfocada y diseñada para aprender con continuidad."],
-  ["Programas estructurados", "Rutas claras para avanzar desde arquitectura hasta producto usable."],
-  ["Continuidad y progreso", "El sistema te indica dónde estás y cuál es el siguiente paso."],
-  ["Updates del build", "Nuevas piezas del proceso dentro del mismo entorno de aprendizaje."],
-  ["Soporte centralizado", "Acceso, compra y ayuda conectados en un solo producto privado."],
+  ["Entorno privado", "Un espacio cerrado para aprender con foco."],
+  ["Programas guiados", "Rutas claras desde arquitectura hasta producto."],
+  ["Continuidad", "Siguiente paso, progreso y contexto."],
+  ["Updates del build", "Nuevas piezas dentro del mismo sistema."],
+  ["Soporte centralizado", "Acceso, compra y ayuda en un solo lugar."],
 ];
 
 const programBullets = [
   "Replica la app desde cero",
-  "Entiende la lógica Multi-IA detrás del producto",
-  "Aprende cómo conectar OpenAI, Anthropic y Gemini",
-  "Sigue el build dentro de un entorno privado con continuidad y updates",
+  "Conecta OpenAI, Anthropic y Gemini",
+  "Entiende la lógica Multi-IA del producto",
+  "Sigue el build con updates privados",
 ];
 
 const finalReinforcements = [
-  "Precio fundador de apertura: USD 47",
-  "Acceso prioritario antes de la subida de precio",
+  "Precio fundador: USD 47",
+  "Prioridad antes de la apertura",
   "Lanzamiento oficial en vivo",
-  "Primer programa dentro del LMS oficial de Rodrigo HeredIA",
+  "Primer programa del LMS oficial",
 ];
 
 function PrimaryCta({ children }: { children: string }) {
@@ -155,15 +155,15 @@ function VideoShowcase() {
               Preview real del LMS
             </p>
             <h3 className="mt-3 text-2xl font-semibold leading-tight text-white">
-              Una pieza vertical para sentir el producto antes de entrar.
+              Preview real del entorno Builder.
             </h3>
             <p className="mt-3 text-sm leading-7 text-neutral-400">
-              Vista de prueba del entorno Builder: contenido, foco y sensación
-              de producto privado en formato mobile-first.
+              Video vertical de prueba para sentir el producto antes del
+              lanzamiento.
             </p>
             <div className="mt-5 grid gap-2 text-xs font-semibold uppercase text-neutral-500">
               <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
-                Autoplay silencioso
+                Preview mobile-first
               </span>
               <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
                 Builder LMS / preview
@@ -216,11 +216,10 @@ function EarlyAccessForm() {
             Lista prioritaria
           </p>
           <p className="mt-2 text-lg font-semibold text-white">
-            Reserva tu lugar de entrada al primer programa.
+            Entra antes de la apertura.
           </p>
           <p className="mt-2 text-sm leading-6 text-neutral-400">
-            Deja tus datos para quedar en la lista de aviso prioritario cuando
-            se habilite la apertura oficial.
+            Nombre y email para recibir el aviso fundador.
           </p>
         </div>
 
@@ -269,9 +268,8 @@ export default function HomePage() {
                 oficial de Rodrigo HeredIA.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-300">
-                Builder.rodriheredia.com es el espacio donde aprenderás cómo
-                diseño, conecto y convierto múltiples IAs en productos reales,
-                empezando con IdeaCash HeredIA.
+                El espacio donde Rodrigo HeredIA enseña a convertir múltiples
+                IAs en productos reales. Primer programa: IdeaCash HeredIA.
               </p>
             </Reveal>
 
@@ -298,8 +296,8 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
         <div className="flex flex-col justify-center">
           <SectionIntro
-            title="Mira primero cómo enseño a construir"
-            description="En este video te explico qué es Builder.rodriheredia.com, qué vas a aprender dentro, por qué empecé con IdeaCash HeredIA y por qué este espacio no está diseñado para consumir contenido suelto, sino para aprender a crear productos Multi-IA reales."
+            title="Mira cómo se siente Builder"
+            description="Un preview breve del LMS, el enfoque de aprendizaje y el primer build Multi-IA."
           />
           <Reveal delay={160} className="mt-6">
             <PrimaryCta>Quiero acceso temprano</PrimaryCta>
@@ -317,7 +315,7 @@ export default function HomePage() {
             <SectionIntro
               eyebrow="Acceso temprano"
               title="Únete al acceso temprano"
-              description="El primer programa de Builder.rodriheredia.com se abrirá el sábado 16 de mayo de 2026. Regístrate temprano para recibir acceso prioritario, precio fundador y el aviso del lanzamiento oficial en vivo."
+              description="Lista prioritaria para precio fundador, aviso en vivo y entrada antes de la apertura."
             />
             <div className="mt-7 grid gap-3">
               {earlyBenefits.map((benefit, index) => (
@@ -343,14 +341,10 @@ export default function HomePage() {
               Sábado 16 de mayo de 2026
             </h2>
             <p className="mt-4 text-base leading-8 text-neutral-200">
-              El sábado 16 de mayo de 2026 abriré oficialmente el primer programa
-              de Builder.rodriheredia.com: IdeaCash HeredIA. Si te registras
-              temprano, recibirás acceso prioritario, precio fundador y el aviso
-              del lanzamiento en vivo.
+              Apertura oficial de IdeaCash HeredIA dentro del LMS de Rodrigo.
             </p>
             <p className="mt-4 text-sm font-semibold text-teal-200">
-              Regístrate antes del lanzamiento para entrar con prioridad y
-              asegurar el precio fundador de apertura.
+              Entra a la lista antes del lanzamiento.
             </p>
             <div className="mt-6">
               <PrimaryCta>Quiero acceso temprano</PrimaryCta>
@@ -373,8 +367,8 @@ export default function HomePage() {
       <section className="border-y border-neutral-800 bg-neutral-900/70">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 lg:px-8">
           <SectionIntro
-            title="Un entorno para aprender a construir, no solo para consumir contenido"
-            description="Builder.rodriheredia.com es el LMS oficial de Rodrigo HeredIA. Aquí no entrarás a una carpeta suelta ni a una academia genérica. Entrarás a un entorno privado diseñado para aprender cómo se construyen productos Multi-IA reales con estructura, continuidad y criterio."
+            title="El LMS oficial de Rodrigo HeredIA"
+            description="Un entorno privado para aprender a construir productos Multi-IA con estructura, continuidad y criterio."
           />
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {builderPoints.map(([title, description], index) => (
@@ -398,7 +392,7 @@ export default function HomePage() {
           <SectionIntro
             eyebrow="Programa activo ahora"
             title="Build IdeaCash — Founder Access"
-            description="Este será el primer programa oficial dentro de Builder.rodriheredia.com. Está diseñado para mostrarte cómo nace, se estructura y evoluciona un producto Multi-IA real, entendiendo cómo conectar OpenAI, Anthropic y Gemini dentro de una app usable y vendible."
+            description="El primer programa oficial: cómo nace, se estructura y evoluciona una app Multi-IA usable y vendible."
           />
           <Reveal delay={140} className="mt-7">
             <SecondaryCta>Ver el programa activo</SecondaryCta>
@@ -419,8 +413,8 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
           <div>
             <SectionIntro
-              title="Reserva tu lugar antes de la apertura"
-              description="El primer programa abrirá oficialmente el sábado 16 de mayo de 2026. Si te unes ahora al acceso temprano, quedarás en la lista prioritaria para entrar con precio fundador y recibir el aviso del lanzamiento en vivo."
+              title="Entra antes de la apertura"
+              description="Reserva prioridad, precio fundador y aviso del lanzamiento en vivo."
             />
             <Reveal delay={120} className="mt-7 flex flex-col gap-3 sm:flex-row">
               <PrimaryCta>Quiero acceso temprano</PrimaryCta>
