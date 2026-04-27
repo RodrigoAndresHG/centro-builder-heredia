@@ -132,9 +132,8 @@ export default async function UserDashboardPage({
             primaryLabel="Continuar programa"
             secondaryHref="/app/updates"
             secondaryLabel="Ver updates"
+            videoSrc="/video/welcome-member.mp4"
             videoLabel="Guía privada"
-            videoTitle="Onboarding del workspace"
-            videoDescription="Un espacio preparado para explicar el recorrido, el progreso y la mejor forma de avanzar dentro del programa."
           />
 
           <div className="grid gap-4 md:grid-cols-3">
@@ -174,9 +173,8 @@ export default async function UserDashboardPage({
             primaryLabel="Ver el programa activo"
             secondaryHref="/#acceso-temprano"
             secondaryLabel="Unirme al acceso temprano"
+            videoSrc="/video/welcome-guest.mp4"
             videoLabel="Intro invitado"
-            videoTitle="Video de bienvenida para invitado"
-            videoDescription="Un contenedor premium listo para la pieza que presenta Builder, el primer programa y el valor del acceso temprano."
           />
 
           <WorkspaceHero
