@@ -16,10 +16,12 @@ export function EarlyAccessForm({ source }: EarlyAccessFormProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
+
     setState("loading");
     setMessage("");
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
 
     try {
       const response = await fetch("/api/early-access", {
@@ -48,7 +50,7 @@ export function EarlyAccessForm({ source }: EarlyAccessFormProps) {
         payload.message ??
           "Quedaste en la lista prioritaria. Te avisaré antes de la apertura.",
       );
-      event.currentTarget.reset();
+      form.reset();
     } catch (error) {
       setState("error");
       setMessage(
