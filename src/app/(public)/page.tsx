@@ -7,14 +7,14 @@ import { VideoShowcase } from "@/components/public/video-showcase";
 
 const heroBullets = [
   "Construye con OpenAI, Anthropic y Gemini",
-  "Primer programa: IdeaCash HeredIA",
-  "Precio fundador activo: USD 47",
+  "Entra al primer programa de Builder HeredIA",
+  "Asegura el precio fundador antes del lanzamiento",
 ];
 
 const earlyBenefits = [
-  "Acceso prioritario al lanzamiento",
+  "Aviso antes de la apertura",
   "Precio fundador reservado",
-  "Aviso del lanzamiento en vivo",
+  "Prioridad de acceso al lanzamiento",
 ];
 
 const builderPoints = [
@@ -28,15 +28,14 @@ const builderPoints = [
 const programBullets = [
   "Replica la app desde cero",
   "Conecta OpenAI, Anthropic y Gemini",
-  "Entiende la lógica Multi-IA del producto",
-  "Sigue el build con updates privados",
+  "Sigue el build dentro del LMS",
+  "Avanza con continuidad, updates y soporte",
 ];
 
 const finalReinforcements = [
-  "Compra hoy por USD 47",
-  "Explora como invitado con Google",
-  "Lanzamiento oficial en vivo",
-  "Acceso temprano si prefieres esperar",
+  "Precio fundador hoy: USD 47",
+  "Apertura oficial: 16 de mayo de 2026",
+  "Precio regular después: USD 67",
 ];
 
 function BuyCta({ children }: { children: string }) {
@@ -175,16 +174,16 @@ export default function HomePage() {
           <div className="flex flex-col justify-center">
             <Reveal>
               <div className="inline-flex w-fit rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase text-teal-300">
-                Precio fundador activo / apertura 16 mayo 2026
+                LMS oficial de Rodrigo HeredIA
               </div>
               <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.04] text-white sm:text-5xl lg:text-6xl">
-                Aprende a construir productos Multi-IA reales dentro del LMS
-                oficial de Rodrigo HeredIA.
+                Aprende a construir productos Multi-IA reales dentro de Builder
+                HeredIA.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-300">
-                Compra el acceso fundador por USD 47, entra con Google y empieza
-                desde el entorno privado de Builder. También puedes explorar como
-                invitado antes de decidir.
+                Explora por dentro cómo diseño, conecto y convierto múltiples
+                IAs en productos reales, empezando con Build IdeaCash — Founder
+                Access.
               </p>
             </Reveal>
 
@@ -204,7 +203,12 @@ export default function HomePage() {
             >
               <BuyCta>Comprar acceso ahora</BuyCta>
               <ExploreCta>Entrar y explorar</ExploreCta>
-              <EarlyAccessCta>Unirme al acceso temprano</EarlyAccessCta>
+            </Reveal>
+            <Reveal delay={390}>
+              <p className="mt-4 text-sm font-semibold text-neutral-400">
+                Precio fundador hoy: USD 47 · Apertura oficial: 16 de mayo de
+                2026
+              </p>
             </Reveal>
           </div>
 
@@ -233,12 +237,12 @@ export default function HomePage() {
               Precio fundador antes del lanzamiento
             </p>
             <h2 className="mt-4 text-3xl font-semibold leading-tight text-white">
-              USD 47 activo hasta la apertura
+              Asegura el precio fundador antes de la apertura
             </h2>
             <p className="mt-4 text-base leading-8 text-neutral-200">
-              Compra hoy, entra con tu cuenta y queda listo para consumir Build
-              IdeaCash dentro del LMS. Después del lanzamiento, el precio regular
-              sube.
+              Build IdeaCash — Founder Access abrirá oficialmente el 16 de mayo
+              de 2026. Hasta entonces, puedes entrar con el precio de apertura
+              antes del siguiente aumento.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border border-teal-300/25 bg-neutral-950/70 p-4">
@@ -249,7 +253,7 @@ export default function HomePage() {
               </div>
               <div className="rounded-xl border border-neutral-800 bg-neutral-950/70 p-4">
                 <p className="text-xs font-semibold uppercase text-neutral-500">
-                  Precio regular después
+                  Precio regular después de la apertura
                 </p>
                 <p className="mt-2 text-3xl font-semibold text-neutral-300">
                   USD 67
@@ -301,10 +305,21 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
         <div>
           <SectionIntro
-            eyebrow="Programa activo ahora"
-            title="Build IdeaCash — Founder Access"
-            description="El primer programa oficial: cómo nace, se estructura y evoluciona una app Multi-IA usable y vendible."
+            eyebrow="Programa activo"
+            title="Empieza por el primer programa de Builder"
+            description="Aprende cómo nace, se estructura y evoluciona una app Multi-IA real, entendiendo cómo conectar OpenAI, Anthropic y Gemini dentro de un producto usable y vendible."
           />
+          <Reveal delay={90}>
+            <div className="mt-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-xl shadow-black/10">
+              <p className="text-xs font-semibold uppercase text-teal-300">
+                Build IdeaCash — Founder Access
+              </p>
+              <p className="mt-3 text-sm leading-7 text-neutral-300">
+                No entras a contenido suelto. Entras al build real del primer
+                programa de Builder HeredIA.
+              </p>
+            </div>
+          </Reveal>
           <Reveal delay={140} className="mt-7">
             <div className="flex flex-col gap-3 sm:flex-row">
               <BuyCta>Comprar acceso ahora</BuyCta>
@@ -327,8 +342,8 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
           <div>
             <SectionIntro
-              title="Elige tu nivel de intención"
-              description="Compra si ya estás listo, entra a explorar si quieres ver el sistema por dentro, o deja tus datos si todavía prefieres esperar."
+              title="Elige cómo quieres entrar a Builder"
+              description="Puedes asegurar el precio fundador hoy, entrar a explorar la plataforma o reservar prioridad antes de la apertura oficial del 16 de mayo."
             />
             <Reveal
               delay={120}
@@ -336,7 +351,7 @@ export default function HomePage() {
             >
               <BuyCta>Comprar acceso ahora</BuyCta>
               <ExploreCta>Entrar y explorar</ExploreCta>
-              <EarlyAccessCta>Unirme al acceso temprano</EarlyAccessCta>
+              <EarlyAccessCta>Quiero acceso prioritario</EarlyAccessCta>
             </Reveal>
           </div>
           <div className="grid gap-3">
@@ -358,9 +373,9 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.84fr_1fr] lg:px-8">
           <div>
             <SectionIntro
-              eyebrow="Tercera vía"
-              title="¿Aún no quieres entrar? Únete al acceso temprano"
-              description="Para indecisos reales: deja tus datos y recibe aviso del lanzamiento, precio fundador y entrada prioritaria sin crear cuenta todavía."
+              eyebrow="Acceso prioritario"
+              title="¿Aún no quieres entrar? Reserva tu acceso prioritario"
+              description="Deja tus datos y te avisaré antes de la apertura oficial para que puedas entrar con precio fundador y prioridad de acceso."
             />
             <div className="mt-7 grid gap-3">
               {earlyBenefits.map((benefit, index) => (
@@ -373,6 +388,9 @@ export default function HomePage() {
             </div>
           </div>
           <EarlyAccessForm source="home" />
+          <p className="text-sm font-medium text-neutral-500 lg:col-start-2">
+            Sin compromiso. Solo te avisaré antes de la apertura.
+          </p>
         </div>
       </section>
     </div>

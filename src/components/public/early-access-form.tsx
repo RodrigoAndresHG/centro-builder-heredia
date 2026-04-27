@@ -112,7 +112,7 @@ export function EarlyAccessForm({ source }: EarlyAccessFormProps) {
           disabled={isLoading}
           className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-md bg-teal-300 px-5 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isLoading ? "Guardando acceso..." : "Quiero acceso temprano"}
+          {isLoading ? "Guardando acceso..." : "Quiero acceso prioritario"}
         </button>
 
         {message ? (
