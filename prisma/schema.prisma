@@ -210,3 +210,17 @@ model LessonProgress {
   @@index([lessonId])
   @@map("lesson_progress")
 }
+
+model EarlyAccessLead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  source    String
+  status    String   @default("PENDIENTE")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([source])
+  @@index([status])
+  @@map("early_access_leads")
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { EarlyAccessForm } from "@/components/public/early-access-form";
 import { LaunchCountdown } from "@/components/public/launch-countdown";
 import { Reveal } from "@/components/public/reveal";
 
@@ -323,6 +324,7 @@ export default function BuildIdeaCashPage() {
           </Reveal>
 
           <div className="grid gap-4">
+            <EarlyAccessForm source="program_build_ideacash" />
             <Reveal
               delay={120}
               className="rounded-2xl border border-neutral-800 bg-neutral-950 p-6 shadow-2xl shadow-black/20"

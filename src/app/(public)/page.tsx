@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { EarlyAccessForm } from "@/components/public/early-access-form";
 import { LaunchCountdown } from "@/components/public/launch-countdown";
 import { Reveal } from "@/components/public/reveal";
 import { VideoShowcase } from "@/components/public/video-showcase";
@@ -144,52 +145,6 @@ function HeroSystemVisual() {
   );
 }
 
-function EarlyAccessForm() {
-  return (
-    <Reveal delay={120}>
-      <form className="rounded-2xl border border-teal-400/20 bg-neutral-950 p-5 shadow-2xl shadow-black/30">
-        <div className="mb-5 rounded-xl border border-neutral-800 bg-neutral-900 p-4">
-          <p className="text-xs font-semibold uppercase text-teal-300">
-            Lista prioritaria
-          </p>
-          <p className="mt-2 text-lg font-semibold text-white">
-            Entra antes de la apertura.
-          </p>
-          <p className="mt-2 text-sm leading-6 text-neutral-400">
-            Nombre y email para recibir el aviso fundador.
-          </p>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block space-y-2">
-            <span className="text-sm font-semibold text-neutral-300">Nombre</span>
-            <input
-              name="name"
-              placeholder="Tu nombre"
-              className="h-12 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 text-sm text-white outline-none transition duration-300 placeholder:text-neutral-600 focus:border-teal-300 focus:bg-neutral-950"
-            />
-          </label>
-          <label className="block space-y-2">
-            <span className="text-sm font-semibold text-neutral-300">Email</span>
-            <input
-              name="email"
-              type="email"
-              placeholder="tu@email.com"
-              className="h-12 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 text-sm text-white outline-none transition duration-300 placeholder:text-neutral-600 focus:border-teal-300 focus:bg-neutral-950"
-            />
-          </label>
-        </div>
-        <Link
-          href="/registro"
-          className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-md bg-teal-300 px-5 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-teal-200"
-        >
-          Quiero acceso temprano
-        </Link>
-      </form>
-    </Reveal>
-  );
-}
-
 export default function HomePage() {
   return (
     <div className="relative left-1/2 -my-10 w-screen -translate-x-1/2 bg-neutral-950 text-white sm:-my-14">
@@ -264,7 +219,7 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-          <EarlyAccessForm />
+          <EarlyAccessForm source="home" />
         </div>
       </section>
 
