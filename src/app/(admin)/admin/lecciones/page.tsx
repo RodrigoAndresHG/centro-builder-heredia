@@ -14,7 +14,7 @@ export default async function AdminLeccionesPage() {
       <PageHeader
         eyebrow="Admin"
         title="Lecciones"
-        description="Edita el contenido consumible que aparece en el area privada."
+        description="Edita el contenido consumible y configura aquí el video de cada lección. Flujo operativo: Programa → Módulo → Lección → Video."
         action={
           <Link
             href="/admin/lecciones/nueva"
@@ -24,6 +24,17 @@ export default async function AdminLeccionesPage() {
           </Link>
         }
       />
+
+      <Card className="border-teal-200 bg-teal-50">
+        <p className="text-sm font-semibold text-teal-900">
+          Los videos se cargan desde la lección.
+        </p>
+        <p className="mt-2 text-sm leading-6 text-teal-800">
+          Cada lección puede existir sin video, pero si ya tienes el asset,
+          entra a Editar y configura URL, proveedor, miniatura, duración y
+          estado preview desde el formulario de la lección.
+        </p>
+      </Card>
 
       <Card className="overflow-hidden p-0">
         <div className="overflow-x-auto">

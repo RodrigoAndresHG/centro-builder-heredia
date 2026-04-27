@@ -411,8 +411,8 @@ export function LessonForm({
             Video de la lección
           </p>
           <p className="mt-1 text-sm leading-6 text-neutral-500">
-            La lección puede existir sin video. Si ya tienes el asset, deja aquí
-            la información necesaria para publicarlo dentro del LMS.
+            Este es el punto principal de carga y configuración del video. La
+            biblioteca de Videos solo sirve para revisar videos ya vinculados.
           </p>
         </div>
 

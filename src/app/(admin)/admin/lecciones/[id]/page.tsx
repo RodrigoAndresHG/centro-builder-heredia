@@ -32,7 +32,7 @@ export default async function EditLessonPage({ params }: EditLessonPageProps) {
       <PageHeader
         eyebrow="Admin"
         title="Editar leccion"
-        description={lesson.title}
+        description={`${lesson.title} · configura contenido, publicación y video desde esta lección.`}
         action={
           <Link
             href="/admin/lecciones"

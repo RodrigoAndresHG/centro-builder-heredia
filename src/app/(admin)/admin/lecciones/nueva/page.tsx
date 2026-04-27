@@ -17,7 +17,7 @@ export default async function NewLessonPage() {
       <PageHeader
         eyebrow="Admin"
         title="Nueva leccion"
-        description="Crea una pieza de contenido dentro de un modulo publicado o en borrador."
+        description="Crea una pieza de contenido dentro de un módulo. Si ya tienes video, configúralo aquí mismo; no necesitas pasar por la biblioteca de videos."
         action={
           <Link
             href="/admin/lecciones"

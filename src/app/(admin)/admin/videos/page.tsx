@@ -22,8 +22,8 @@ export default async function AdminVideosPage() {
     <div className="space-y-8">
       <PageHeader
         eyebrow="Admin"
-        title="Videos"
-        description="Índice operativo de videos ligados a lecciones. Para cargar o editar un video, entra a la lección correspondiente."
+        title="Biblioteca de videos"
+        description="Índice operativo de videos ya vinculados a lecciones. Esta pantalla sirve para auditar y localizar videos, no para cargarlos."
         action={
           <Link
             href="/admin/lecciones"
@@ -33,6 +33,17 @@ export default async function AdminVideosPage() {
           </Link>
         }
       />
+
+      <Card className="border-amber-200 bg-amber-50">
+        <p className="text-sm font-semibold text-amber-900">
+          La carga y edición principal del video se realiza desde cada lección.
+        </p>
+        <p className="mt-2 text-sm leading-6 text-amber-800">
+          Si quieres subir, cambiar URL, definir proveedor, miniatura, duración
+          o preview, entra a Lecciones y edita la lección correspondiente.
+          Relación operativa: Programa → Módulo → Lección → Video.
+        </p>
+      </Card>
 
       <Card className="overflow-hidden p-0">
         <div className="overflow-x-auto">
