@@ -12,8 +12,8 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       </main>
       <footer className="border-t border-neutral-800 bg-neutral-950 py-6">
         <Container size="wide">
-          <p className="text-sm text-neutral-500">
-            Centro Builder HeredIA MVP
+          <p className="text-sm font-medium text-neutral-500">
+            Builder HeredIA by Rodrigo HeredIA
           </p>
         </Container>
       </footer>

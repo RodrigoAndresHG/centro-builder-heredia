@@ -163,7 +163,7 @@ function VideoShowcase() {
             </p>
             <div className="mt-5 grid gap-2 text-xs font-semibold uppercase text-neutral-500">
               <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
-                Preview mobile-first
+                Reproducción silenciosa
               </span>
               <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
                 Builder LMS / preview
@@ -186,7 +186,7 @@ function VideoShowcase() {
                 />
                 <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/70 to-transparent p-4">
                   <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase text-white backdrop-blur">
-                    Builder preview
+                    Silent preview
                   </span>
                   <span className="h-2 w-2 rounded-full bg-teal-300 shadow-lg shadow-teal-300/50" />
                 </div>

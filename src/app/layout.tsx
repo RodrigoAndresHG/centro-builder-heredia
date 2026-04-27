@@ -13,8 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Centro Builder HeredIA",
-  description: "Plataforma SaaS para aprendizaje y acompanamiento de Centro Builder HeredIA.",
+  title: "Builder HeredIA | LMS oficial de Rodrigo HeredIA",
+  description:
+    "Aprende a construir productos Multi-IA reales dentro del LMS oficial de Rodrigo HeredIA, empezando con IdeaCash HeredIA.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/favicon.ico",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
