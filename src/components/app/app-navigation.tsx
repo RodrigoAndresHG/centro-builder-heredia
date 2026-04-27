@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const appItems = [
   { label: "Inicio", href: "/app" },
   { label: "Programas", href: "/app/programas" },
-  { label: "Updates", href: "/app/updates" },
+  { label: "Novedades", href: "/app/updates" },
   { label: "Perfil", href: "/app/perfil" },
   { label: "Soporte", href: "/app/soporte" },
 ];

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 import { isAdminRole } from "@/lib/permissions";
+import { isBuilderUpdateType } from "@/lib/services/builder-updates";
 
 async function requireAdmin() {
   const session = await auth();
@@ -53,6 +54,12 @@ function requireField(value: string | null, label: string) {
 function revalidateContentPaths() {
   revalidatePath("/admin", "layout");
   revalidatePath("/app", "layout");
+}
+
+function readBuilderUpdateType(formData: FormData) {
+  const type = readString(formData, "type");
+
+  return isBuilderUpdateType(type) ? type : "NOVEDAD";
 }
 
 export async function createProgram(formData: FormData) {
@@ -263,6 +270,92 @@ export async function toggleLessonPublished(id: string, isPublished: boolean) {
   await prisma.lesson.update({
     where: { id },
     data: { isPublished },
+  });
+
+  revalidateContentPaths();
+}
+
+export async function createBuilderUpdate(formData: FormData) {
+  await requireAdmin();
+
+  const title = requireField(readOptionalString(formData, "title"), "Titulo");
+  const summary = requireField(
+    readOptionalString(formData, "summary"),
+    "Resumen",
+  );
+  const content = requireField(
+    readOptionalString(formData, "content"),
+    "Contenido",
+  );
+  const isPublished = readBoolean(formData, "isPublished");
+  const builderUpdate = await prisma.builderUpdate.create({
+    data: {
+      title,
+      type: readBuilderUpdateType(formData),
+      summary,
+      content,
+      imageUrl: readOptionalString(formData, "imageUrl"),
+      isPublished,
+      publishedAt: isPublished ? new Date() : null,
+    },
+  });
+
+  revalidateContentPaths();
+  redirect(`/admin/updates/${builderUpdate.id}`);
+}
+
+export async function updateBuilderUpdate(id: string, formData: FormData) {
+  await requireAdmin();
+
+  const title = requireField(readOptionalString(formData, "title"), "Titulo");
+  const summary = requireField(
+    readOptionalString(formData, "summary"),
+    "Resumen",
+  );
+  const content = requireField(
+    readOptionalString(formData, "content"),
+    "Contenido",
+  );
+  const isPublished = readBoolean(formData, "isPublished");
+  const currentUpdate = await prisma.builderUpdate.findUnique({
+    where: { id },
+    select: { publishedAt: true },
+  });
+
+  await prisma.builderUpdate.update({
+    where: { id },
+    data: {
+      title,
+      type: readBuilderUpdateType(formData),
+      summary,
+      content,
+      imageUrl: readOptionalString(formData, "imageUrl"),
+      isPublished,
+      publishedAt: isPublished ? (currentUpdate?.publishedAt ?? new Date()) : null,
+    },
+  });
+
+  revalidateContentPaths();
+  redirect("/admin/updates");
+}
+
+export async function toggleBuilderUpdatePublished(
+  id: string,
+  isPublished: boolean,
+) {
+  await requireAdmin();
+
+  const currentUpdate = await prisma.builderUpdate.findUnique({
+    where: { id },
+    select: { publishedAt: true },
+  });
+
+  await prisma.builderUpdate.update({
+    where: { id },
+    data: {
+      isPublished,
+      publishedAt: isPublished ? (currentUpdate?.publishedAt ?? new Date()) : null,
+    },
   });
 
   revalidateContentPaths();

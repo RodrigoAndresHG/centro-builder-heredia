@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { builderUpdateTypes } from "@/lib/services/builder-updates";
+
 type FormAction = (formData: FormData) => void | Promise<void>;
 
 type ProductOption = {
@@ -52,6 +54,15 @@ type LessonFormValue = {
   content?: string | null;
   videoUrl?: string | null;
   sortOrder?: number;
+  isPublished?: boolean;
+};
+
+type BuilderUpdateFormValue = {
+  title?: string | null;
+  type?: string | null;
+  summary?: string | null;
+  content?: string | null;
+  imageUrl?: string | null;
   isPublished?: boolean;
 };
 
@@ -374,6 +385,80 @@ export function LessonForm({
       </label>
 
       <PublishCheckbox defaultChecked={lesson?.isPublished} />
+
+      <SubmitButton label={submitLabel} />
+    </form>
+  );
+}
+
+export function BuilderUpdateForm({
+  action,
+  update,
+  submitLabel,
+}: {
+  action: FormAction;
+  update?: BuilderUpdateFormValue | null;
+  submitLabel: string;
+}) {
+  return (
+    <form action={action} className="space-y-5">
+      <label className="block space-y-2">
+        <FieldLabel>Título</FieldLabel>
+        <TextInput
+          name="title"
+          required
+          defaultValue={update?.title}
+          placeholder="Nueva lección publicada dentro de Builder"
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Tipo</FieldLabel>
+        <select
+          name="type"
+          defaultValue={update?.type ?? "NOVEDAD"}
+          className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+        >
+          {builderUpdateTypes.map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Resumen</FieldLabel>
+        <TextArea
+          name="summary"
+          required
+          rows={3}
+          defaultValue={update?.summary}
+          placeholder="Una síntesis clara para el feed privado."
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Contenido</FieldLabel>
+        <TextArea
+          name="content"
+          required
+          rows={8}
+          defaultValue={update?.content}
+          placeholder="Desarrolla la novedad, tip o recomendación con criterio práctico."
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Imagen opcional</FieldLabel>
+        <TextInput
+          name="imageUrl"
+          defaultValue={update?.imageUrl}
+          placeholder="https://..."
+        />
+      </label>
+
+      <PublishCheckbox defaultChecked={update?.isPublished} />
 
       <SubmitButton label={submitLabel} />
     </form>

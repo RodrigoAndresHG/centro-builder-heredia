@@ -1,6 +1,7 @@
 export * from "./access-control";
 export * from "./admin-access";
 export * from "./admin-content";
+export * from "./builder-updates";
 export * from "./commerce";
 export * from "./early-access";
 export * from "./learning";

@@ -13,7 +13,7 @@ const adminItems = [
   { label: "Modulos", href: "/admin/modulos" },
   { label: "Lecciones", href: "/admin/lecciones" },
   { label: "Videos", href: "/admin/videos" },
-  { label: "Updates", href: "/admin/updates" },
+  { label: "Novedades", href: "/admin/updates" },
   { label: "Usuarios", href: "/admin/usuarios" },
   { label: "Accesos", href: "/admin/accesos" },
   { label: "Early Access", href: "/admin/early-access" },

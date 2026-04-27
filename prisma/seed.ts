@@ -116,6 +116,36 @@ const ideaCashProgram = {
   ],
 };
 
+const builderUpdates = [
+  {
+    id: "seed-update-builder-novedad-workspace",
+    title: "Builder ya funciona como workspace privado",
+    type: "NOVEDAD" as const,
+    summary:
+      "El LMS ya conecta cuenta, acceso, programa, progreso y soporte dentro de una experiencia privada.",
+    content:
+      "Esta novedad importa porque Builder no se está construyendo como una carpeta de videos. La base privada ya permite entrar, ver el acceso activo, continuar un programa y mantener el recorrido dentro del mismo sistema.",
+  },
+  {
+    id: "seed-update-builder-tip-continuidad",
+    title: "Tip: no aprendas IA como piezas sueltas",
+    type: "TIP" as const,
+    summary:
+      "Cuando estudies herramientas de IA, aterriza cada aprendizaje a un flujo real de producto.",
+    content:
+      "La pregunta útil no es solo qué hace un modelo nuevo. La pregunta es dónde mejora tu sistema: captura, razonamiento, interfaz, automatización, soporte o entrega. Esa mirada evita acumular contenido sin convertirlo en producto.",
+  },
+  {
+    id: "seed-update-builder-ia-orquestacion",
+    title: "IA: el valor está en orquestar modelos con criterio",
+    type: "IA" as const,
+    summary:
+      "OpenAI, Anthropic y Gemini no tienen que competir dentro de tu producto; pueden cumplir roles distintos.",
+    content:
+      "Para construir productos Multi-IA, conviene pensar en responsabilidades: un modelo puede ayudar con razonamiento, otro con redacción, otro con análisis multimodal. Builder usará este criterio para aterrizar señales de IA a decisiones prácticas.",
+  },
+];
+
 async function main() {
   for (const role of roles) {
     await prisma.role.upsert({
@@ -262,6 +292,29 @@ async function main() {
         userId: accessUser.id,
         productId: product.id,
         status: "ACTIVE",
+      },
+    });
+  }
+
+  for (const updateSeed of builderUpdates) {
+    await prisma.builderUpdate.upsert({
+      where: { id: updateSeed.id },
+      update: {
+        title: updateSeed.title,
+        type: updateSeed.type,
+        summary: updateSeed.summary,
+        content: updateSeed.content,
+        isPublished: true,
+        publishedAt: new Date("2026-04-27T12:00:00.000Z"),
+      },
+      create: {
+        id: updateSeed.id,
+        title: updateSeed.title,
+        type: updateSeed.type,
+        summary: updateSeed.summary,
+        content: updateSeed.content,
+        isPublished: true,
+        publishedAt: new Date("2026-04-27T12:00:00.000Z"),
       },
     });
   }
