@@ -38,13 +38,16 @@ export function AccessRequiredCard({
         >
           Volver al dashboard
         </Link>
+      </div>
+      <p className="mt-4 text-xs leading-5 text-neutral-500">
+        ¿Ya pagaste y no ves tu acceso?{" "}
         <Link
           href="/app/soporte"
-          className="rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
+          className="font-semibold text-neutral-300 underline decoration-neutral-700 underline-offset-4 transition hover:text-white"
         >
-          Solicitar acceso
+          Revisa soporte.
         </Link>
-      </div>
+      </p>
     </WorkspaceCard>
   );
 }
