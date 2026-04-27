@@ -8,7 +8,7 @@ import { VideoShowcase } from "@/components/public/video-showcase";
 const heroBullets = [
   "Construye con OpenAI, Anthropic y Gemini",
   "Primer programa: IdeaCash HeredIA",
-  "Acceso prioritario + precio fundador",
+  "Precio fundador activo: USD 47",
 ];
 
 const earlyBenefits = [
@@ -33,27 +33,49 @@ const programBullets = [
 ];
 
 const finalReinforcements = [
-  "Precio fundador: USD 47",
-  "Prioridad antes de la apertura",
+  "Compra hoy por USD 47",
+  "Explora como invitado con Google",
   "Lanzamiento oficial en vivo",
-  "Primer programa del LMS oficial",
+  "Acceso temprano si prefieres esperar",
 ];
 
-function PrimaryCta({ children }: { children: string }) {
+function BuyCta({ children }: { children: string }) {
   return (
-    <a
-      href="#acceso-temprano"
+    <Link
+      href="/registro"
       className="group inline-flex min-h-12 items-center justify-center rounded-md bg-teal-300 px-5 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-teal-200 hover:shadow-teal-900/50"
     >
       <span>{children}</span>
       <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
         →
       </span>
+    </Link>
+  );
+}
+
+function ExploreCta({ children }: { children: string }) {
+  return (
+    <Link
+      href="/login"
+      className="inline-flex min-h-12 items-center justify-center rounded-md border border-teal-400/30 bg-teal-400/10 px-5 py-3 text-sm font-semibold text-teal-100 transition duration-300 hover:-translate-y-0.5 hover:border-teal-300/60 hover:bg-teal-400/15"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function EarlyAccessCta({ children }: { children: string }) {
+  return (
+    <a
+      href="#acceso-temprano"
+      className="inline-flex min-h-11 items-center justify-center rounded-md border border-neutral-800 bg-neutral-950 px-4 py-2.5 text-sm font-semibold text-neutral-300 transition duration-300 hover:-translate-y-0.5 hover:border-neutral-600 hover:text-white"
+    >
+      {children}
     </a>
   );
 }
 
-function SecondaryCta({ children }: { children: string }) {
+function ProgramCta({ children }: { children: string }) {
   return (
     <Link
       href="/programas/build-ideacash"
@@ -153,15 +175,16 @@ export default function HomePage() {
           <div className="flex flex-col justify-center">
             <Reveal>
               <div className="inline-flex w-fit rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase text-teal-300">
-                LMS oficial de Rodrigo HeredIA / apertura 16 mayo 2026
+                Precio fundador activo / apertura 16 mayo 2026
               </div>
               <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.04] text-white sm:text-5xl lg:text-6xl">
                 Aprende a construir productos Multi-IA reales dentro del LMS
                 oficial de Rodrigo HeredIA.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-300">
-                El espacio donde Rodrigo HeredIA enseña a convertir múltiples
-                IAs en productos reales. Primer programa: IdeaCash HeredIA.
+                Compra el acceso fundador por USD 47, entra con Google y empieza
+                desde el entorno privado de Builder. También puedes explorar como
+                invitado antes de decidir.
               </p>
             </Reveal>
 
@@ -175,9 +198,13 @@ export default function HomePage() {
               ))}
             </div>
 
-            <Reveal delay={320} className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <PrimaryCta>Unirme al acceso temprano</PrimaryCta>
-              <SecondaryCta>Ver el programa activo</SecondaryCta>
+            <Reveal
+              delay={320}
+              className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+            >
+              <BuyCta>Comprar acceso ahora</BuyCta>
+              <ExploreCta>Entrar y explorar</ExploreCta>
+              <EarlyAccessCta>Unirme al acceso temprano</EarlyAccessCta>
             </Reveal>
           </div>
 
@@ -189,57 +216,49 @@ export default function HomePage() {
         <div className="flex flex-col justify-center">
           <SectionIntro
             title="Mira cómo se siente Builder"
-            description="Un preview breve del LMS, el enfoque de aprendizaje y el primer build Multi-IA."
+            description="Un preview breve del LMS, el enfoque de aprendizaje y el primer build Multi-IA antes de entrar."
           />
-          <Reveal delay={160} className="mt-6">
-            <PrimaryCta>Quiero acceso temprano</PrimaryCta>
+          <Reveal delay={160} className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <BuyCta>Comprar acceso ahora</BuyCta>
+            <ExploreCta>Entrar y explorar</ExploreCta>
           </Reveal>
         </div>
         <VideoShowcase />
-      </section>
-
-      <section
-        id="acceso-temprano"
-        className="border-y border-neutral-800 bg-neutral-900/70"
-      >
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.84fr_1fr] lg:px-8">
-          <div>
-            <SectionIntro
-              eyebrow="Acceso temprano"
-              title="Únete al acceso temprano"
-              description="Lista prioritaria para precio fundador, aviso en vivo y entrada antes de la apertura."
-            />
-            <div className="mt-7 grid gap-3">
-              {earlyBenefits.map((benefit, index) => (
-                <Reveal key={benefit} delay={index * 90}>
-                  <div className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-200 transition duration-300 hover:border-teal-400/40">
-                    {benefit}
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-          <EarlyAccessForm source="home" />
-        </div>
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
         <Reveal>
           <div className="rounded-2xl border border-teal-400/30 bg-teal-400/10 p-6 shadow-2xl shadow-black/20">
             <p className="text-sm font-semibold uppercase text-teal-200">
-              Lanzamiento oficial del primer programa
+              Precio fundador antes del lanzamiento
             </p>
             <h2 className="mt-4 text-3xl font-semibold leading-tight text-white">
-              Sábado 16 de mayo de 2026
+              USD 47 activo hasta la apertura
             </h2>
             <p className="mt-4 text-base leading-8 text-neutral-200">
-              Apertura oficial de IdeaCash HeredIA dentro del LMS de Rodrigo.
+              Compra hoy, entra con tu cuenta y queda listo para consumir Build
+              IdeaCash dentro del LMS. Después del lanzamiento, el precio regular
+              sube.
             </p>
-            <p className="mt-4 text-sm font-semibold text-teal-200">
-              Entra a la lista antes del lanzamiento.
-            </p>
-            <div className="mt-6">
-              <PrimaryCta>Quiero acceso temprano</PrimaryCta>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-teal-300/25 bg-neutral-950/70 p-4">
+                <p className="text-xs font-semibold uppercase text-neutral-500">
+                  Precio fundador hoy
+                </p>
+                <p className="mt-2 text-3xl font-semibold text-white">USD 47</p>
+              </div>
+              <div className="rounded-xl border border-neutral-800 bg-neutral-950/70 p-4">
+                <p className="text-xs font-semibold uppercase text-neutral-500">
+                  Precio regular después
+                </p>
+                <p className="mt-2 text-3xl font-semibold text-neutral-300">
+                  USD 67
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <BuyCta>Comprar acceso ahora</BuyCta>
+              <ExploreCta>Entrar y explorar</ExploreCta>
             </div>
           </div>
         </Reveal>
@@ -247,10 +266,10 @@ export default function HomePage() {
           <LaunchCountdown />
           <div className="mt-5 grid gap-3 text-sm text-neutral-300">
             <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-4">
-              Lanzamiento oficial en vivo
+              Sábado 16 de mayo de 2026: lanzamiento oficial en vivo
             </div>
             <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-4">
-              Precio fundador reservado
+              El precio fundador queda disponible antes de la apertura
             </div>
           </div>
         </Reveal>
@@ -287,7 +306,10 @@ export default function HomePage() {
             description="El primer programa oficial: cómo nace, se estructura y evoluciona una app Multi-IA usable y vendible."
           />
           <Reveal delay={140} className="mt-7">
-            <SecondaryCta>Ver el programa activo</SecondaryCta>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <BuyCta>Comprar acceso ahora</BuyCta>
+              <ProgramCta>Ver el programa activo</ProgramCta>
+            </div>
           </Reveal>
         </div>
         <div className="grid gap-3">
@@ -305,12 +327,16 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
           <div>
             <SectionIntro
-              title="Entra antes de la apertura"
-              description="Reserva prioridad, precio fundador y aviso del lanzamiento en vivo."
+              title="Elige tu nivel de intención"
+              description="Compra si ya estás listo, entra a explorar si quieres ver el sistema por dentro, o deja tus datos si todavía prefieres esperar."
             />
-            <Reveal delay={120} className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <PrimaryCta>Quiero acceso temprano</PrimaryCta>
-              <SecondaryCta>Ver el programa activo</SecondaryCta>
+            <Reveal
+              delay={120}
+              className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+            >
+              <BuyCta>Comprar acceso ahora</BuyCta>
+              <ExploreCta>Entrar y explorar</ExploreCta>
+              <EarlyAccessCta>Unirme al acceso temprano</EarlyAccessCta>
             </Reveal>
           </div>
           <div className="grid gap-3">
@@ -322,6 +348,31 @@ export default function HomePage() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section
+        id="acceso-temprano"
+        className="border-t border-neutral-800 bg-neutral-900/70"
+      >
+        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.84fr_1fr] lg:px-8">
+          <div>
+            <SectionIntro
+              eyebrow="Tercera vía"
+              title="¿Aún no quieres entrar? Únete al acceso temprano"
+              description="Para indecisos reales: deja tus datos y recibe aviso del lanzamiento, precio fundador y entrada prioritaria sin crear cuenta todavía."
+            />
+            <div className="mt-7 grid gap-3">
+              {earlyBenefits.map((benefit, index) => (
+                <Reveal key={benefit} delay={index * 90}>
+                  <div className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-200 transition duration-300 hover:border-teal-400/40">
+                    {benefit}
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+          <EarlyAccessForm source="home" />
         </div>
       </section>
     </div>
