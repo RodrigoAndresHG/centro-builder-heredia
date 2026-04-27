@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { ProgressMeter } from "@/components/app/progress-meter";
+import { WelcomeVideoCard } from "@/components/app/welcome-video-card";
 import {
   WorkspaceCard,
   WorkspaceHero,
@@ -123,6 +124,19 @@ export default async function UserDashboardPage({
             </div>
           </WorkspaceHero>
 
+          <WelcomeVideoCard
+            badge="Tu recorrido empieza aquí"
+            title="Bienvenido a tu entorno privado de Builder"
+            description="Mira esta guía rápida para entender cómo avanzar dentro del programa, seguir el build, retomar tu progreso y aprovechar mejor el sistema desde el primer día."
+            primaryHref={continueHref}
+            primaryLabel="Continuar programa"
+            secondaryHref="/app/updates"
+            secondaryLabel="Ver updates"
+            videoLabel="Guía privada"
+            videoTitle="Onboarding del workspace"
+            videoDescription="Un espacio preparado para explicar el recorrido, el progreso y la mejor forma de avanzar dentro del programa."
+          />
+
           <div className="grid gap-4 md:grid-cols-3">
             <WorkspaceMetric
               label="Acceso"
@@ -152,6 +166,19 @@ export default async function UserDashboardPage({
         </>
       ) : lockedProgram ? (
         <div className="space-y-6">
+          <WelcomeVideoCard
+            badge="Bienvenido a Builder"
+            title="Antes de entrar, entiende cómo funciona Builder"
+            description="Mira esta introducción rápida para entender qué encontrarás dentro del LMS oficial de Rodrigo HeredIA y por qué el primer programa abre una forma distinta de aprender a construir productos Multi-IA reales."
+            primaryHref="/programas/build-ideacash"
+            primaryLabel="Ver el programa activo"
+            secondaryHref="/#acceso-temprano"
+            secondaryLabel="Unirme al acceso temprano"
+            videoLabel="Intro invitado"
+            videoTitle="Video de bienvenida para invitado"
+            videoDescription="Un contenedor premium listo para la pieza que presenta Builder, el primer programa y el valor del acceso temprano."
+          />
+
           <WorkspaceHero
             eyebrow="Acceso pendiente"
             title="Ya estás dentro del sistema. El producto premium está a un paso."
