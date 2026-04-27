@@ -41,7 +41,7 @@ const finalReinforcements = [
 function BuyCta({ children }: { children: string }) {
   return (
     <Link
-      href="/registro"
+      href="/registro?intent=buy"
       className="group inline-flex min-h-12 items-center justify-center rounded-md bg-teal-300 px-5 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-teal-200 hover:shadow-teal-900/50"
     >
       <span>{children}</span>
@@ -55,7 +55,7 @@ function BuyCta({ children }: { children: string }) {
 function ExploreCta({ children }: { children: string }) {
   return (
     <Link
-      href="/login"
+      href="/registro?intent=explore"
       className="inline-flex min-h-12 items-center justify-center rounded-md border border-teal-400/30 bg-teal-400/10 px-5 py-3 text-sm font-semibold text-teal-100 transition duration-300 hover:-translate-y-0.5 hover:border-teal-300/60 hover:bg-teal-400/15"
     >
       {children}

@@ -18,18 +18,19 @@ import {
 } from "@/lib/services";
 
 type UserDashboardPageProps = {
-  searchParams: Promise<{ checkout?: string }>;
+  searchParams: Promise<{ checkout?: string; intent?: string }>;
 };
 
 export default async function UserDashboardPage({
   searchParams,
 }: UserDashboardPageProps) {
-  const { checkout } = await searchParams;
+  const { checkout, intent } = await searchParams;
   const session = await auth();
   const user = session?.user;
 
   if (!user) {
-    redirect("/login?callbackUrl=/app");
+    const callbackUrl = intent ? `/app?intent=${intent}` : "/app";
+    redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
 
   const { availablePrograms, lockedPrograms } = await listProgramsForViewer({
@@ -40,6 +41,7 @@ export default async function UserDashboardPage({
   const lockedProgram = lockedPrograms[0] ?? null;
   const lessonCount = getProgramLessonCount(program);
   const progress = program ? await getProgramProgress(user.id, program) : null;
+  const isBuyIntent = intent === "buy";
   const continueHref = progress?.nextLesson
     ? progress.nextLesson.href
     : program
@@ -166,29 +168,53 @@ export default async function UserDashboardPage({
       ) : lockedProgram ? (
         <div className="space-y-6">
           <WelcomeVideoCard
-            badge="Bienvenido a Builder"
-            title="Antes de entrar, entiende cómo funciona Builder"
-            description="Mira esta introducción rápida para entender qué encontrarás dentro del LMS oficial de Rodrigo HeredIA y por qué el primer programa abre una forma distinta de aprender a construir productos Multi-IA reales."
-            primaryHref="/programas/build-ideacash"
-            primaryLabel="Ver el programa activo"
-            secondaryHref="/#acceso-temprano"
-            secondaryLabel="Unirme al acceso temprano"
+            badge={isBuyIntent ? "Acceso fundador" : "Bienvenido a Builder"}
+            title={
+              isBuyIntent
+                ? "Estás a un paso de activar Builder"
+                : "Antes de entrar, entiende cómo funciona Builder"
+            }
+            description={
+              isBuyIntent
+                ? "Tu cuenta ya está lista. Completa la compra del acceso fundador y entra al programa privado con módulos, lecciones, progreso y soporte dentro del LMS."
+                : "Mira esta introducción rápida para entender qué encontrarás dentro del LMS oficial de Rodrigo HeredIA y por qué el primer programa abre una forma distinta de aprender a construir productos Multi-IA reales."
+            }
+            primaryHref={isBuyIntent ? "#activar-acceso" : "/programas/build-ideacash"}
+            primaryLabel={isBuyIntent ? "Activar acceso fundador" : "Ver el programa activo"}
+            secondaryHref={isBuyIntent ? "/programas/build-ideacash" : "/#acceso-temprano"}
+            secondaryLabel={
+              isBuyIntent ? "Ver detalles del programa" : "Quiero acceso prioritario"
+            }
             videoSrc="/video/welcome-guest.mp4"
             videoLabel="Intro invitado"
           />
 
           <WorkspaceHero
-            eyebrow="Acceso pendiente"
-            title="Ya estás dentro del sistema. El producto premium está a un paso."
-            description="Activa el acceso al programa activo y entra al recorrido privado con módulos, lecciones, progreso y soporte dentro del mismo workspace."
+            eyebrow={isBuyIntent ? "Compra iniciada" : "Acceso pendiente"}
+            title={
+              isBuyIntent
+                ? "Tu acceso está listo para activarse."
+                : "Ya estás dentro del sistema. El producto premium está a un paso."
+            }
+            description={
+              isBuyIntent
+                ? "Completa la entrada a Builder con el precio fundador y conserva compra, acceso y progreso en esta misma cuenta."
+                : "Activa el acceso al programa activo y entra al recorrido privado con módulos, lecciones, progreso y soporte dentro del mismo workspace."
+            }
             action={<SignOutButton variant="dark" />}
           >
             <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
-              <AccessRequiredCard
-                title={lockedProgram.title}
-                description="Activa el acceso para abrir el programa premium, ver los módulos publicados y continuar dentro de una experiencia guiada."
-                productSlug={lockedProgram.product?.slug}
-              />
+              <div id="activar-acceso" className="scroll-mt-8">
+                <AccessRequiredCard
+                  title={lockedProgram.title}
+                  description={
+                    isBuyIntent
+                      ? "Completa la compra para abrir el programa premium, conservar tu acceso y comenzar el recorrido dentro del entorno privado."
+                      : "Activa el acceso para abrir el programa premium, ver los módulos publicados y continuar dentro de una experiencia guiada."
+                  }
+                  productSlug={lockedProgram.product?.slug}
+                />
+              </div>
               <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
                   Vista previa del contenido

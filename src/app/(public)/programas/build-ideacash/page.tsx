@@ -57,7 +57,7 @@ const finalReinforcements = [
 function PrimaryCta({ children }: { children: string }) {
   return (
     <Link
-      href="/#acceso-temprano"
+      href="/registro?intent=buy"
       className="group inline-flex min-h-12 items-center justify-center rounded-md bg-teal-300 px-5 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-teal-200 hover:shadow-teal-900/50"
     >
       <span>{children}</span>
@@ -211,7 +211,7 @@ export default function BuildIdeaCashPage() {
             </div>
 
             <Reveal delay={360} className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <PrimaryCta>Unirme al acceso temprano</PrimaryCta>
+              <PrimaryCta>Comprar acceso ahora</PrimaryCta>
               <SecondaryCta href="#incluye">Ver qué incluye</SecondaryCta>
             </Reveal>
           </div>
@@ -304,8 +304,8 @@ export default function BuildIdeaCashPage() {
               <p className="mt-4 text-base leading-8 text-neutral-200">
                 Build IdeaCash — Founder Access abrirá oficialmente dentro de
                 Builder.rodriheredia.com. Hasta entonces, puedes registrarte
-                para recibir acceso prioritario, precio fundador y el aviso del
-                lanzamiento oficial en vivo.
+                con el precio fundador o reservar acceso prioritario para
+                recibir el aviso del lanzamiento oficial en vivo.
               </p>
               <div className="mt-6 rounded-xl border border-neutral-800 bg-neutral-950 p-4">
                 <p className="text-sm font-semibold text-white">
@@ -318,7 +318,7 @@ export default function BuildIdeaCashPage() {
                 </p>
               </div>
               <div className="mt-6">
-                <PrimaryCta>Unirme al acceso temprano</PrimaryCta>
+                <PrimaryCta>Comprar acceso ahora</PrimaryCta>
               </div>
             </div>
           </Reveal>
@@ -352,7 +352,7 @@ export default function BuildIdeaCashPage() {
               description="Build IdeaCash — Founder Access abrirá oficialmente el sábado 16 de mayo de 2026. Si te unes ahora al acceso temprano, quedarás en la lista prioritaria para entrar con precio fundador y recibir el aviso del lanzamiento en vivo."
             />
             <Reveal delay={120} className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <PrimaryCta>Quiero acceso temprano</PrimaryCta>
+              <PrimaryCta>Comprar acceso ahora</PrimaryCta>
               <SecondaryCta href="/">Volver al LMS</SecondaryCta>
             </Reveal>
           </div>

@@ -4,16 +4,36 @@ import { signIn } from "@/lib/auth";
 
 type AuthPanelProps = {
   mode: "login" | "registro";
+  intent?: "buy" | "explore";
+  callbackUrl?: string;
 };
 
-export function AuthPanel({ mode }: AuthPanelProps) {
-  const badge = mode === "login" ? "Acceso" : "Registro";
-  const title =
-    mode === "login" ? "Entra a Builder HeredIA" : "Crea tu acceso a Builder";
-  const description =
-    mode === "login"
+function getRedirectTo(intent?: "buy" | "explore", callbackUrl?: string) {
+  if (callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")) {
+    return callbackUrl;
+  }
+
+  return intent ? `/app?intent=${intent}` : "/app";
+}
+
+export function AuthPanel({ mode, intent, callbackUrl }: AuthPanelProps) {
+  const isBuyIntent = intent === "buy";
+  const redirectTo = getRedirectTo(intent, callbackUrl);
+  const badge = isBuyIntent
+    ? "Acceso fundador"
+    : mode === "login"
+      ? "Acceso"
+      : "Registro";
+  const title = isBuyIntent
+    ? "Entra para activar tu acceso"
+    : mode === "login"
+      ? "Entra a Builder HeredIA"
+      : "Crea tu acceso a Builder";
+  const description = isBuyIntent
+    ? "Primero conectamos tu identidad con Google; después podrás completar la compra dentro del entorno privado."
+    : mode === "login"
       ? "Accede al LMS oficial de Rodrigo HeredIA y continúa dentro de tu entorno privado."
-      : "Entra al LMS oficial de Rodrigo HeredIA y prepárate para el lanzamiento del primer programa.";
+      : "Entra al LMS oficial de Rodrigo HeredIA y prepárate para explorar el primer programa.";
   const isEmailAuthConfigured = Boolean(
     process.env.EMAIL_SERVER && process.env.EMAIL_FROM,
   );
@@ -74,7 +94,7 @@ export function AuthPanel({ mode }: AuthPanelProps) {
               <form
                 action={async () => {
                   "use server";
-                  await signIn("google", { redirectTo: "/app" });
+                  await signIn("google", { redirectTo });
                 }}
               >
                 <button
@@ -107,7 +127,7 @@ export function AuthPanel({ mode }: AuthPanelProps) {
                     await signIn("nodemailer", formData);
                   }}
                 >
-                  <input type="hidden" name="redirectTo" value="/app" />
+                  <input type="hidden" name="redirectTo" value={redirectTo} />
                   <label className="block space-y-2">
                     <span className="text-sm font-medium text-neutral-300">
                       Acceso por correo
@@ -138,11 +158,14 @@ export function AuthPanel({ mode }: AuthPanelProps) {
 
             <div className="mt-7 rounded-xl border border-teal-400/20 bg-teal-400/10 p-4">
               <p className="text-sm font-semibold text-teal-100">
-                Acceso privado, contenido y continuidad
+                {isBuyIntent
+                  ? "Sesión primero, compra después"
+                  : "Acceso privado, contenido y continuidad"}
               </p>
               <p className="mt-2 text-sm leading-6 text-teal-100/75">
-                Tu cuenta te conecta con los programas activos y el entorno
-                privado del LMS.
+                {isBuyIntent
+                  ? "Así tu compra, acceso y progreso quedan unidos a la misma cuenta."
+                  : "Tu cuenta te conecta con los programas activos y el entorno privado del LMS."}
               </p>
             </div>
           </div>

@@ -15,11 +15,14 @@ export function PublicTopbar() {
           </span>
         </Link>
         <nav className="flex items-center gap-3 text-sm text-neutral-300">
-          <Link href="/login" className="transition hover:text-white">
+          <Link
+            href="/registro?intent=explore"
+            className="transition hover:text-white"
+          >
             Explorar
           </Link>
           <Link
-            href="/registro"
+            href="/registro?intent=buy"
             className="rounded-md bg-teal-300 px-3 py-2 font-semibold text-neutral-950 shadow-lg shadow-teal-950/30 transition duration-300 hover:-translate-y-0.5 hover:bg-teal-200"
           >
             Comprar acceso

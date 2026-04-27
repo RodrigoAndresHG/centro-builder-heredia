@@ -8,6 +8,36 @@ export const metadata: Metadata = {
     "Entra al LMS oficial de Rodrigo HeredIA y continúa dentro de tu entorno privado.",
 };
 
-export default function LoginPage() {
-  return <AuthPanel mode="login" />;
+type LoginPageProps = {
+  searchParams: Promise<{ callbackUrl?: string; intent?: string }>;
+};
+
+function normalizeIntent(intent?: string, callbackUrl?: string) {
+  if (intent === "buy" || intent === "explore") {
+    return intent;
+  }
+
+  if (callbackUrl) {
+    const callbackIntent = new URL(callbackUrl, "https://builder.local").searchParams.get(
+      "intent",
+    );
+
+    return callbackIntent === "buy" || callbackIntent === "explore"
+      ? callbackIntent
+      : undefined;
+  }
+
+  return undefined;
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { callbackUrl, intent } = await searchParams;
+
+  return (
+    <AuthPanel
+      mode="login"
+      intent={normalizeIntent(intent, callbackUrl)}
+      callbackUrl={callbackUrl}
+    />
+  );
 }
