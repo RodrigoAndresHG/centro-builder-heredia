@@ -17,7 +17,7 @@ export function AccessRequiredCard({
   compact = false,
 }: AccessRequiredCardProps) {
   return (
-    <WorkspaceCard className={compact ? "" : "max-w-4xl"}>
+    <WorkspaceCard className={compact ? "" : "max-w-4xl border-teal-400/20 bg-teal-400/10"}>
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
         Acceso premium pendiente
       </p>
@@ -25,7 +25,7 @@ export function AccessRequiredCard({
       <p className="mt-3 max-w-2xl text-sm leading-7 text-neutral-300">
         {description}
       </p>
-      <div className="mt-5 grid gap-3 rounded-xl border border-neutral-800 bg-neutral-950 p-4 text-sm text-neutral-300 sm:grid-cols-3">
+      <div className="mt-5 grid gap-3 rounded-xl border border-neutral-800 bg-neutral-950 p-4 text-sm font-medium text-neutral-300 sm:grid-cols-3">
         <span>Programa privado</span>
         <span>Lecciones guiadas</span>
         <span>Progreso y soporte</span>

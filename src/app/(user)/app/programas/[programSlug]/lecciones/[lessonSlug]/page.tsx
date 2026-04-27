@@ -72,7 +72,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         action={
           <Link
             href={`/app/programas/${program.slug}`}
-            className="rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
+            className="rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-neutral-500"
           >
             Ver programa
           </Link>
@@ -98,7 +98,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <div className="space-y-6">
-          <div className="aspect-video rounded-2xl border border-neutral-800 bg-neutral-950 p-6 text-white shadow-xl shadow-black/20">
+          <div className="aspect-video rounded-3xl border border-neutral-800 bg-neutral-950 p-6 text-white shadow-2xl shadow-black/30">
             {lesson.videoUrl ? (
               <div className="flex h-full flex-col justify-between">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
@@ -120,11 +120,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 </p>
                 <div>
                   <p className="text-2xl font-semibold text-white">
-                    Lección textual lista para consumir
+                    Lección enfocada del build
                   </p>
                   <p className="mt-3 max-w-xl text-sm leading-7 text-neutral-300">
-                    Esta pieza forma parte de la ruta guiada. El video se puede
-                    conectar después sin romper la continuidad del programa.
+                    Esta pieza forma parte de la ruta guiada. Consume el
+                    contenido, marca progreso y sigue al próximo paso.
                   </p>
                 </div>
               </div>
@@ -133,13 +133,14 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
           <WorkspaceCard className="p-7">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
-              Nota de trabajo
+              Contenido de la lección
             </p>
             <div className="mt-5 space-y-5 text-base leading-8 text-neutral-200">
               {(lesson.content ?? "Contenido en preparación.")
                 .split("\n")
-                .map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                .filter(Boolean)
+                .map((paragraph, index) => (
+                  <p key={`${index}-${paragraph}`}>{paragraph}</p>
                 ))}
             </div>
           </WorkspaceCard>
@@ -166,7 +167,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
               >
                 <button
                   type="submit"
-                  className="w-full rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
+                  className="w-full rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200"
                 >
                   {nextHref ? "Completar y seguir" : "Marcar completada"}
                 </button>
@@ -210,7 +211,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
               {nextLesson ? (
                 <Link
                   href={`/app/programas/${program.slug}/lecciones/${nextLesson.slug}`}
-                  className="block rounded-md bg-teal-400 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
+                  className="block rounded-md bg-teal-300 px-3 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-200"
                 >
                   Siguiente: {nextLesson.title}
                 </Link>

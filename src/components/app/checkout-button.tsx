@@ -45,7 +45,7 @@ export function CheckoutButton({
         type="button"
         onClick={startCheckout}
         disabled={isLoading}
-        className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300 disabled:cursor-not-allowed disabled:opacity-60"
+        className="rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? "Abriendo checkout..." : label}
       </button>

@@ -3,7 +3,11 @@ import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
-import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
+import {
+  WorkspaceCard,
+  WorkspaceHero,
+  WorkspaceMetric,
+} from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 import {
   getModuleProgress,
@@ -62,7 +66,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
           progress.nextLesson ? (
             <Link
               href={progress.nextLesson.href}
-              className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
+              className="rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200"
             >
               {progress.completedCount > 0 ? "Continuar" : "Empezar"}
             </Link>
@@ -70,28 +74,17 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
         }
       >
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-              Estado
-            </p>
-            <p className="mt-2 text-lg font-semibold text-emerald-300">
-              Acceso activo
-            </p>
-          </div>
+          <WorkspaceMetric label="Estado" value="Acceso activo" detail="Tu cuenta puede recorrer este programa." />
           <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
             <ProgressMeter
               percent={progress.percent}
               label={`${progress.completedCount}/${progress.totalCount} lecciones`}
             />
           </div>
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-              Siguiente paso
-            </p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-white">
-              {progress.nextLesson?.lesson.title ?? "Programa completado"}
-            </p>
-          </div>
+          <WorkspaceMetric
+            label="Siguiente paso"
+            value={progress.nextLesson?.lesson.title ?? "Programa completado"}
+          />
         </div>
       </WorkspaceHero>
 
@@ -99,8 +92,8 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
         <div>
           <h2 className="text-2xl font-semibold text-white">Mapa del programa</h2>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-neutral-400">
-            Recorre los módulos como una ruta guiada. Cada lección completada queda
-            guardada en tu cuenta.
+            Recorre los módulos como una ruta guiada. Cada lección completada
+            queda guardada en tu cuenta y mantiene la continuidad del build.
           </p>
         </div>
 
@@ -115,7 +108,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
               : `/app/programas/${program.slug}/modulos/${module.slug}`;
 
             return (
-              <WorkspaceCard key={module.id}>
+              <WorkspaceCard key={module.id} className="overflow-hidden">
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                   <div className="max-w-2xl">
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
@@ -136,7 +129,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
                   </div>
                   <Link
                     href={moduleHref}
-                    className="rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
+                    className="rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-teal-400/50"
                   >
                     {moduleProgress.completedCount > 0
                       ? "Continuar módulo"
@@ -149,7 +142,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
                     <Link
                       key={lesson.id}
                       href={`/app/programas/${program.slug}/lecciones/${lesson.slug}`}
-                      className="rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-300 transition hover:border-teal-400/50 hover:text-white"
+                      className="rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-300 transition hover:-translate-y-0.5 hover:border-teal-400/50 hover:text-white"
                     >
                       <span className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <span>

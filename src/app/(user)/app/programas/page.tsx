@@ -34,15 +34,15 @@ export default async function ProgramasPage() {
     <div className="space-y-8">
       <WorkspaceHero
         eyebrow="Programas"
-        title="Tu mapa de aprendizaje dentro del workspace."
-        description="Aquí ves qué productos tienes disponibles, qué sigue y qué contenido requiere activar acceso."
+        title="Tu mapa privado de construcción."
+        description="Programas disponibles, continuidad recomendada y contenido premium que puedes activar cuando estés listo."
       />
 
       <section className="space-y-5">
         <div>
           <h2 className="text-2xl font-semibold text-white">Disponibles ahora</h2>
           <p className="mt-2 text-sm leading-7 text-neutral-400">
-            Programas habilitados según tus permisos activos.
+            Rutas habilitadas según tus permisos activos.
           </p>
         </div>
 
@@ -50,7 +50,7 @@ export default async function ProgramasPage() {
           {programsWithProgress.map(({ program, progress }) => (
             <WorkspaceCard
               key={program.id}
-              className="flex flex-col justify-between gap-6"
+              className="flex flex-col justify-between gap-6 border-teal-400/20 bg-teal-400/10"
             >
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
@@ -76,7 +76,7 @@ export default async function ProgramasPage() {
                 </div>
                 <Link
                   href={progress.nextLesson?.href ?? `/app/programas/${program.slug}`}
-                  className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
+                  className="rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200"
                 >
                   {progress.completedCount > 0 ? "Continuar" : "Abrir programa"}
                 </Link>
@@ -88,7 +88,8 @@ export default async function ProgramasPage() {
         {availablePrograms.length === 0 ? (
           <WorkspaceCard>
             <p className="text-sm leading-7 text-neutral-300">
-              No tienes programas disponibles en este momento.
+              No tienes programas disponibles todavía. Si ves un producto bloqueado,
+              puedes activar acceso desde esta misma pantalla.
             </p>
           </WorkspaceCard>
         ) : null}

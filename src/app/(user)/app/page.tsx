@@ -3,7 +3,11 @@ import { redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { ProgressMeter } from "@/components/app/progress-meter";
-import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
+import {
+  WorkspaceCard,
+  WorkspaceHero,
+  WorkspaceMetric,
+} from "@/components/app/workspace-card";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { auth } from "@/lib/auth";
 import {
@@ -65,12 +69,12 @@ export default async function UserDashboardPage({
         <>
           <WorkspaceHero
             eyebrow="Workspace privado"
-            title={`Hola${user.name ? `, ${user.name}` : ""}. Ya estás dentro de tu producto activo.`}
-            description="Tu acceso está habilitado. Retoma la siguiente lección, revisa el mapa del programa y mantén continuidad dentro del mismo entorno privado."
+            title={`Hola${user.name ? `, ${user.name}` : ""}. Tu build sigue en movimiento.`}
+            description="Retoma el siguiente paso, revisa el mapa del programa y mantén continuidad dentro de un entorno privado diseñado para construir con foco."
             action={<SignOutButton variant="dark" />}
           >
             <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-              <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+              <div className="rounded-2xl border border-teal-400/20 bg-teal-400/10 p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
                   Siguiente paso recomendado
                 </p>
@@ -83,7 +87,7 @@ export default async function UserDashboardPage({
                 <div className="mt-5 flex flex-wrap gap-3">
                   <Link
                     href={continueHref}
-                    className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
+                    className="rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200"
                   >
                     Continuar aprendizaje
                   </Link>
@@ -103,13 +107,13 @@ export default async function UserDashboardPage({
                 />
                 <div className="mt-6 grid grid-cols-2 gap-3">
                   <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">
-                    <p className="text-xs text-neutral-500">Módulos</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">Módulos</p>
                     <p className="mt-1 text-2xl font-semibold text-white">
                       {program.modules.length}
                     </p>
                   </div>
                   <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">
-                    <p className="text-xs text-neutral-500">Lecciones</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">Lecciones</p>
                     <p className="mt-1 text-2xl font-semibold text-white">
                       {lessonCount}
                     </p>
@@ -120,26 +124,16 @@ export default async function UserDashboardPage({
           </WorkspaceHero>
 
           <div className="grid gap-4 md:grid-cols-3">
-            <WorkspaceCard>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                Acceso
-              </p>
-              <p className="mt-2 text-lg font-semibold text-white">Activo</p>
-              <p className="mt-2 text-sm leading-6 text-neutral-400">
-                Tu cuenta puede consumir el producto asociado.
-              </p>
-            </WorkspaceCard>
-            <WorkspaceCard>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                Updates
-              </p>
-              <p className="mt-2 text-lg font-semibold text-white">
-                Dentro del workspace
-              </p>
-              <p className="mt-2 text-sm leading-6 text-neutral-400">
-                Nuevas publicaciones aparecerán en la misma experiencia.
-              </p>
-            </WorkspaceCard>
+            <WorkspaceMetric
+              label="Acceso"
+              value="Activo"
+              detail="Tu cuenta puede consumir el producto asociado."
+            />
+            <WorkspaceMetric
+              label="Updates"
+              value="Workspace"
+              detail="Nuevas publicaciones aparecerán en la misma experiencia."
+            />
             <WorkspaceCard>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
                 Soporte
@@ -160,8 +154,8 @@ export default async function UserDashboardPage({
         <div className="space-y-6">
           <WorkspaceHero
             eyebrow="Acceso pendiente"
-            title="Estás a un paso de entrar a un entorno privado de construcción real."
-            description="Tu cuenta ya existe. Ahora puedes activar el acceso al producto activo y entrar al programa, sus lecciones, progreso y soporte dentro del workspace."
+            title="Ya estás dentro del sistema. El producto premium está a un paso."
+            description="Activa el acceso al programa activo y entra al recorrido privado con módulos, lecciones, progreso y soporte dentro del mismo workspace."
             action={<SignOutButton variant="dark" />}
           >
             <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
@@ -199,12 +193,7 @@ export default async function UserDashboardPage({
               ["Acceso centralizado", "Tu dashboard refleja lo que tienes activo."],
               ["Continuidad real", "El progreso queda dentro de tu cuenta."],
             ].map(([title, description]) => (
-              <WorkspaceCard key={title}>
-                <p className="text-lg font-semibold text-white">{title}</p>
-                <p className="mt-2 text-sm leading-6 text-neutral-400">
-                  {description}
-                </p>
-              </WorkspaceCard>
+              <WorkspaceMetric key={title} label="Sistema" value={title} detail={description} />
             ))}
           </div>
         </div>

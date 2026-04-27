@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
 import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
-import { WorkspaceHero } from "@/components/app/workspace-card";
+import { WorkspaceCard, WorkspaceHero } from "@/components/app/workspace-card";
 import { auth } from "@/lib/auth";
 import {
   getModuleBySlug,
@@ -71,7 +71,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
           nextLesson ? (
             <Link
               href={`/app/programas/${programSlug}/lecciones/${nextLesson.slug}`}
-              className="rounded-md bg-teal-400 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-300"
+              className="rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200"
             >
               {moduleProgress.completedCount > 0 ? "Continuar módulo" : "Empezar módulo"}
             </Link>
@@ -81,11 +81,11 @@ export default async function ModulePage({ params }: ModulePageProps) {
         <div className="grid gap-4 md:grid-cols-[1fr_1.2fr]">
           <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-              Objetivo del módulo
+              Dirección del módulo
             </p>
             <p className="mt-3 text-sm leading-7 text-neutral-300">
-              Salir con una decisión más concreta: qué promesa trabajar, con
-              quién validarla y qué pieza preparar para la siguiente conversación.
+              Avanza en orden, completa cada pieza y conserva el contexto del
+              recorrido antes de pasar al siguiente módulo.
             </p>
           </div>
           <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
@@ -112,7 +112,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
             <Link
               key={lesson.id}
               href={`/app/programas/${programSlug}/lecciones/${lesson.slug}`}
-              className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-xl shadow-black/10 transition hover:border-teal-400/50"
+              className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:border-teal-400/50"
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -135,12 +135,20 @@ export default async function ModulePage({ params }: ModulePageProps) {
         </div>
       </section>
 
-      <Link
-        href={`/app/programas/${programSlug}`}
-        className="inline-flex rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
-      >
-        Volver al programa
-      </Link>
+      <WorkspaceCard className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-white">Mapa completo</p>
+          <p className="mt-1 text-sm text-neutral-400">
+            Vuelve al programa para ver el recorrido completo.
+          </p>
+        </div>
+        <Link
+          href={`/app/programas/${programSlug}`}
+          className="inline-flex rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
+        >
+          Volver al programa
+        </Link>
+      </WorkspaceCard>
     </div>
   );
 }
