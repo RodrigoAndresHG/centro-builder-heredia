@@ -58,3 +58,11 @@ export async function createOrUpdateEarlyAccessLead(
 
   return lead;
 }
+
+export async function listEarlyAccessLeads() {
+  return prisma.earlyAccessLead.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
