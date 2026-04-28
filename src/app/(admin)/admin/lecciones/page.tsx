@@ -66,14 +66,20 @@ export default async function AdminLeccionesPage() {
                   <td className="px-5 py-4">
                     <span
                       className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        lesson.videoUrl
+                        lesson.streamVideoId || lesson.videoUrl
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-neutral-100 text-neutral-600"
                       }`}
                     >
-                      {lesson.videoUrl ? "Con video" : "Sin video"}
+                      {lesson.streamVideoId || lesson.videoUrl
+                        ? "Con video"
+                        : "Sin video"}
                     </span>
-                    {lesson.videoProvider ? (
+                    {lesson.streamVideoId ? (
+                      <p className="mt-1 text-xs text-neutral-500">
+                        Stream · {lesson.videoStatus}
+                      </p>
+                    ) : lesson.videoProvider ? (
                       <p className="mt-1 text-xs text-neutral-500">
                         {lesson.videoProvider}
                       </p>

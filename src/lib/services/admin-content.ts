@@ -1,4 +1,8 @@
 import { prisma } from "@/lib/db/prisma";
+import {
+  getCloudflareStreamVideo,
+  normalizeStreamVideoStatus,
+} from "@/lib/services/cloudflare-stream";
 
 export async function listAdminProducts() {
   return prisma.product.findMany({
@@ -69,11 +73,22 @@ export async function listAdminLessons() {
 }
 
 export async function listAdminVideoLessons() {
+  await syncAdminStreamVideos();
+
   return prisma.lesson.findMany({
     where: {
-      videoUrl: {
-        not: null,
-      },
+      OR: [
+        {
+          streamVideoId: {
+            not: null,
+          },
+        },
+        {
+          videoUrl: {
+            not: null,
+          },
+        },
+      ],
     },
     orderBy: [
       { program: { title: "asc" } },
@@ -85,6 +100,48 @@ export async function listAdminVideoLessons() {
       module: true,
     },
   });
+}
+
+export async function syncAdminStreamVideos() {
+  const lessons = await prisma.lesson.findMany({
+    where: {
+      streamVideoId: {
+        not: null,
+      },
+    },
+    select: {
+      id: true,
+      streamVideoId: true,
+    },
+  });
+
+  await Promise.all(
+    lessons.map(async (lesson) => {
+      if (!lesson.streamVideoId) {
+        return;
+      }
+
+      try {
+        const video = await getCloudflareStreamVideo(lesson.streamVideoId);
+
+        await prisma.lesson.update({
+          where: { id: lesson.id },
+          data: {
+            videoStatus: normalizeStreamVideoStatus(video),
+            videoThumbnailUrl: video?.thumbnail ?? undefined,
+            videoDuration: video?.duration ? Math.round(video.duration) : undefined,
+          },
+        });
+      } catch {
+        await prisma.lesson.update({
+          where: { id: lesson.id },
+          data: {
+            videoStatus: "STATUS_UNAVAILABLE",
+          },
+        });
+      }
+    }),
+  );
 }
 
 export async function listAdminUsers() {

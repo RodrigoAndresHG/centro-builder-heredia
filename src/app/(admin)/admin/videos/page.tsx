@@ -53,6 +53,7 @@ export default async function AdminVideosPage() {
                 <th className="px-5 py-3 font-semibold">Video</th>
                 <th className="px-5 py-3 font-semibold">Lección</th>
                 <th className="px-5 py-3 font-semibold">Programa / módulo</th>
+                <th className="px-5 py-3 font-semibold">Estado</th>
                 <th className="px-5 py-3 font-semibold">Duración</th>
                 <th className="px-5 py-3 font-semibold">Preview</th>
                 <th className="px-5 py-3 font-semibold">Acciones</th>
@@ -66,12 +67,24 @@ export default async function AdminVideosPage() {
                       {lesson.videoTitle ?? lesson.title}
                     </p>
                     <p className="mt-1 max-w-xs truncate text-sm text-neutral-500">
-                      {lesson.videoProvider ?? "Proveedor no definido"} ·{" "}
-                      {lesson.videoUrl}
+                      {lesson.streamVideoId
+                        ? `Stream ID ${lesson.streamVideoId}`
+                        : lesson.videoUrl}
                     </p>
                   </td>
                   <td className="px-5 py-4 text-sm text-neutral-600">
                     {lesson.title}
+                  </td>
+                  <td className="px-5 py-4">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                        lesson.videoStatus === "READY"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {lesson.videoStatus}
+                    </span>
                   </td>
                   <td className="px-5 py-4 text-sm text-neutral-600">
                     {lesson.program.title}

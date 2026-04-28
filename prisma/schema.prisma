@@ -142,6 +142,8 @@ model Lesson {
   content           String?  @db.Text
   videoUrl          String?  @map("video_url")
   videoProvider     String?  @map("video_provider")
+  streamVideoId     String?  @unique @map("stream_video_id")
+  videoStatus       String   @default("NONE") @map("video_status")
   videoTitle        String?  @map("video_title")
   videoThumbnailUrl String?  @map("video_thumbnail_url")
   videoDuration     Int?     @map("video_duration")

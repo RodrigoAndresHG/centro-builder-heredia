@@ -13,6 +13,7 @@ import { auth } from "@/lib/auth";
 import {
   getLessonBySlug,
   getProgramProgress,
+  getCloudflareStreamPlaybackUrl,
   isLessonCompleted,
 } from "@/lib/services";
 
@@ -128,9 +129,17 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <div className="space-y-6">
-          <div className="aspect-video rounded-3xl border border-neutral-800 bg-neutral-950 p-6 text-white shadow-2xl shadow-black/30">
-            {lesson.videoUrl ? (
-              <div className="flex h-full flex-col justify-between">
+          <div className="aspect-video overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-950 text-white shadow-2xl shadow-black/30">
+            {lesson.streamVideoId ? (
+              <iframe
+                src={getCloudflareStreamPlaybackUrl(lesson.streamVideoId)}
+                title={lesson.videoTitle ?? lesson.title}
+                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                allowFullScreen
+                className="h-full w-full"
+              />
+            ) : lesson.videoUrl ? (
+              <div className="flex h-full flex-col justify-between p-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
                   Video
                 </p>
@@ -144,7 +153,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 </a>
               </div>
             ) : (
-              <div className="flex h-full flex-col justify-between">
+              <div className="flex h-full flex-col justify-between p-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
                   Contenido del build
                 </p>

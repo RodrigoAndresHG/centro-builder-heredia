@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { CloudflareStreamUpload } from "@/components/admin/content/cloudflare-stream-upload";
 import { builderUpdateTypes } from "@/lib/services/builder-updates";
 
 type FormAction = (formData: FormData) => void | Promise<void>;
@@ -46,6 +47,7 @@ type ModuleFormValue = {
 };
 
 type LessonFormValue = {
+  id?: string | null;
   programId?: string | null;
   moduleId?: string | null;
   title?: string | null;
@@ -54,6 +56,8 @@ type LessonFormValue = {
   content?: string | null;
   videoUrl?: string | null;
   videoProvider?: string | null;
+  streamVideoId?: string | null;
+  videoStatus?: string | null;
   videoTitle?: string | null;
   videoThumbnailUrl?: string | null;
   videoDuration?: number | null;
@@ -397,12 +401,16 @@ export function LessonForm({
       </label>
 
       <label className="block space-y-2">
-        <FieldLabel>Video URL opcional</FieldLabel>
+        <FieldLabel>Video URL externa opcional</FieldLabel>
         <TextInput
           name="videoUrl"
           defaultValue={lesson?.videoUrl}
           placeholder="https://youtube.com/watch?v=..."
         />
+        <span className="text-xs leading-5 text-neutral-500">
+          Campo de compatibilidad. El flujo principal del LMS usa Cloudflare
+          Stream.
+        </span>
       </label>
 
       <div className="rounded-xl border border-border bg-surface-muted p-4">
@@ -414,6 +422,15 @@ export function LessonForm({
             Este es el punto principal de carga y configuración del video. La
             biblioteca de Videos solo sirve para revisar videos ya vinculados.
           </p>
+        </div>
+
+        <div className="mt-4">
+          <CloudflareStreamUpload
+            lessonId={lesson?.id}
+            lessonTitle={lesson?.title}
+            streamVideoId={lesson?.streamVideoId}
+            videoStatus={lesson?.videoStatus}
+          />
         </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
