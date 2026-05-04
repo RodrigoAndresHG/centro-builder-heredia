@@ -55,6 +55,28 @@ function readOptionalInt(formData: FormData, key: string) {
   return Number.isFinite(parsedValue) ? parsedValue : null;
 }
 
+function readOptionalDate(formData: FormData, key: string) {
+  const rawValue = readString(formData, key);
+
+  if (!rawValue) {
+    return null;
+  }
+
+  const parsedDate = new Date(rawValue);
+
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
+function readProgramStatus(formData: FormData) {
+  const status = readString(formData, "status");
+
+  if (status === "DRAFT" || status === "PRESALE" || status === "OPEN") {
+    return status;
+  }
+
+  return "DRAFT";
+}
+
 function requireField(value: string | null, label: string) {
   if (!value) {
     throw new Error(`${label} es requerido.`);
@@ -80,6 +102,7 @@ export async function createProgram(formData: FormData) {
   const title = requireField(readOptionalString(formData, "title"), "Titulo");
   const slug = requireField(readOptionalString(formData, "slug"), "Slug");
   const productId = readOptionalString(formData, "productId");
+  const status = readProgramStatus(formData);
 
   const program = await prisma.program.create({
     data: {
@@ -87,7 +110,10 @@ export async function createProgram(formData: FormData) {
       title,
       slug,
       description: readOptionalString(formData, "description"),
-      isPublished: readBoolean(formData, "isPublished"),
+      status,
+      opensAt: readOptionalDate(formData, "opensAt"),
+      presaleMessage: readOptionalString(formData, "presaleMessage"),
+      isPublished: status !== "DRAFT",
     },
   });
 
@@ -101,6 +127,7 @@ export async function updateProgram(id: string, formData: FormData) {
   const title = requireField(readOptionalString(formData, "title"), "Titulo");
   const slug = requireField(readOptionalString(formData, "slug"), "Slug");
   const productId = readOptionalString(formData, "productId");
+  const status = readProgramStatus(formData);
 
   await prisma.program.update({
     where: { id },
@@ -109,7 +136,10 @@ export async function updateProgram(id: string, formData: FormData) {
       title,
       slug,
       description: readOptionalString(formData, "description"),
-      isPublished: readBoolean(formData, "isPublished"),
+      status,
+      opensAt: readOptionalDate(formData, "opensAt"),
+      presaleMessage: readOptionalString(formData, "presaleMessage"),
+      isPublished: status !== "DRAFT",
     },
   });
 
@@ -122,7 +152,10 @@ export async function toggleProgramPublished(id: string, isPublished: boolean) {
 
   await prisma.program.update({
     where: { id },
-    data: { isPublished },
+    data: {
+      isPublished,
+      status: isPublished ? "OPEN" : "DRAFT",
+    },
   });
 
   revalidateContentPaths();

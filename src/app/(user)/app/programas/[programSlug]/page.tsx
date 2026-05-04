@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { AccessRequiredCard } from "@/components/app/access-required-card";
+import { PresaleCountdown } from "@/components/app/presale-countdown";
 import { LessonStatusPill, ProgressMeter } from "@/components/app/progress-meter";
 import {
   WorkspaceCard,
@@ -19,6 +20,17 @@ import {
 type ProgramPageProps = {
   params: Promise<{ programSlug: string }>;
 };
+
+function formatOpenDate(date: Date | null) {
+  if (!date) {
+    return "Fecha por confirmar";
+  }
+
+  return new Intl.DateTimeFormat("es", {
+    dateStyle: "full",
+    timeStyle: "short",
+  }).format(date);
+}
 
 export default async function ProgramPage({ params }: ProgramPageProps) {
   const { programSlug } = await params;
@@ -64,6 +76,8 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
 
   const program = programResult.program;
   const progress = await getProgramProgress(user.id, program);
+  const isPresale = program.status === "PRESALE";
+  const canConsumeLessons = program.status === "OPEN";
 
   return (
     <div className="space-y-8">
@@ -75,12 +89,44 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
         ]}
       />
 
+      {isPresale ? (
+        <WorkspaceHero
+          eyebrow="Preventa activa"
+          title="Ya estás dentro de la preventa"
+          description={
+            program.presaleMessage ??
+            "Tu acceso fundador ya quedó activo. El recorrido completo se abrirá oficialmente el 16 de mayo de 2026. Hasta entonces, estás entrando antes que el público general."
+          }
+        >
+          <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="rounded-2xl border border-teal-400/20 bg-teal-400/10 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                Apertura oficial del recorrido completo en:
+              </p>
+              <p className="mt-3 text-2xl font-semibold text-white">
+                {formatOpenDate(program.opensAt)}
+              </p>
+            </div>
+            {program.opensAt ? (
+              <PresaleCountdown opensAt={program.opensAt.toISOString()} />
+            ) : (
+              <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+                <p className="text-sm font-semibold text-neutral-300">
+                  El cronómetro aparecerá cuando definas la fecha oficial de
+                  apertura desde admin.
+                </p>
+              </div>
+            )}
+          </div>
+        </WorkspaceHero>
+      ) : null}
+
       <WorkspaceHero
         eyebrow={program.product?.name ?? "Programa"}
         title={program.title}
         description={program.description ?? undefined}
         action={
-          progress.nextLesson ? (
+          canConsumeLessons && progress.nextLesson ? (
             <Link
               href={progress.nextLesson.href}
               className="rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200"
@@ -91,7 +137,15 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
         }
       >
         <div className="grid gap-4 md:grid-cols-3">
-          <WorkspaceMetric label="Estado" value="Acceso activo" detail="Tu cuenta puede recorrer este programa." />
+          <WorkspaceMetric
+            label="Estado"
+            value={isPresale ? "Preventa" : "Acceso activo"}
+            detail={
+              isPresale
+                ? "Tu acceso fundador está confirmado antes de la apertura."
+                : "Tu cuenta puede recorrer este programa."
+            }
+          />
           <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
             <ProgressMeter
               percent={progress.percent}
@@ -100,7 +154,11 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
           </div>
           <WorkspaceMetric
             label="Siguiente paso"
-            value={progress.nextLesson?.lesson.title ?? "Programa completado"}
+            value={
+              isPresale
+                ? "Esperar apertura oficial"
+                : (progress.nextLesson?.lesson.title ?? "Programa completado")
+            }
           />
         </div>
       </WorkspaceHero>
@@ -120,9 +178,19 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
               module,
               progress.completedLessonIds,
             );
-            const moduleHref = moduleProgress.nextLesson
+            const previewLesson = module.lessons.find((lesson) => lesson.isPreview);
+            const moduleHref = canConsumeLessons && moduleProgress.nextLesson
               ? `/app/programas/${program.slug}/lecciones/${moduleProgress.nextLesson.slug}`
+              : previewLesson
+                ? `/app/programas/${program.slug}/lecciones/${previewLesson.slug}`
               : `/app/programas/${program.slug}/modulos/${module.slug}`;
+            const moduleActionLabel = isPresale
+              ? previewLesson
+                ? "Ver preview"
+                : "Ver módulo"
+              : moduleProgress.completedCount > 0
+                ? "Continuar módulo"
+                : "Abrir módulo";
 
             return (
               <WorkspaceCard key={module.id} className="overflow-hidden">
@@ -148,29 +216,53 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
                     href={moduleHref}
                     className="rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-teal-400/50"
                   >
-                    {moduleProgress.completedCount > 0
-                      ? "Continuar módulo"
-                      : "Abrir módulo"}
+                    {moduleActionLabel}
                   </Link>
                 </div>
 
                 <div className="mt-6 grid gap-2">
-                  {module.lessons.map((lesson) => (
-                    <Link
-                      key={lesson.id}
-                      href={`/app/programas/${program.slug}/lecciones/${lesson.slug}`}
-                      className="rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-300 transition hover:-translate-y-0.5 hover:border-teal-400/50 hover:text-white"
-                    >
-                      <span className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <span>
-                          {lesson.sortOrder}. {lesson.title}
+                  {module.lessons.map((lesson) => {
+                    const lessonIsAvailable = canConsumeLessons || lesson.isPreview;
+
+                    return lessonIsAvailable ? (
+                      <Link
+                        key={lesson.id}
+                        href={`/app/programas/${program.slug}/lecciones/${lesson.slug}`}
+                        className="rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-300 transition hover:-translate-y-0.5 hover:border-teal-400/50 hover:text-white"
+                      >
+                        <span className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <span>
+                            {lesson.sortOrder}. {lesson.title}
+                          </span>
+                          {lesson.isPreview && isPresale ? (
+                            <span className="rounded-full bg-teal-400/10 px-2.5 py-1 text-xs font-semibold text-teal-200">
+                              Preview
+                            </span>
+                          ) : (
+                            <LessonStatusPill
+                              isCompleted={progress.completedLessonIds.has(
+                                lesson.id,
+                              )}
+                            />
+                          )}
                         </span>
-                        <LessonStatusPill
-                          isCompleted={progress.completedLessonIds.has(lesson.id)}
-                        />
-                      </span>
-                    </Link>
-                  ))}
+                      </Link>
+                    ) : (
+                      <div
+                        key={lesson.id}
+                        className="rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-500"
+                      >
+                        <span className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <span>
+                            {lesson.sortOrder}. {lesson.title}
+                          </span>
+                          <span className="rounded-full bg-amber-400/10 px-2.5 py-1 text-xs font-semibold text-amber-200">
+                            Disponible en apertura
+                          </span>
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </WorkspaceCard>
             );

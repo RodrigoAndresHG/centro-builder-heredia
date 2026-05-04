@@ -47,10 +47,24 @@ export async function createProductCheckoutSession({
       isActive: true,
       ...(productId ? { id: productId } : { slug: productSlug }),
     },
+    include: {
+      programs: {
+        select: {
+          status: true,
+        },
+      },
+    },
   });
 
   if (!product) {
     throw new Error("Producto no encontrado o inactivo.");
+  }
+
+  if (
+    product.programs.length > 0 &&
+    !product.programs.some((program) => program.status === "PRESALE" || program.status === "OPEN")
+  ) {
+    throw new Error("Este producto todavía no está disponible para compra.");
   }
 
   if (!product.stripePriceId) {

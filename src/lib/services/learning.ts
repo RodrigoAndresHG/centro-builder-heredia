@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import {
   canViewerOpenProgram,
   type AccessDecision,
@@ -17,10 +18,12 @@ const programInclude = {
       },
     },
   },
-};
+} satisfies Prisma.ProgramInclude;
 
 const publishedProgramWhere = {
-  isPublished: true,
+  status: {
+    in: ["PRESALE", "OPEN"] as const,
+  },
   OR: [
     { productId: null },
     {
@@ -31,7 +34,7 @@ const publishedProgramWhere = {
       },
     },
   ],
-};
+} satisfies Prisma.ProgramWhereInput;
 
 export async function listPublishedPrograms() {
   return prisma.program.findMany({

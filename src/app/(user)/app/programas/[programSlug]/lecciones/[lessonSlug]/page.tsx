@@ -71,6 +71,8 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   const { program, lesson, previousLesson, nextLesson } = lessonData;
+  const isPresale = program.status === "PRESALE";
+  const canConsumeLesson = program.status === "OPEN" || lesson.isPreview;
   const [programProgress, completed] = await Promise.all([
     getProgramProgress(user.id, program),
     isLessonCompleted(user.id, lesson.id),
@@ -127,7 +129,31 @@ export default async function LessonPage({ params }: LessonPageProps) {
         </div>
       </WorkspaceHero>
 
-      <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+      {isPresale && !canConsumeLesson ? (
+        <WorkspaceHero
+          eyebrow="Preventa activa"
+          title="Esta lección se abrirá con el recorrido completo"
+          description="Tu acceso fundador ya está confirmado. Esta pieza forma parte del recorrido completo y estará disponible en la apertura oficial."
+          action={
+            <Link
+              href={`/app/programas/${program.slug}`}
+              className="rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-neutral-500"
+            >
+              Volver al mapa
+            </Link>
+          }
+        >
+          <div className="rounded-2xl border border-teal-400/20 bg-teal-400/10 p-5">
+            <p className="text-sm font-semibold text-teal-100">
+              Ya estás dentro antes que el público general. El contenido
+              completo se habilitará según la fecha oficial del programa.
+            </p>
+          </div>
+        </WorkspaceHero>
+      ) : null}
+
+      {canConsumeLesson ? (
+        <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <div className="space-y-6">
           <div className="aspect-video overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-950 text-white shadow-2xl shadow-black/30">
             {lesson.streamVideoId ? (
@@ -263,6 +289,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           </WorkspaceCard>
         </aside>
       </div>
+      ) : null}
     </div>
   );
 }

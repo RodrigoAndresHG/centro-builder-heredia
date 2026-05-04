@@ -14,7 +14,7 @@ export default async function NewProgramPage() {
       <PageHeader
         eyebrow="Admin"
         title="Nuevo programa"
-        description="Crea una nueva ruta de aprendizaje. Publicalo cuando este listo para usuarios."
+        description="Crea una ruta de aprendizaje y define si empieza como borrador, preventa o programa abierto."
         action={
           <Link
             href="/admin/programas"

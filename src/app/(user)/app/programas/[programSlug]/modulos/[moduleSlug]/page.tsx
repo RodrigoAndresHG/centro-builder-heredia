@@ -25,7 +25,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
   const user = session?.user;
 
   if (!user) {
-    redirect(`/login?callbackUrl=/app/programas/${programSlug}/modulos/${moduleSlug}`);
+    redirect(
+      `/login?callbackUrl=/app/programas/${programSlug}/modulos/${moduleSlug}`,
+    );
   }
 
   const moduleResult = await getModuleBySlug(programSlug, moduleSlug, {
@@ -75,6 +77,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
     programProgress.completedLessonIds,
   );
   const nextLesson = moduleProgress.nextLesson;
+  const isPresale = moduleResult.program.status === "PRESALE";
+  const canConsumeLessons = moduleResult.program.status === "OPEN";
+  const previewLesson = programModule.lessons.find((lesson) => lesson.isPreview);
 
   return (
     <div className="space-y-8">
@@ -94,12 +99,21 @@ export default async function ModulePage({ params }: ModulePageProps) {
         title={programModule.title}
         description={programModule.description ?? undefined}
         action={
-          nextLesson ? (
+          canConsumeLessons && nextLesson ? (
             <Link
               href={`/app/programas/${programSlug}/lecciones/${nextLesson.slug}`}
               className="rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200"
             >
-              {moduleProgress.completedCount > 0 ? "Continuar módulo" : "Empezar módulo"}
+              {moduleProgress.completedCount > 0
+                ? "Continuar módulo"
+                : "Empezar módulo"}
+            </Link>
+          ) : isPresale && previewLesson ? (
+            <Link
+              href={`/app/programas/${programSlug}/lecciones/${previewLesson.slug}`}
+              className="rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition hover:bg-teal-200"
+            >
+              Ver preview
             </Link>
           ) : null
         }
@@ -110,8 +124,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
               Dirección del módulo
             </p>
             <p className="mt-3 text-sm leading-7 text-neutral-300">
-              Avanza en orden, completa cada pieza y conserva el contexto del
-              recorrido antes de pasar al siguiente módulo.
+              {isPresale
+                ? "Este módulo ya forma parte del mapa de preventa. El consumo completo se abrirá oficialmente en la fecha de apertura."
+                : "Avanza en orden, completa cada pieza y conserva el contexto del recorrido antes de pasar al siguiente módulo."}
             </p>
           </div>
           <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
@@ -129,35 +144,71 @@ export default async function ModulePage({ params }: ModulePageProps) {
             Lecciones del módulo
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-neutral-400">
-            Consume cada pieza en orden y marca progreso cuando termines.
+            {isPresale
+              ? "El mapa está visible para compradores en preventa. Las lecciones completas se abrirán oficialmente con el recorrido."
+              : "Consume cada pieza en orden y marca progreso cuando termines."}
           </p>
         </div>
 
         <div className="grid gap-3">
-          {programModule.lessons.map((lesson) => (
-            <Link
-              key={lesson.id}
-              href={`/app/programas/${programSlug}/lecciones/${lesson.slug}`}
-              className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:border-teal-400/50"
-            >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
-                    Lección {lesson.sortOrder}
-                  </p>
-                  <h3 className="mt-2 text-lg font-semibold text-white">
-                    {lesson.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-neutral-400">
-                    {lesson.description}
-                  </p>
+          {programModule.lessons.map((lesson) => {
+            const lessonIsAvailable = canConsumeLessons || lesson.isPreview;
+
+            return lessonIsAvailable ? (
+              <Link
+                key={lesson.id}
+                href={`/app/programas/${programSlug}/lecciones/${lesson.slug}`}
+                className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:border-teal-400/50"
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+                      Lección {lesson.sortOrder}
+                    </p>
+                    <h3 className="mt-2 text-lg font-semibold text-white">
+                      {lesson.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-neutral-400">
+                      {lesson.description}
+                    </p>
+                  </div>
+                  {isPresale && lesson.isPreview ? (
+                    <span className="rounded-full bg-teal-400/10 px-2.5 py-1 text-xs font-semibold text-teal-200">
+                      Preview
+                    </span>
+                  ) : (
+                    <LessonStatusPill
+                      isCompleted={programProgress.completedLessonIds.has(
+                        lesson.id,
+                      )}
+                    />
+                  )}
                 </div>
-                <LessonStatusPill
-                  isCompleted={programProgress.completedLessonIds.has(lesson.id)}
-                />
+              </Link>
+            ) : (
+              <div
+                key={lesson.id}
+                className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-xl shadow-black/10"
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                      Lección {lesson.sortOrder}
+                    </p>
+                    <h3 className="mt-2 text-lg font-semibold text-neutral-300">
+                      {lesson.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-neutral-500">
+                      {lesson.description}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-amber-400/10 px-2.5 py-1 text-xs font-semibold text-amber-200">
+                    Disponible en apertura
+                  </span>
+                </div>
               </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       </section>
 

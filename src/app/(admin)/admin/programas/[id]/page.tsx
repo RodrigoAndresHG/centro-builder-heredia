@@ -27,7 +27,7 @@ export default async function EditProgramPage({ params }: EditProgramPageProps) 
       <PageHeader
         eyebrow="Admin"
         title="Editar programa"
-        description={program.title}
+        description={`${program.title} · estado actual: ${program.status}`}
         action={
           <Link
             href="/admin/programas"

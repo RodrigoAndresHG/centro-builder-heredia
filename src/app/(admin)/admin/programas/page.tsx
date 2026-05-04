@@ -1,9 +1,8 @@
 import Link from "next/link";
 
-import { StatusBadge } from "@/components/admin/content/status-badge";
+import { ProgramStatusBadge } from "@/components/admin/content/status-badge";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
-import { toggleProgramPublished } from "@/lib/actions/admin-content";
 import { listAdminPrograms } from "@/lib/services";
 
 export default async function AdminProgramasPage() {
@@ -14,7 +13,7 @@ export default async function AdminProgramasPage() {
       <PageHeader
         eyebrow="Admin"
         title="Programas"
-        description="Gestiona la estructura principal visible en el area privada."
+        description="Gestiona la estructura principal y el estado comercial: borrador, preventa o abierto."
         action={
           <Link
             href="/admin/programas/nuevo"
@@ -51,7 +50,12 @@ export default async function AdminProgramasPage() {
                     {program.modules.length} modulos · {program.lessons.length} lecciones
                   </td>
                   <td className="px-5 py-4">
-                    <StatusBadge isPublished={program.isPublished} />
+                    <ProgramStatusBadge status={program.status} />
+                    {program.opensAt ? (
+                      <p className="mt-1 text-xs text-neutral-500">
+                        Abre {program.opensAt.toLocaleDateString("es")}
+                      </p>
+                    ) : null}
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex flex-wrap gap-2">
@@ -61,20 +65,6 @@ export default async function AdminProgramasPage() {
                       >
                         Editar
                       </Link>
-                      <form
-                        action={toggleProgramPublished.bind(
-                          null,
-                          program.id,
-                          !program.isPublished,
-                        )}
-                      >
-                        <button
-                          type="submit"
-                          className="rounded-md border border-border px-3 py-2 text-sm font-semibold text-neutral-700"
-                        >
-                          {program.isPublished ? "Despublicar" : "Publicar"}
-                        </button>
-                      </form>
                     </div>
                   </td>
                 </tr>

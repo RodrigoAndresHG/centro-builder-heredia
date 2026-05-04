@@ -97,14 +97,17 @@ model Product {
 }
 
 model Program {
-  id          String   @id @default(cuid())
-  productId   String?  @map("product_id")
-  slug        String   @unique
-  title       String
-  description String?
-  isPublished Boolean  @default(false) @map("is_published")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id             String        @id @default(cuid())
+  productId      String?       @map("product_id")
+  slug           String        @unique
+  title          String
+  description    String?
+  isPublished    Boolean       @default(false) @map("is_published")
+  status         ProgramStatus @default(DRAFT)
+  opensAt        DateTime?     @map("opens_at")
+  presaleMessage String?       @map("presale_message") @db.Text
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
   product  Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
   modules  Module[]
@@ -112,6 +115,12 @@ model Program {
   accesses Access[]
 
   @@map("programs")
+}
+
+enum ProgramStatus {
+  DRAFT
+  PRESALE
+  OPEN
 }
 
 model Module {

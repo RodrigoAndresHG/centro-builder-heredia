@@ -16,6 +16,7 @@ type ProgramOption = {
   title: string;
   slug: string;
   isPublished: boolean;
+  status: string;
 };
 
 type ModuleOption = {
@@ -34,6 +35,9 @@ type ProgramFormValue = {
   slug?: string | null;
   description?: string | null;
   productId?: string | null;
+  status?: string | null;
+  opensAt?: Date | string | null;
+  presaleMessage?: string | null;
   isPublished?: boolean;
 };
 
@@ -96,6 +100,28 @@ function TextInput({
       required={required}
       defaultValue={defaultValue ?? ""}
       placeholder={placeholder}
+      className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+    />
+  );
+}
+
+function DateTimeInput({
+  name,
+  defaultValue,
+}: {
+  name: string;
+  defaultValue?: Date | string | null;
+}) {
+  const normalizedValue =
+    defaultValue instanceof Date
+      ? defaultValue.toISOString().slice(0, 16)
+      : (defaultValue ?? "");
+
+  return (
+    <input
+      type="datetime-local"
+      name={name}
+      defaultValue={normalizedValue}
       className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
     />
   );
@@ -225,7 +251,47 @@ export function ProgramForm({
         />
       </label>
 
-      <PublishCheckbox defaultChecked={program?.isPublished} />
+      <div className="rounded-xl border border-border bg-surface-muted p-4">
+        <div>
+          <p className="text-sm font-semibold text-foreground">
+            Estado del programa
+          </p>
+          <p className="mt-1 text-sm leading-6 text-neutral-500">
+            Usa Borrador para ocultarlo, Preventa para vender acceso fundador
+            antes de abrir el recorrido, y Abierto para consumo normal.
+          </p>
+        </div>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <label className="block space-y-2">
+            <FieldLabel>Estado</FieldLabel>
+            <select
+              name="status"
+              defaultValue={program?.status ?? "DRAFT"}
+              className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+            >
+              <option value="DRAFT">Borrador</option>
+              <option value="PRESALE">Preventa</option>
+              <option value="OPEN">Abierto</option>
+            </select>
+          </label>
+
+          <label className="block space-y-2">
+            <FieldLabel>Apertura oficial</FieldLabel>
+            <DateTimeInput name="opensAt" defaultValue={program?.opensAt} />
+          </label>
+        </div>
+
+        <label className="mt-4 block space-y-2">
+          <FieldLabel>Mensaje de preventa opcional</FieldLabel>
+          <TextArea
+            name="presaleMessage"
+            rows={3}
+            defaultValue={program?.presaleMessage}
+            placeholder="Mensaje premium para compradores en preventa."
+          />
+        </label>
+      </div>
 
       <SubmitButton label={submitLabel} />
     </form>

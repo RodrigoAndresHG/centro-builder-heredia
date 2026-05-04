@@ -182,6 +182,10 @@ async function main() {
       title: ideaCashProgram.program.title,
       description: ideaCashProgram.program.description,
       isPublished: true,
+      status: "PRESALE",
+      opensAt: new Date("2026-05-16T15:00:00.000Z"),
+      presaleMessage:
+        "Tu acceso fundador ya quedó activo. El recorrido completo se abrirá oficialmente el 16 de mayo de 2026.",
     },
     create: {
       productId: product.id,
@@ -189,6 +193,10 @@ async function main() {
       title: ideaCashProgram.program.title,
       description: ideaCashProgram.program.description,
       isPublished: true,
+      status: "PRESALE",
+      opensAt: new Date("2026-05-16T15:00:00.000Z"),
+      presaleMessage:
+        "Tu acceso fundador ya quedó activo. El recorrido completo se abrirá oficialmente el 16 de mayo de 2026.",
     },
   });
 
