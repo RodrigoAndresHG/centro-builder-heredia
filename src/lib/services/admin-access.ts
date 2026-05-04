@@ -76,6 +76,7 @@ export async function listAccessFormOptions() {
         title: true,
         slug: true,
         isPublished: true,
+        status: true,
         product: {
           select: {
             name: true,

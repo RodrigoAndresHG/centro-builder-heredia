@@ -178,6 +178,7 @@ export async function listProgramOptions() {
       title: true,
       slug: true,
       isPublished: true,
+      status: true,
     },
   });
 }

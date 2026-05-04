@@ -20,6 +20,7 @@ type ProgramOption = {
   title: string;
   slug: string;
   isPublished: boolean;
+  status: string;
   product: {
     name: string;
   } | null;
@@ -131,7 +132,7 @@ export function AccessForm({
             <option value="">Sin programa directo</option>
             {programs.map((program) => (
               <option key={program.id} value={program.id}>
-                {program.title} {program.isPublished ? "" : "(borrador)"}
+                {program.title} ({program.status})
               </option>
             ))}
           </select>
