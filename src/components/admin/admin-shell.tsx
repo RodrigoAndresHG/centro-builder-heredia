@@ -16,7 +16,6 @@ const adminItems = [
   { label: "Novedades", href: "/admin/updates" },
   { label: "Usuarios", href: "/admin/usuarios" },
   { label: "Accesos", href: "/admin/accesos" },
-  { label: "Early Access", href: "/admin/early-access" },
 ];
 
 export function AdminShell({ children }: AdminShellProps) {

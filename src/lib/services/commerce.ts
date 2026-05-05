@@ -173,6 +173,7 @@ export async function activateProductAccess({
       },
       update: {
         status: "ACTIVE",
+        source: "STRIPE",
         startsAt,
         expiresAt,
       },
@@ -180,6 +181,7 @@ export async function activateProductAccess({
         userId,
         productId,
         status: "ACTIVE",
+        source: "STRIPE",
         startsAt,
         expiresAt,
       },

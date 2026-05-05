@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-import { AccessStatusBadge } from "@/components/admin/access/access-form";
+import {
+  AccessSourceBadge,
+  AccessStatusBadge,
+} from "@/components/admin/access/access-form";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { toggleAccessStatus } from "@/lib/actions/admin-access";
@@ -45,6 +48,7 @@ export default async function AdminAccesosPage() {
                 <th className="px-5 py-3 font-semibold">Usuario</th>
                 <th className="px-5 py-3 font-semibold">Acceso</th>
                 <th className="px-5 py-3 font-semibold">Estado</th>
+                <th className="px-5 py-3 font-semibold">Origen</th>
                 <th className="px-5 py-3 font-semibold">Fechas</th>
                 <th className="px-5 py-3 font-semibold">Acciones</th>
               </tr>
@@ -86,6 +90,9 @@ export default async function AdminAccesosPage() {
                     </td>
                     <td className="px-5 py-4">
                       <AccessStatusBadge status={access.status} />
+                    </td>
+                    <td className="px-5 py-4">
+                      <AccessSourceBadge source={access.source} />
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-600">
                       <p>Inicio: {formatDate(access.startsAt)}</p>

@@ -293,6 +293,7 @@ async function main() {
       },
       update: {
         status: "ACTIVE",
+        source: "TEST",
         startsAt: new Date(),
         expiresAt: null,
       },
@@ -300,6 +301,7 @@ async function main() {
         userId: accessUser.id,
         productId: product.id,
         status: "ACTIVE",
+        source: "TEST",
       },
     });
   }

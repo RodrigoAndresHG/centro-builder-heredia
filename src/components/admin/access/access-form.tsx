@@ -1,8 +1,17 @@
-import type { ReactNode } from "react";
+"use client";
 
-type FormAction = (formData: FormData) => void | Promise<void>;
+import { useActionState, type ReactNode } from "react";
+import { useFormStatus } from "react-dom";
+
+import type { AccessActionState } from "@/lib/actions/admin-access";
+
+type FormAction = (
+  previousState: AccessActionState | void,
+  formData: FormData,
+) => Promise<AccessActionState | void>;
 
 type UserOption = {
+  id: string;
   email: string | null;
   name: string | null;
   roleKey: string;
@@ -28,11 +37,15 @@ type ProgramOption = {
 
 type AccessFormValue = {
   user?: {
+    id: string;
     email: string | null;
+    name: string | null;
+    roleKey: string;
   } | null;
   productId?: string | null;
   programId?: string | null;
   status?: string | null;
+  source?: string | null;
   startsAt?: Date | null;
   expiresAt?: Date | null;
 };
@@ -47,6 +60,16 @@ function dateValue(date?: Date | null) {
   }
 
   return date.toISOString().slice(0, 10);
+}
+
+function programStatusLabel(status: string) {
+  const labels: Record<string, string> = {
+    DRAFT: "Borrador",
+    PRESALE: "Preventa",
+    OPEN: "Abierto",
+  };
+
+  return labels[status] ?? status;
 }
 
 export function AccessStatusBadge({ status }: { status: string }) {
@@ -65,6 +88,44 @@ export function AccessStatusBadge({ status }: { status: string }) {
   );
 }
 
+export function AccessSourceBadge({ source }: { source?: string | null }) {
+  const labels: Record<string, string> = {
+    STRIPE: "Pago confirmado",
+    MANUAL: "Acceso manual",
+    TEST: "Acceso de prueba",
+  };
+  const styles: Record<string, string> = {
+    STRIPE: "bg-sky-50 text-sky-700",
+    MANUAL: "bg-amber-50 text-amber-700",
+    TEST: "bg-violet-50 text-violet-700",
+  };
+  const key = source ?? "MANUAL";
+
+  return (
+    <span
+      className={`inline-flex rounded-md px-2.5 py-1 text-xs font-semibold ${
+        styles[key] ?? styles.MANUAL
+      }`}
+    >
+      {labels[key] ?? labels.MANUAL}
+    </span>
+  );
+}
+
+function SubmitButton({ children }: { children: ReactNode }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+    >
+      {pending ? "Guardando..." : children}
+    </button>
+  );
+}
+
 export function AccessForm({
   action,
   access,
@@ -80,29 +141,47 @@ export function AccessForm({
   programs: ProgramOption[];
   submitLabel: string;
 }) {
+  const [state, formAction] = useActionState(action, {});
+  const isStripeAccess = access?.source === "STRIPE";
+
   return (
-    <form action={action} className="space-y-5">
+    <form action={formAction} className="space-y-5">
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+        <p className="text-sm font-semibold text-amber-900">
+          Este flujo crea accesos manuales fuera de Stripe.
+        </p>
+        <p className="mt-1 text-sm leading-6 text-amber-800">
+          Úsalo solo para pruebas, demos o habilitación excepcional de usuarios.
+          La compra oficial sigue pasando por Stripe.
+        </p>
+      </div>
+
+      {state?.type === "error" && state.message ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+          {state.message}
+        </div>
+      ) : null}
+
       <label className="block space-y-2">
-        <FieldLabel>Email del usuario</FieldLabel>
-        <input
-          name="email"
+        <FieldLabel>Usuario existente del LMS</FieldLabel>
+        <select
+          name="userId"
           required
-          list="admin-access-users"
-          defaultValue={access?.user?.email ?? ""}
-          placeholder="usuario@example.com"
+          defaultValue={access?.user?.id ?? ""}
           className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
-        />
-        <datalist id="admin-access-users">
-          {users.map((user) =>
-            user.email ? (
-              <option key={user.email} value={user.email}>
-                {user.name
-                  ? `${user.name} · ${user.roleKey}`
-                  : user.roleKey}
-              </option>
-            ) : null,
-          )}
-        </datalist>
+        >
+          <option value="">Selecciona una cuenta existente</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name ? `${user.name} · ` : ""}
+              {user.email ?? "Sin email"} · {user.roleKey}
+            </option>
+          ))}
+        </select>
+        <p className="text-sm leading-6 text-neutral-600">
+          Primero el usuario debe existir en Builder. Este formulario no crea
+          cuentas nuevas.
+        </p>
       </label>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -132,7 +211,7 @@ export function AccessForm({
             <option value="">Sin programa directo</option>
             {programs.map((program) => (
               <option key={program.id} value={program.id}>
-                {program.title} ({program.status})
+                {program.title} · {programStatusLabel(program.status)}
               </option>
             ))}
           </select>
@@ -145,6 +224,27 @@ export function AccessForm({
       </p>
 
       <div className="grid gap-4 md:grid-cols-3">
+        <label className="block space-y-2">
+          <FieldLabel>Origen</FieldLabel>
+          {isStripeAccess ? (
+            <>
+              <input type="hidden" name="source" value="STRIPE" />
+              <div className="flex h-11 items-center rounded-md border border-border bg-surface-muted px-3 text-sm font-semibold text-neutral-700">
+                Pago confirmado por Stripe
+              </div>
+            </>
+          ) : (
+            <select
+              name="source"
+              defaultValue={access?.source ?? "MANUAL"}
+              className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+            >
+              <option value="MANUAL">Acceso manual</option>
+              <option value="TEST">Acceso de prueba</option>
+            </select>
+          )}
+        </label>
+
         <label className="block space-y-2">
           <FieldLabel>Estado</FieldLabel>
           <select
@@ -178,12 +278,7 @@ export function AccessForm({
         </label>
       </div>
 
-      <button
-        type="submit"
-        className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
-      >
-        {submitLabel}
-      </button>
+      <SubmitButton>{submitLabel}</SubmitButton>
     </form>
   );
 }

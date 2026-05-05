@@ -9,10 +9,15 @@ import { getAdminAccess, listAccessFormOptions } from "@/lib/services";
 
 type EditAccessPageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ saved?: string }>;
 };
 
-export default async function EditAccessPage({ params }: EditAccessPageProps) {
+export default async function EditAccessPage({
+  params,
+  searchParams,
+}: EditAccessPageProps) {
   const { id } = await params;
+  const { saved } = await searchParams;
   const [access, options] = await Promise.all([
     getAdminAccess(id),
     listAccessFormOptions(),
@@ -37,6 +42,14 @@ export default async function EditAccessPage({ params }: EditAccessPageProps) {
           </Link>
         }
       />
+      {saved === "1" ? (
+        <Card className="border-emerald-200 bg-emerald-50">
+          <p className="text-sm font-semibold text-emerald-800">
+            Acceso creado correctamente. Revisa usuario, destino, origen y
+            fechas antes de operarlo.
+          </p>
+        </Card>
+      ) : null}
       <Card>
         <AccessForm
           action={updateManualAccess.bind(null, access.id)}

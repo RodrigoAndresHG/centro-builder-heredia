@@ -14,7 +14,7 @@ export default async function NewAccessPage() {
       <PageHeader
         eyebrow="Admin"
         title="Nuevo acceso"
-        description="Crea un permiso manual para habilitar un producto o programa a un usuario."
+        description="Crea un acceso manual para una cuenta existente. Este flujo no reemplaza el pago oficial por Stripe."
         action={
           <Link
             href="/admin/accesos"

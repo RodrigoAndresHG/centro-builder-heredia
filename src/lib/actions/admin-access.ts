@@ -7,6 +7,11 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 import { isAdminRole } from "@/lib/permissions";
 
+export type AccessActionState = {
+  type?: "error";
+  message?: string;
+};
+
 async function requireAdmin() {
   const session = await auth();
 
@@ -47,6 +52,14 @@ function normalizeStatus(status: string | null) {
   throw new Error("Estado de acceso invalido.");
 }
 
+function normalizeSource(source: string | null, { allowStripe = false } = {}) {
+  if (source === "MANUAL" || source === "TEST" || (allowStripe && source === "STRIPE")) {
+    return source;
+  }
+
+  throw new Error("Origen de acceso invalido.");
+}
+
 function parseOptionalDate(value: string | null) {
   if (!value) {
     return null;
@@ -65,15 +78,20 @@ function parseStartsAt(value: string | null) {
   return parseOptionalDate(value) ?? new Date();
 }
 
-async function resolveAccessUser(email: string) {
-  return prisma.user.upsert({
-    where: { email },
-    update: {},
-    create: {
-      email,
-      roleKey: "INVITADO",
+async function resolveExistingAccessUser(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
     },
   });
+
+  if (!user) {
+    throw new Error("Selecciona un usuario existente del LMS.");
+  }
+
+  return user;
 }
 
 async function upgradePaidRoleIfNeeded(userId: string, status: string) {
@@ -108,38 +126,139 @@ function readAccessTarget(formData: FormData) {
   };
 }
 
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "No se pudo guardar el acceso. Revisa los datos e intenta de nuevo.";
+}
+
+async function ensureNoExistingAccess({
+  currentAccessId,
+  userId,
+  productId,
+  programId,
+}: {
+  currentAccessId?: string;
+  userId: string;
+  productId: string | null;
+  programId: string | null;
+}) {
+  const existingAccess = productId
+    ? await prisma.access.findUnique({
+        where: {
+          userId_productId: {
+            userId,
+            productId,
+          },
+        },
+        select: { id: true },
+      })
+    : await prisma.access.findUnique({
+        where: {
+          userId_programId: {
+            userId,
+            programId: programId as string,
+          },
+        },
+        select: { id: true },
+      });
+
+  if (existingAccess && existingAccess.id !== currentAccessId) {
+    throw new Error(
+      "Este usuario ya tiene un acceso para el producto o programa seleccionado.",
+    );
+  }
+}
+
 function revalidateAccessPaths() {
   revalidatePath("/admin/accesos");
   revalidatePath("/app", "layout");
 }
 
-export async function createManualAccess(formData: FormData) {
+export async function createManualAccess(
+  _previousState: AccessActionState | void,
+  formData: FormData,
+) {
   await requireAdmin();
 
-  const email = requireField(readOptionalString(formData, "email"), "Email");
-  const status = normalizeStatus(readOptionalString(formData, "status"));
-  const startsAt = parseStartsAt(readOptionalString(formData, "startsAt"));
-  const expiresAt = parseOptionalDate(readOptionalString(formData, "expiresAt"));
-  const { productId, programId } = readAccessTarget(formData);
-  const user = await resolveAccessUser(email.toLowerCase());
+  let redirectPath = "/admin/accesos";
 
-  if (productId) {
-    const access = await prisma.access.upsert({
-      where: {
-        userId_productId: {
-          userId: user.id,
-          productId,
-        },
-      },
-      update: {
+  try {
+    const userId = requireField(readOptionalString(formData, "userId"), "Usuario");
+    const status = normalizeStatus(readOptionalString(formData, "status"));
+    const source = normalizeSource(readOptionalString(formData, "source"));
+    const startsAt = parseStartsAt(readOptionalString(formData, "startsAt"));
+    const expiresAt = parseOptionalDate(readOptionalString(formData, "expiresAt"));
+    const { productId, programId } = readAccessTarget(formData);
+    const user = await resolveExistingAccessUser(userId);
+
+    await ensureNoExistingAccess({
+      userId: user.id,
+      productId,
+      programId,
+    });
+
+    const access = await prisma.access.create({
+      data: {
+        userId: user.id,
+        productId,
+        programId,
         status,
+        source,
         startsAt,
         expiresAt,
       },
-      create: {
+      select: { id: true },
+    });
+
+    await upgradePaidRoleIfNeeded(user.id, status);
+    revalidateAccessPaths();
+    redirectPath = `/admin/accesos/${access.id}?saved=1`;
+  } catch (error) {
+    return {
+      type: "error" as const,
+      message: getErrorMessage(error),
+    };
+  }
+
+  redirect(redirectPath);
+}
+
+export async function updateManualAccess(
+  id: string,
+  _previousState: AccessActionState | void,
+  formData: FormData,
+) {
+  await requireAdmin();
+
+  try {
+    const userId = requireField(readOptionalString(formData, "userId"), "Usuario");
+    const status = normalizeStatus(readOptionalString(formData, "status"));
+    const source = normalizeSource(readOptionalString(formData, "source"), {
+      allowStripe: true,
+    });
+    const startsAt = parseStartsAt(readOptionalString(formData, "startsAt"));
+    const expiresAt = parseOptionalDate(readOptionalString(formData, "expiresAt"));
+    const { productId, programId } = readAccessTarget(formData);
+    const user = await resolveExistingAccessUser(userId);
+
+    await ensureNoExistingAccess({
+      currentAccessId: id,
+      userId: user.id,
+      productId,
+      programId,
+    });
+
+    await prisma.access.update({
+      where: { id },
+      data: {
         userId: user.id,
         productId,
+        programId,
         status,
+        source,
         startsAt,
         expiresAt,
       },
@@ -147,60 +266,13 @@ export async function createManualAccess(formData: FormData) {
 
     await upgradePaidRoleIfNeeded(user.id, status);
     revalidateAccessPaths();
-    redirect(`/admin/accesos/${access.id}`);
+  } catch (error) {
+    return {
+      type: "error" as const,
+      message: getErrorMessage(error),
+    };
   }
 
-  const targetProgramId = programId as string;
-  const access = await prisma.access.upsert({
-    where: {
-      userId_programId: {
-        userId: user.id,
-        programId: targetProgramId,
-      },
-    },
-    update: {
-      status,
-      startsAt,
-      expiresAt,
-    },
-      create: {
-        userId: user.id,
-        programId: targetProgramId,
-        status,
-        startsAt,
-      expiresAt,
-    },
-  });
-
-  await upgradePaidRoleIfNeeded(user.id, status);
-  revalidateAccessPaths();
-  redirect(`/admin/accesos/${access.id}`);
-}
-
-export async function updateManualAccess(id: string, formData: FormData) {
-  await requireAdmin();
-
-  const email = requireField(readOptionalString(formData, "email"), "Email");
-  const status = normalizeStatus(readOptionalString(formData, "status"));
-  const startsAt = parseStartsAt(readOptionalString(formData, "startsAt"));
-  const expiresAt = parseOptionalDate(readOptionalString(formData, "expiresAt"));
-  const { productId, programId } = readAccessTarget(formData);
-  const user = await resolveAccessUser(email.toLowerCase());
-
-  await prisma.access.update({
-    where: { id },
-    data: {
-      userId: user.id,
-      productId,
-      programId,
-      status,
-      startsAt,
-      expiresAt,
-    },
-  });
-
-  await upgradePaidRoleIfNeeded(user.id, status);
-  revalidateAccessPaths();
   redirect("/admin/accesos");
 }
 
