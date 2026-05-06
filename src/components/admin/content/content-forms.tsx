@@ -390,7 +390,6 @@ export function LessonForm({
           <FieldLabel>Programa</FieldLabel>
           <select
             name="programId"
-            required
             defaultValue={lesson?.programId ?? ""}
             className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
           >
@@ -401,6 +400,10 @@ export function LessonForm({
               </option>
             ))}
           </select>
+          <span className="text-xs leading-5 text-neutral-500">
+            El programa guardado se toma del módulo seleccionado para evitar
+            cruces accidentales.
+          </span>
         </label>
 
         <label className="block space-y-2">
@@ -509,6 +512,7 @@ export function LessonForm({
             >
               <option value="">Sin proveedor</option>
               <option value="YouTube">YouTube</option>
+              <option value="Cloudflare Stream">Cloudflare Stream</option>
               <option value="Vimeo">Vimeo</option>
               <option value="Loom">Loom</option>
               <option value="Mux">Mux</option>

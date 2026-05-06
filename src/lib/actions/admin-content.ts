@@ -229,7 +229,7 @@ export async function toggleModulePublished(id: string, isPublished: boolean) {
   revalidateContentPaths();
 }
 
-async function resolveLessonProgramId(programId: string, moduleId: string) {
+async function resolveLessonProgramId(moduleId: string) {
   const programModule = await prisma.module.findUnique({
     where: { id: moduleId },
     select: { programId: true },
@@ -239,25 +239,16 @@ async function resolveLessonProgramId(programId: string, moduleId: string) {
     throw new Error("Modulo no encontrado.");
   }
 
-  if (programModule.programId !== programId) {
-    throw new Error("El modulo seleccionado no pertenece al programa.");
-  }
-
   return programModule.programId;
 }
 
 export async function createLesson(formData: FormData) {
   await requireAdmin();
 
-  const programId = requireField(
-    readOptionalString(formData, "programId"),
-    "Programa",
-  );
   const moduleId = requireField(readOptionalString(formData, "moduleId"), "Modulo");
   const title = requireField(readOptionalString(formData, "title"), "Titulo");
   const slug = requireField(readOptionalString(formData, "slug"), "Slug");
-
-  await resolveLessonProgramId(programId, moduleId);
+  const programId = await resolveLessonProgramId(moduleId);
 
   const lesson = await prisma.lesson.create({
     data: {
@@ -285,15 +276,10 @@ export async function createLesson(formData: FormData) {
 export async function updateLesson(id: string, formData: FormData) {
   await requireAdmin();
 
-  const programId = requireField(
-    readOptionalString(formData, "programId"),
-    "Programa",
-  );
   const moduleId = requireField(readOptionalString(formData, "moduleId"), "Modulo");
   const title = requireField(readOptionalString(formData, "title"), "Titulo");
   const slug = requireField(readOptionalString(formData, "slug"), "Slug");
-
-  await resolveLessonProgramId(programId, moduleId);
+  const programId = await resolveLessonProgramId(moduleId);
 
   await prisma.lesson.update({
     where: { id },
