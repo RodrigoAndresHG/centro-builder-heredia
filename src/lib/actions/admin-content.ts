@@ -85,6 +85,17 @@ function requireField(value: string | null, label: string) {
   return value;
 }
 
+function normalizeSlug(value: string | null) {
+  const slug = requireField(value, "Slug")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return requireField(slug, "Slug");
+}
+
 function revalidateContentPaths() {
   revalidatePath("/admin", "layout");
   revalidatePath("/app", "layout");
@@ -242,13 +253,52 @@ async function resolveLessonProgramId(moduleId: string) {
   return programModule.programId;
 }
 
+async function ensureLessonSlugIsAvailable({
+  lessonId,
+  programId,
+  slug,
+}: {
+  lessonId?: string;
+  programId: string;
+  slug: string;
+}) {
+  const existingLesson = await prisma.lesson.findFirst({
+    where: {
+      programId,
+      slug,
+      ...(lessonId
+        ? {
+            NOT: {
+              id: lessonId,
+            },
+          }
+        : {}),
+    },
+    select: {
+      id: true,
+      title: true,
+    },
+  });
+
+  if (existingLesson) {
+    throw new Error(
+      `Ya existe otra lección con el slug "${slug}" dentro de este programa.`,
+    );
+  }
+}
+
 export async function createLesson(formData: FormData) {
   await requireAdmin();
 
   const moduleId = requireField(readOptionalString(formData, "moduleId"), "Modulo");
   const title = requireField(readOptionalString(formData, "title"), "Titulo");
-  const slug = requireField(readOptionalString(formData, "slug"), "Slug");
+  const slug = normalizeSlug(readOptionalString(formData, "slug"));
   const programId = await resolveLessonProgramId(moduleId);
+
+  await ensureLessonSlugIsAvailable({
+    programId,
+    slug,
+  });
 
   const lesson = await prisma.lesson.create({
     data: {
@@ -278,8 +328,14 @@ export async function updateLesson(id: string, formData: FormData) {
 
   const moduleId = requireField(readOptionalString(formData, "moduleId"), "Modulo");
   const title = requireField(readOptionalString(formData, "title"), "Titulo");
-  const slug = requireField(readOptionalString(formData, "slug"), "Slug");
+  const slug = normalizeSlug(readOptionalString(formData, "slug"));
   const programId = await resolveLessonProgramId(moduleId);
+
+  await ensureLessonSlugIsAvailable({
+    lessonId: id,
+    programId,
+    slug,
+  });
 
   await prisma.lesson.update({
     where: { id },
