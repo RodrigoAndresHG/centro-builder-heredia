@@ -16,7 +16,15 @@ type CreateCheckoutSessionInput = {
 };
 
 function appUrl() {
-  return process.env.AUTH_URL ?? "http://localhost:3000";
+  const url = process.env.AUTH_URL;
+
+  if (!url) {
+    throw new Error(
+      "AUTH_URL no está configurado. Es requerido para generar URLs de Stripe Checkout.",
+    );
+  }
+
+  return url;
 }
 
 function stringId(value: string | Stripe.Customer | Stripe.DeletedCustomer | null) {
