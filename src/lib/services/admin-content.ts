@@ -73,8 +73,6 @@ export async function listAdminLessons() {
 }
 
 export async function listAdminVideoLessons() {
-  await syncAdminStreamVideos();
-
   return prisma.lesson.findMany({
     where: {
       OR: [

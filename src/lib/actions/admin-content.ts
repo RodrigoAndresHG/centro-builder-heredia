@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 import { isAdminRole } from "@/lib/permissions";
+import { syncAdminStreamVideos } from "@/lib/services/admin-content";
 import { isBuilderUpdateType } from "@/lib/services/builder-updates";
 
 async function requireAdmin() {
@@ -456,4 +457,10 @@ export async function toggleBuilderUpdatePublished(
   });
 
   revalidateContentPaths();
+}
+
+export async function refreshAdminStreamVideos() {
+  await requireAdmin();
+  await syncAdminStreamVideos();
+  revalidatePath("/admin/videos");
 }
