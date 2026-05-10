@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
+import { refreshAdminStreamVideos } from "@/lib/actions/admin-content";
 import { listAdminVideoLessons } from "@/lib/services";
 
 function formatDuration(seconds: number | null) {
@@ -25,12 +26,22 @@ export default async function AdminVideosPage() {
         title="Biblioteca de videos"
         description="Índice operativo de videos ya vinculados a lecciones. Esta pantalla sirve para auditar y localizar videos, no para cargarlos."
         action={
-          <Link
-            href="/admin/lecciones"
-            className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground"
-          >
-            Ver lecciones
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <form action={refreshAdminStreamVideos}>
+              <button
+                type="submit"
+                className="rounded-md border border-border bg-surface-muted px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-surface"
+              >
+                Refrescar estado
+              </button>
+            </form>
+            <Link
+              href="/admin/lecciones"
+              className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground"
+            >
+              Ver lecciones
+            </Link>
+          </div>
         }
       />
 
