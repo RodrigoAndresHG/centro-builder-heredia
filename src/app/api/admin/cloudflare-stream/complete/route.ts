@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 import { isAdminRole } from "@/lib/permissions";
+import { completeUploadRequestSchema } from "@/lib/validators";
 
 async function requireAdmin() {
   const session = await auth();
@@ -19,22 +20,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   }
 
-  const body = (await request.json().catch(() => null)) as {
-    lessonId?: string;
-    streamVideoId?: string;
-  } | null;
+  const rawBody = await request.json().catch(() => null);
+  const parsed = completeUploadRequestSchema.safeParse(rawBody);
 
-  if (!body?.lessonId || !body.streamVideoId) {
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: "La lección y el video son requeridos." },
+      {
+        error:
+          parsed.error.issues[0]?.message ??
+          "La lección y el video son requeridos.",
+      },
       { status: 400 },
     );
   }
 
   await prisma.lesson.update({
-    where: { id: body.lessonId },
+    where: { id: parsed.data.lessonId },
     data: {
-      streamVideoId: body.streamVideoId,
+      streamVideoId: parsed.data.streamVideoId,
       videoStatus: "PROCESSING",
       videoProvider: "Cloudflare Stream",
     },

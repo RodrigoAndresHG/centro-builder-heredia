@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/db/prisma";
 import { isAdminRole } from "@/lib/permissions";
 import { getStripeClient } from "@/lib/stripe";
+import { stripeCheckoutMetadataSchema } from "@/lib/validators";
 
 type CheckoutUser = {
   id: string;
@@ -113,12 +114,18 @@ export async function createProductCheckoutSession({
   });
 }
 
-async function resolveCheckoutUser(session: Stripe.Checkout.Session) {
-  const metadataUserId = session.metadata?.userId;
+function parseCheckoutMetadata(session: Stripe.Checkout.Session) {
+  const parsed = stripeCheckoutMetadataSchema.safeParse(session.metadata ?? {});
 
-  if (metadataUserId) {
+  return parsed.success ? parsed.data : {};
+}
+
+async function resolveCheckoutUser(session: Stripe.Checkout.Session) {
+  const metadata = parseCheckoutMetadata(session);
+
+  if (metadata.userId) {
     const existingUser = await prisma.user.findUnique({
-      where: { id: metadataUserId },
+      where: { id: metadata.userId },
     });
 
     if (existingUser) {
@@ -129,7 +136,7 @@ async function resolveCheckoutUser(session: Stripe.Checkout.Session) {
   const email =
     session.customer_details?.email ??
     session.customer_email ??
-    session.metadata?.userEmail;
+    metadata.userEmail;
 
   if (!email) {
     throw new Error("Checkout sin usuario ni email para asociar compra.");
@@ -146,11 +153,16 @@ async function resolveCheckoutUser(session: Stripe.Checkout.Session) {
 }
 
 async function resolveCheckoutProduct(session: Stripe.Checkout.Session) {
-  const productId = session.metadata?.productId;
-  const productSlug = session.metadata?.productSlug;
+  const metadata = parseCheckoutMetadata(session);
+
+  if (!metadata.productId && !metadata.productSlug) {
+    throw new Error("Checkout sin producto interno valido.");
+  }
 
   const product = await prisma.product.findFirst({
-    where: productId ? { id: productId } : { slug: productSlug },
+    where: metadata.productId
+      ? { id: metadata.productId }
+      : { slug: metadata.productSlug },
   });
 
   if (!product) {

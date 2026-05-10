@@ -1,27 +1,25 @@
 import { NextResponse } from "next/server";
 
 import { createOrUpdateEarlyAccessLead } from "@/lib/services/early-access";
+import { earlyAccessRequestSchema } from "@/lib/validators";
 
 export async function POST(request: Request) {
-  const body = (await request.json().catch(() => null)) as {
-    name?: string;
-    email?: string;
-    source?: string;
-  } | null;
+  const rawBody = await request.json().catch(() => null);
+  const parsed = earlyAccessRequestSchema.safeParse(rawBody);
 
-  if (!body) {
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: "No pudimos leer tus datos. Intenta nuevamente." },
+      {
+        error:
+          parsed.error.issues[0]?.message ??
+          "No pudimos leer tus datos. Intenta nuevamente.",
+      },
       { status: 400 },
     );
   }
 
   try {
-    await createOrUpdateEarlyAccessLead({
-      name: body.name ?? "",
-      email: body.email ?? "",
-      source: body.source ?? "",
-    });
+    await createOrUpdateEarlyAccessLead(parsed.data);
 
     return NextResponse.json({
       ok: true,

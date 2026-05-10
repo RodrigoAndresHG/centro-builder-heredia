@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 import { isAdminRole } from "@/lib/permissions";
 import { createCloudflareStreamDirectUpload } from "@/lib/services";
+import { directUploadRequestSchema } from "@/lib/validators";
 
 async function requireAdmin() {
   const session = await auth();
@@ -20,21 +21,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   }
 
-  const body = (await request.json().catch(() => null)) as {
-    lessonId?: string;
-    title?: string;
-  } | null;
-  const lessonId = body?.lessonId;
+  const rawBody = await request.json().catch(() => null);
+  const parsed = directUploadRequestSchema.safeParse(rawBody);
 
-  if (!lessonId) {
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: "La lección es requerida para subir video." },
+      {
+        error:
+          parsed.error.issues[0]?.message ??
+          "La lección es requerida para subir video.",
+      },
       { status: 400 },
     );
   }
 
   const lesson = await prisma.lesson.findUnique({
-    where: { id: lessonId },
+    where: { id: parsed.data.lessonId },
     select: { id: true, title: true },
   });
 
@@ -45,10 +47,12 @@ export async function POST(request: Request) {
     );
   }
 
+  const videoTitle = parsed.data.title ?? lesson.title;
+
   try {
     const directUpload = await createCloudflareStreamDirectUpload({
       lessonId: lesson.id,
-      title: body?.title ?? lesson.title,
+      title: videoTitle,
     });
 
     await prisma.lesson.update({
@@ -57,7 +61,7 @@ export async function POST(request: Request) {
         streamVideoId: directUpload.uid,
         videoStatus: "UPLOADING",
         videoProvider: "Cloudflare Stream",
-        videoTitle: body?.title ?? lesson.title,
+        videoTitle,
         videoUrl: null,
       },
     });
