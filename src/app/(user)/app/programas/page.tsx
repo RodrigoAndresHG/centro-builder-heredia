@@ -80,6 +80,23 @@ export default async function ProgramasPage() {
   const featuredContinueHref =
     featuredProgress?.nextLesson?.href ?? featuredHref;
 
+  // Programas que NO son el destacado, agrupados por acceso.
+  type ProgramItem = (typeof availablePrograms)[number];
+  const otherAvailable: ProgramItem[] = featuredProgramProgress
+    ? availablePrograms.slice(1)
+    : [];
+  const otherLocked: ProgramItem[] = featuredProgramProgress
+    ? lockedPrograms
+    : lockedPrograms.slice(1);
+  const hasOtherPrograms =
+    otherAvailable.length > 0 || otherLocked.length > 0;
+
+  function programStatusLabel(status: ProgramItem["status"]) {
+    if (status === "OPEN") return "Abierto";
+    if (status === "PRESALE") return "Preventa";
+    return "Borrador";
+  }
+
   return (
     <div className="space-y-8">
       <WorkspaceTrail
@@ -228,6 +245,103 @@ export default async function ProgramasPage() {
           </p>
         </WorkspaceCard>
       )}
+
+      {hasOtherPrograms ? (
+        <section className="space-y-5">
+          <div>
+            <h2 className="text-2xl font-semibold text-white">
+              Otros programas del ecosistema
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-neutral-400">
+              Programas adicionales disponibles o por activar en tu workspace.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {otherAvailable.map((program) => {
+              const lessonCount = getProgramLessonCount(program);
+              return (
+                <WorkspaceCard key={program.id} className="p-6">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                      {programStatusLabel(program.status)}
+                    </p>
+                    <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-200">
+                      Acceso activo
+                    </span>
+                  </div>
+                  <h3 className="mt-3 text-xl font-semibold text-white">
+                    {program.title}
+                  </h3>
+                  {program.description ? (
+                    <p className="mt-2 text-sm leading-6 text-neutral-400">
+                      {program.description}
+                    </p>
+                  ) : null}
+                  <p className="mt-4 text-xs text-neutral-500">
+                    {program.modules.length}{" "}
+                    {program.modules.length === 1 ? "módulo" : "módulos"} ·{" "}
+                    {lessonCount}{" "}
+                    {lessonCount === 1 ? "lección" : "lecciones"}
+                  </p>
+                  <div className="mt-4">
+                    <Link
+                      href={`/app/programas/${program.slug}`}
+                      className="inline-flex items-center rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
+                    >
+                      Abrir programa
+                    </Link>
+                  </div>
+                </WorkspaceCard>
+              );
+            })}
+
+            {otherLocked.map((program) => {
+              const lessonCount = getProgramLessonCount(program);
+              return (
+                <WorkspaceCard key={program.id} className="p-6">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                      {programStatusLabel(program.status)}
+                    </p>
+                    <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-200">
+                      Acceso pendiente
+                    </span>
+                  </div>
+                  <h3 className="mt-3 text-xl font-semibold text-white">
+                    {program.title}
+                  </h3>
+                  {program.description ? (
+                    <p className="mt-2 text-sm leading-6 text-neutral-400">
+                      {program.description}
+                    </p>
+                  ) : null}
+                  <p className="mt-4 text-xs text-neutral-500">
+                    {program.modules.length}{" "}
+                    {program.modules.length === 1 ? "módulo" : "módulos"} ·{" "}
+                    {lessonCount}{" "}
+                    {lessonCount === 1 ? "lección" : "lecciones"}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {program.product?.slug ? (
+                      <CheckoutButton
+                        productSlug={program.product.slug}
+                        label="Activar acceso"
+                      />
+                    ) : null}
+                    <Link
+                      href={`/app/programas/${program.slug}`}
+                      className="inline-flex items-center rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm font-semibold text-white transition hover:border-neutral-500"
+                    >
+                      Ver programa
+                    </Link>
+                  </div>
+                </WorkspaceCard>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       <section className="space-y-5">
         <div>
