@@ -9,6 +9,7 @@ type AdminShellProps = {
 
 const adminItems = [
   { label: "Dashboard", href: "/admin" },
+  { label: "Productos", href: "/admin/productos" },
   { label: "Programas", href: "/admin/programas" },
   { label: "Modulos", href: "/admin/modulos" },
   { label: "Lecciones", href: "/admin/lecciones" },

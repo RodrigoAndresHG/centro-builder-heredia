@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db/prisma";
 import { isAdminRole } from "@/lib/permissions";
 import { syncAdminStreamVideos } from "@/lib/services/admin-content";
 import { isBuilderUpdateType } from "@/lib/services/builder-updates";
+import { productInputSchema } from "@/lib/validators";
 
 async function requireAdmin() {
   const session = await auth();
@@ -463,4 +464,92 @@ export async function refreshAdminStreamVideos() {
   await requireAdmin();
   await syncAdminStreamVideos();
   revalidatePath("/admin/videos");
+}
+
+function parseProductFormData(formData: FormData) {
+  const parsed = productInputSchema.safeParse({
+    name: readString(formData, "name"),
+    slug: normalizeSlug(readOptionalString(formData, "slug")),
+    description: readString(formData, "description"),
+    stripePriceId: readString(formData, "stripePriceId"),
+    isActive: readBoolean(formData, "isActive"),
+  });
+
+  if (!parsed.success) {
+    throw new Error(
+      parsed.error.issues[0]?.message ?? "Datos de producto inválidos.",
+    );
+  }
+
+  return parsed.data;
+}
+
+export async function createProduct(formData: FormData) {
+  await requireAdmin();
+  const data = parseProductFormData(formData);
+
+  const existing = await prisma.product.findUnique({
+    where: { slug: data.slug },
+    select: { id: true },
+  });
+
+  if (existing) {
+    throw new Error(
+      `Ya existe un producto con el slug "${data.slug}". Elige otro.`,
+    );
+  }
+
+  const product = await prisma.product.create({
+    data: {
+      name: data.name,
+      slug: data.slug,
+      description: data.description,
+      stripePriceId: data.stripePriceId,
+      isActive: data.isActive,
+    },
+  });
+
+  revalidateContentPaths();
+  redirect(`/admin/productos/${product.id}`);
+}
+
+export async function updateProduct(id: string, formData: FormData) {
+  await requireAdmin();
+  const data = parseProductFormData(formData);
+
+  const existing = await prisma.product.findFirst({
+    where: { slug: data.slug, NOT: { id } },
+    select: { id: true },
+  });
+
+  if (existing) {
+    throw new Error(
+      `Ya existe otro producto con el slug "${data.slug}". Elige otro.`,
+    );
+  }
+
+  await prisma.product.update({
+    where: { id },
+    data: {
+      name: data.name,
+      slug: data.slug,
+      description: data.description,
+      stripePriceId: data.stripePriceId,
+      isActive: data.isActive,
+    },
+  });
+
+  revalidateContentPaths();
+  redirect("/admin/productos");
+}
+
+export async function toggleProductActive(id: string, isActive: boolean) {
+  await requireAdmin();
+
+  await prisma.product.update({
+    where: { id },
+    data: { isActive },
+  });
+
+  revalidateContentPaths();
 }

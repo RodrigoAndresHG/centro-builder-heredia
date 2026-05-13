@@ -637,3 +637,83 @@ export function BuilderUpdateForm({
     </form>
   );
 }
+
+type ProductFormValue = {
+  name?: string | null;
+  slug?: string | null;
+  description?: string | null;
+  stripePriceId?: string | null;
+  isActive?: boolean;
+};
+
+export function ProductForm({
+  action,
+  product,
+  submitLabel,
+}: {
+  action: FormAction;
+  product?: ProductFormValue | null;
+  submitLabel: string;
+}) {
+  return (
+    <form action={action} className="space-y-5">
+      <label className="block space-y-2">
+        <FieldLabel>Nombre del producto</FieldLabel>
+        <TextInput
+          name="name"
+          required
+          defaultValue={product?.name}
+          placeholder="Build IdeaCash — Founder Access"
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Slug</FieldLabel>
+        <TextInput
+          name="slug"
+          required
+          defaultValue={product?.slug}
+          placeholder="build-ideacash-founder-access"
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Descripción</FieldLabel>
+        <TextArea
+          name="description"
+          defaultValue={product?.description}
+          placeholder="Describe qué desbloquea este producto comercialmente."
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Stripe Price ID</FieldLabel>
+        <TextInput
+          name="stripePriceId"
+          defaultValue={product?.stripePriceId}
+          placeholder="price_1Q..."
+        />
+        <span className="block text-xs leading-5 text-neutral-500">
+          Crea el precio primero en Stripe Dashboard (modo Test o Live según
+          corresponda) y pega aquí el ID que empieza con <code>price_</code>.
+          Sin este valor el producto existe pero no es comprable vía Stripe
+          Checkout.
+        </span>
+      </label>
+
+      <label className="flex items-center gap-3 rounded-md border border-border bg-background px-3 py-3">
+        <input
+          type="checkbox"
+          name="isActive"
+          defaultChecked={product?.isActive ?? true}
+          className="h-4 w-4 accent-[var(--accent)]"
+        />
+        <span className="text-sm font-semibold text-foreground">
+          Producto activo
+        </span>
+      </label>
+
+      <SubmitButton label={submitLabel} />
+    </form>
+  );
+}
