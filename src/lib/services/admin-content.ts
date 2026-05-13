@@ -188,6 +188,8 @@ export async function getAdminLesson(id: string) {
     include: {
       program: true,
       module: true,
+      prompts: { orderBy: { sortOrder: "asc" } },
+      resources: { orderBy: { sortOrder: "asc" } },
     },
   });
 }

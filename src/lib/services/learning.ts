@@ -186,3 +186,18 @@ export function getProgramLessonCount(
     0,
   ) ?? 0;
 }
+
+export async function getLessonExtras(lessonId: string) {
+  const [prompts, resources] = await Promise.all([
+    prisma.lessonPrompt.findMany({
+      where: { lessonId },
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.lessonResource.findMany({
+      where: { lessonId },
+      orderBy: { sortOrder: "asc" },
+    }),
+  ]);
+
+  return { prompts, resources };
+}

@@ -638,6 +638,318 @@ export function BuilderUpdateForm({
   );
 }
 
+type LessonPromptValue = {
+  id: string;
+  title: string;
+  body: string;
+  sortOrder: number;
+};
+
+type LessonResourceValue = {
+  id: string;
+  title: string;
+  description: string | null;
+  url: string;
+  type: string;
+  sortOrder: number;
+};
+
+function NumberInput({
+  name,
+  defaultValue,
+}: {
+  name: string;
+  defaultValue?: number;
+}) {
+  return (
+    <input
+      type="number"
+      name={name}
+      defaultValue={defaultValue ?? 0}
+      className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+    />
+  );
+}
+
+export function LessonPromptsManager({
+  lessonId,
+  prompts,
+  createAction,
+  updateAction,
+  deleteAction,
+}: {
+  lessonId: string;
+  prompts: LessonPromptValue[];
+  createAction: (lessonId: string, formData: FormData) => Promise<void>;
+  updateAction: (promptId: string, formData: FormData) => Promise<void>;
+  deleteAction: (promptId: string) => Promise<void>;
+}) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold text-foreground">Prompts</h2>
+        <p className="mt-1 text-sm leading-6 text-neutral-500">
+          Bloques copy-paste que se muestran al usuario con botón de copiar. Útil
+          para entregar prompts de IA, snippets de código o plantillas.
+        </p>
+      </div>
+
+      {prompts.length === 0 ? (
+        <p className="rounded-md border border-dashed border-border bg-surface-muted px-4 py-3 text-sm text-neutral-600">
+          Todavía no hay prompts. Agrega el primero abajo.
+        </p>
+      ) : (
+        <div className="space-y-4">
+          {prompts.map((prompt) => (
+            <div
+              key={prompt.id}
+              className="rounded-xl border border-border bg-background p-4"
+            >
+              <form
+                action={updateAction.bind(null, prompt.id)}
+                className="space-y-3"
+              >
+                <div className="grid gap-3 md:grid-cols-[1fr_120px]">
+                  <label className="block space-y-2">
+                    <FieldLabel>Título</FieldLabel>
+                    <TextInput
+                      name="title"
+                      required
+                      defaultValue={prompt.title}
+                    />
+                  </label>
+                  <label className="block space-y-2">
+                    <FieldLabel>Orden</FieldLabel>
+                    <NumberInput
+                      name="sortOrder"
+                      defaultValue={prompt.sortOrder}
+                    />
+                  </label>
+                </div>
+                <label className="block space-y-2">
+                  <FieldLabel>Cuerpo del prompt</FieldLabel>
+                  <TextArea
+                    name="body"
+                    rows={6}
+                    required
+                    defaultValue={prompt.body}
+                  />
+                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <SubmitButton label="Guardar prompt" />
+                </div>
+              </form>
+              <form action={deleteAction.bind(null, prompt.id)} className="mt-3">
+                <button
+                  type="submit"
+                  className="text-xs font-semibold uppercase tracking-[0.12em] text-red-600 hover:underline"
+                >
+                  Eliminar prompt
+                </button>
+              </form>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="rounded-xl border border-dashed border-border bg-surface-muted p-4">
+        <p className="text-sm font-semibold text-foreground">Agregar prompt</p>
+        <form
+          action={createAction.bind(null, lessonId)}
+          className="mt-3 space-y-3"
+        >
+          <div className="grid gap-3 md:grid-cols-[1fr_120px]">
+            <label className="block space-y-2">
+              <FieldLabel>Título</FieldLabel>
+              <TextInput
+                name="title"
+                required
+                placeholder="Prompt 1 — Generar idea inicial"
+              />
+            </label>
+            <label className="block space-y-2">
+              <FieldLabel>Orden</FieldLabel>
+              <NumberInput name="sortOrder" defaultValue={0} />
+            </label>
+          </div>
+          <label className="block space-y-2">
+            <FieldLabel>Cuerpo del prompt</FieldLabel>
+            <TextArea
+              name="body"
+              rows={6}
+              required
+              placeholder="Pega aquí el prompt completo que el usuario podrá copiar."
+            />
+          </label>
+          <SubmitButton label="Agregar prompt" />
+        </form>
+      </div>
+    </div>
+  );
+}
+
+const resourceTypeLabels: Record<string, string> = {
+  LINK: "Link externo",
+  DOWNLOAD: "Descarga / archivo",
+  REFERENCE: "Referencia / lectura",
+};
+
+export function LessonResourcesManager({
+  lessonId,
+  resources,
+  createAction,
+  updateAction,
+  deleteAction,
+}: {
+  lessonId: string;
+  resources: LessonResourceValue[];
+  createAction: (lessonId: string, formData: FormData) => Promise<void>;
+  updateAction: (resourceId: string, formData: FormData) => Promise<void>;
+  deleteAction: (resourceId: string) => Promise<void>;
+}) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold text-foreground">Recursos</h2>
+        <p className="mt-1 text-sm leading-6 text-neutral-500">
+          Links externos, descargas o referencias complementarias. Aparecen como
+          tarjetas debajo del contenido de la lección.
+        </p>
+      </div>
+
+      {resources.length === 0 ? (
+        <p className="rounded-md border border-dashed border-border bg-surface-muted px-4 py-3 text-sm text-neutral-600">
+          Todavía no hay recursos. Agrega el primero abajo.
+        </p>
+      ) : (
+        <div className="space-y-4">
+          {resources.map((resource) => (
+            <div
+              key={resource.id}
+              className="rounded-xl border border-border bg-background p-4"
+            >
+              <form
+                action={updateAction.bind(null, resource.id)}
+                className="space-y-3"
+              >
+                <div className="grid gap-3 md:grid-cols-[1fr_180px_120px]">
+                  <label className="block space-y-2">
+                    <FieldLabel>Título</FieldLabel>
+                    <TextInput
+                      name="title"
+                      required
+                      defaultValue={resource.title}
+                    />
+                  </label>
+                  <label className="block space-y-2">
+                    <FieldLabel>Tipo</FieldLabel>
+                    <select
+                      name="type"
+                      defaultValue={resource.type}
+                      className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+                    >
+                      {Object.entries(resourceTypeLabels).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block space-y-2">
+                    <FieldLabel>Orden</FieldLabel>
+                    <NumberInput
+                      name="sortOrder"
+                      defaultValue={resource.sortOrder}
+                    />
+                  </label>
+                </div>
+                <label className="block space-y-2">
+                  <FieldLabel>URL</FieldLabel>
+                  <TextInput name="url" required defaultValue={resource.url} />
+                </label>
+                <label className="block space-y-2">
+                  <FieldLabel>Descripción (opcional)</FieldLabel>
+                  <TextArea
+                    name="description"
+                    rows={2}
+                    defaultValue={resource.description}
+                  />
+                </label>
+                <SubmitButton label="Guardar recurso" />
+              </form>
+              <form
+                action={deleteAction.bind(null, resource.id)}
+                className="mt-3"
+              >
+                <button
+                  type="submit"
+                  className="text-xs font-semibold uppercase tracking-[0.12em] text-red-600 hover:underline"
+                >
+                  Eliminar recurso
+                </button>
+              </form>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="rounded-xl border border-dashed border-border bg-surface-muted p-4">
+        <p className="text-sm font-semibold text-foreground">Agregar recurso</p>
+        <form
+          action={createAction.bind(null, lessonId)}
+          className="mt-3 space-y-3"
+        >
+          <div className="grid gap-3 md:grid-cols-[1fr_180px_120px]">
+            <label className="block space-y-2">
+              <FieldLabel>Título</FieldLabel>
+              <TextInput
+                name="title"
+                required
+                placeholder="Plantilla Notion para captura de ideas"
+              />
+            </label>
+            <label className="block space-y-2">
+              <FieldLabel>Tipo</FieldLabel>
+              <select
+                name="type"
+                defaultValue="LINK"
+                className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+              >
+                {Object.entries(resourceTypeLabels).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block space-y-2">
+              <FieldLabel>Orden</FieldLabel>
+              <NumberInput name="sortOrder" defaultValue={0} />
+            </label>
+          </div>
+          <label className="block space-y-2">
+            <FieldLabel>URL</FieldLabel>
+            <TextInput
+              name="url"
+              required
+              placeholder="https://notion.so/..."
+            />
+          </label>
+          <label className="block space-y-2">
+            <FieldLabel>Descripción (opcional)</FieldLabel>
+            <TextArea
+              name="description"
+              rows={2}
+              placeholder="Qué encontrarás en este recurso."
+            />
+          </label>
+          <SubmitButton label="Agregar recurso" />
+        </form>
+      </div>
+    </div>
+  );
+}
+
 type ProductFormValue = {
   name?: string | null;
   slug?: string | null;
