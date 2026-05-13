@@ -90,7 +90,9 @@ export async function createCloudflareStreamDirectUpload({
     (await response.json().catch(() => null)) as CloudflareEnvelope<DirectUploadResult> | null;
 
   if (!response.ok || !data?.success || !data.result) {
-    throw new Error(getCloudflareError(data?.errors));
+    throw new Error(
+      `Cloudflare Stream API error (HTTP ${response.status}): ${getCloudflareError(data?.errors)}`,
+    );
   }
 
   return data.result;
@@ -111,7 +113,9 @@ export async function getCloudflareStreamVideo(streamVideoId: string) {
     (await response.json().catch(() => null)) as CloudflareEnvelope<StreamVideoResult> | null;
 
   if (!response.ok || !data?.success) {
-    throw new Error(getCloudflareError(data?.errors));
+    throw new Error(
+      `Cloudflare Stream API error (HTTP ${response.status}): ${getCloudflareError(data?.errors)}`,
+    );
   }
 
   return data.result ?? null;

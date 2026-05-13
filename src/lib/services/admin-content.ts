@@ -130,7 +130,11 @@ export async function syncAdminStreamVideos() {
             videoDuration: video?.duration ? Math.round(video.duration) : undefined,
           },
         });
-      } catch {
+      } catch (error) {
+        console.error(
+          `[cloudflare-stream] Failed to sync lesson ${lesson.id} (streamVideoId=${lesson.streamVideoId}):`,
+          error instanceof Error ? error.message : error,
+        );
         await prisma.lesson.update({
           where: { id: lesson.id },
           data: {
