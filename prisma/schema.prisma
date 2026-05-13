@@ -162,12 +162,52 @@ model Lesson {
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
-  program  Program          @relation(fields: [programId], references: [id], onDelete: Cascade)
-  module   Module?          @relation(fields: [moduleId], references: [id], onDelete: SetNull)
-  progress LessonProgress[]
+  program   Program          @relation(fields: [programId], references: [id], onDelete: Cascade)
+  module    Module?          @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  progress  LessonProgress[]
+  prompts   LessonPrompt[]
+  resources LessonResource[]
 
   @@unique([programId, slug])
   @@map("lessons")
+}
+
+model LessonPrompt {
+  id        String   @id @default(cuid())
+  lessonId  String   @map("lesson_id")
+  title     String
+  body      String   @db.Text
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+  @@map("lesson_prompts")
+}
+
+enum LessonResourceType {
+  LINK
+  DOWNLOAD
+  REFERENCE
+}
+
+model LessonResource {
+  id          String             @id @default(cuid())
+  lessonId    String             @map("lesson_id")
+  title       String
+  description String?
+  url         String
+  type        LessonResourceType @default(LINK)
+  sortOrder   Int                @default(0) @map("sort_order")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+  @@map("lesson_resources")
 }
 
 model Access {

@@ -8,7 +8,13 @@ import { prisma } from "@/lib/db/prisma";
 import { isAdminRole } from "@/lib/permissions";
 import { syncAdminStreamVideos } from "@/lib/services/admin-content";
 import { isBuilderUpdateType } from "@/lib/services/builder-updates";
-import { productInputSchema } from "@/lib/validators";
+import {
+  lessonResourceTypes,
+  productInputSchema,
+  promptInputSchema,
+  resourceInputSchema,
+  type LessonResourceTypeValue,
+} from "@/lib/validators";
 
 async function requireAdmin() {
   const session = await auth();
@@ -549,6 +555,152 @@ export async function toggleProductActive(id: string, isActive: boolean) {
   await prisma.product.update({
     where: { id },
     data: { isActive },
+  });
+
+  revalidateContentPaths();
+}
+
+function parsePromptFormData(formData: FormData) {
+  const parsed = promptInputSchema.safeParse({
+    title: readString(formData, "title"),
+    body: readString(formData, "body"),
+    sortOrder: readSortOrder(formData),
+  });
+
+  if (!parsed.success) {
+    throw new Error(
+      parsed.error.issues[0]?.message ?? "Datos del prompt inválidos.",
+    );
+  }
+
+  return parsed.data;
+}
+
+function isLessonResourceType(value: string): value is LessonResourceTypeValue {
+  return (lessonResourceTypes as readonly string[]).includes(value);
+}
+
+function parseResourceFormData(formData: FormData) {
+  const rawType = readString(formData, "type");
+  const parsed = resourceInputSchema.safeParse({
+    title: readString(formData, "title"),
+    description: readString(formData, "description"),
+    url: readString(formData, "url"),
+    type: isLessonResourceType(rawType) ? rawType : "LINK",
+    sortOrder: readSortOrder(formData),
+  });
+
+  if (!parsed.success) {
+    throw new Error(
+      parsed.error.issues[0]?.message ?? "Datos del recurso inválidos.",
+    );
+  }
+
+  return parsed.data;
+}
+
+async function ensureLessonExists(lessonId: string) {
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: lessonId },
+    select: { id: true },
+  });
+
+  if (!lesson) {
+    throw new Error("Lección no encontrada.");
+  }
+}
+
+export async function createLessonPrompt(lessonId: string, formData: FormData) {
+  await requireAdmin();
+  await ensureLessonExists(lessonId);
+  const data = parsePromptFormData(formData);
+
+  await prisma.lessonPrompt.create({
+    data: {
+      lessonId,
+      title: data.title,
+      body: data.body,
+      sortOrder: data.sortOrder,
+    },
+  });
+
+  revalidateContentPaths();
+}
+
+export async function updateLessonPrompt(promptId: string, formData: FormData) {
+  await requireAdmin();
+  const data = parsePromptFormData(formData);
+
+  await prisma.lessonPrompt.update({
+    where: { id: promptId },
+    data: {
+      title: data.title,
+      body: data.body,
+      sortOrder: data.sortOrder,
+    },
+  });
+
+  revalidateContentPaths();
+}
+
+export async function deleteLessonPrompt(promptId: string) {
+  await requireAdmin();
+
+  await prisma.lessonPrompt.delete({
+    where: { id: promptId },
+  });
+
+  revalidateContentPaths();
+}
+
+export async function createLessonResource(
+  lessonId: string,
+  formData: FormData,
+) {
+  await requireAdmin();
+  await ensureLessonExists(lessonId);
+  const data = parseResourceFormData(formData);
+
+  await prisma.lessonResource.create({
+    data: {
+      lessonId,
+      title: data.title,
+      description: data.description,
+      url: data.url,
+      type: data.type,
+      sortOrder: data.sortOrder,
+    },
+  });
+
+  revalidateContentPaths();
+}
+
+export async function updateLessonResource(
+  resourceId: string,
+  formData: FormData,
+) {
+  await requireAdmin();
+  const data = parseResourceFormData(formData);
+
+  await prisma.lessonResource.update({
+    where: { id: resourceId },
+    data: {
+      title: data.title,
+      description: data.description,
+      url: data.url,
+      type: data.type,
+      sortOrder: data.sortOrder,
+    },
+  });
+
+  revalidateContentPaths();
+}
+
+export async function deleteLessonResource(resourceId: string) {
+  await requireAdmin();
+
+  await prisma.lessonResource.delete({
+    where: { id: resourceId },
   });
 
   revalidateContentPaths();

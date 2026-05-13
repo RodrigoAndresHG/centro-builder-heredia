@@ -1,10 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { LessonForm } from "@/components/admin/content/content-forms";
+import {
+  LessonForm,
+  LessonPromptsManager,
+  LessonResourcesManager,
+} from "@/components/admin/content/content-forms";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
-import { updateLesson } from "@/lib/actions/admin-content";
+import {
+  createLessonPrompt,
+  createLessonResource,
+  deleteLessonPrompt,
+  deleteLessonResource,
+  updateLesson,
+  updateLessonPrompt,
+  updateLessonResource,
+} from "@/lib/actions/admin-content";
 import {
   getAdminLesson,
   listModuleOptions,
@@ -49,6 +61,26 @@ export default async function EditLessonPage({ params }: EditLessonPageProps) {
           modules={modules}
           lesson={lesson}
           submitLabel="Guardar cambios"
+        />
+      </Card>
+
+      <Card>
+        <LessonPromptsManager
+          lessonId={lesson.id}
+          prompts={lesson.prompts}
+          createAction={createLessonPrompt}
+          updateAction={updateLessonPrompt}
+          deleteAction={deleteLessonPrompt}
+        />
+      </Card>
+
+      <Card>
+        <LessonResourcesManager
+          lessonId={lesson.id}
+          resources={lesson.resources}
+          createAction={createLessonResource}
+          updateAction={updateLessonResource}
+          deleteAction={deleteLessonResource}
         />
       </Card>
     </div>
