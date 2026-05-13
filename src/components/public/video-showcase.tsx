@@ -38,11 +38,11 @@ export function VideoShowcase() {
               Preview real del LMS
             </p>
             <h3 className="mt-3 text-2xl font-semibold leading-tight text-white">
-              Preview real del entorno Builder.
+              Así se ve el workspace por dentro.
             </h3>
             <p className="mt-3 text-sm leading-7 text-neutral-400">
-              Video vertical de prueba para sentir el producto antes del
-              lanzamiento.
+              Un vistazo al ritmo, la estructura y la experiencia real del LMS
+              antes de comprar.
             </p>
             <div className="mt-5 grid gap-2 text-xs font-semibold uppercase text-neutral-500">
               <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
@@ -70,7 +70,7 @@ export function VideoShowcase() {
                 />
                 <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/70 to-transparent p-4">
                   <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase text-white backdrop-blur">
-                    {isMuted ? "Silent preview" : "Audio on"}
+                    {isMuted ? "Sin audio" : "Audio activo"}
                   </span>
                   <span className="h-2 w-2 rounded-full bg-teal-300 shadow-lg shadow-teal-300/50" />
                 </div>
