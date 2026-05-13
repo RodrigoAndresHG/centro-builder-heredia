@@ -7,6 +7,26 @@ import {
 export async function listAdminProducts() {
   return prisma.product.findMany({
     orderBy: { name: "asc" },
+    include: {
+      _count: {
+        select: { programs: true, accesses: true, purchases: true },
+      },
+    },
+  });
+}
+
+export async function getAdminProduct(id: string) {
+  return prisma.product.findUnique({
+    where: { id },
+    include: {
+      programs: {
+        orderBy: { createdAt: "asc" },
+        select: { id: true, title: true, slug: true, status: true },
+      },
+      _count: {
+        select: { accesses: true, purchases: true },
+      },
+    },
   });
 }
 
