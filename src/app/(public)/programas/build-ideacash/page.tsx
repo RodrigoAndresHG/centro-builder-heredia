@@ -167,7 +167,7 @@ function ProgramSignal() {
               <p className="text-xl font-semibold text-white">USD 47</p>
             </div>
             <p className="mt-2 text-xs leading-5 text-teal-100/80">
-              Apertura oficial: sábado 23 de mayo de 2026
+              Apertura oficial: sábado 30 de mayo de 2026
             </p>
           </div>
         </div>
@@ -196,7 +196,7 @@ export default function BuildIdeaCashPage() {
               </p>
               <p className="mt-4 max-w-2xl text-base leading-8 text-neutral-400">
                 Este será el primer programa oficial dentro de
-                Builder.rodriheredia.com. Abrirá el sábado 23 de mayo de 2026.
+                Builder.rodriheredia.com. Abrirá el sábado 30 de mayo de 2026.
               </p>
             </Reveal>
 
@@ -299,7 +299,7 @@ export default function BuildIdeaCashPage() {
                 Estado de lanzamiento
               </p>
               <h2 className="mt-4 text-3xl font-semibold leading-tight text-white">
-                Apertura oficial: sábado 23 de mayo de 2026
+                Apertura oficial: sábado 30 de mayo de 2026
               </h2>
               <p className="mt-4 text-base leading-8 text-neutral-200">
                 Build IdeaCash — Founder Access abrirá oficialmente dentro de
@@ -349,7 +349,7 @@ export default function BuildIdeaCashPage() {
           <div>
             <SectionIntro
               title="Reserva tu lugar antes de la apertura"
-              description="Build IdeaCash — Founder Access abrirá oficialmente el sábado 23 de mayo de 2026. Si te unes ahora al acceso temprano, quedarás en la lista prioritaria para entrar con precio fundador y recibir el aviso del lanzamiento en vivo."
+              description="Build IdeaCash — Founder Access abrirá oficialmente el sábado 30 de mayo de 2026. Si te unes ahora al acceso temprano, quedarás en la lista prioritaria para entrar con precio fundador y recibir el aviso del lanzamiento en vivo."
             />
             <Reveal delay={120} className="mt-7 flex flex-col gap-3 sm:flex-row">
               <PrimaryCta>Comprar acceso ahora</PrimaryCta>
