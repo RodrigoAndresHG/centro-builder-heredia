@@ -10,6 +10,16 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // prisma.config.ts is only read by the Prisma CLI (migrate, db push,
+    // db pull, etc.), NOT by the runtime PrismaClient. The runtime uses
+    // the adapter in src/lib/db/prisma.ts which reads DATABASE_URL.
+    //
+    // So we deliberately make CLI migrations use DATABASE_URL_UNPOOLED
+    // when available — the direct (non-pooled) Neon connection — to
+    // avoid the Postgres advisory lock contention that PgBouncer
+    // transaction-pool causes with `prisma migrate deploy`. Falls back
+    // to DATABASE_URL when the unpooled var is not set (e.g. local dev).
+    url:
+      process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"],
   },
 });
