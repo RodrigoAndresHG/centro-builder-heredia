@@ -9,6 +9,11 @@ import { isAdminRole } from "@/lib/permissions";
 import { syncAdminStreamVideos } from "@/lib/services/admin-content";
 import { isBuilderUpdateType } from "@/lib/services/builder-updates";
 import {
+  getCloudflareStreamVideo,
+  normalizeStreamVideoStatus,
+} from "@/lib/services/cloudflare-stream";
+import {
+  associateVideoSchema,
   lessonResourceTypes,
   productInputSchema,
   promptInputSchema,
@@ -701,6 +706,92 @@ export async function deleteLessonResource(resourceId: string) {
 
   await prisma.lessonResource.delete({
     where: { id: resourceId },
+  });
+
+  revalidateContentPaths();
+}
+
+export async function associateLessonVideo(
+  lessonId: string,
+  formData: FormData,
+) {
+  await requireAdmin();
+  await ensureLessonExists(lessonId);
+
+  const parsed = associateVideoSchema.safeParse({
+    streamVideoId: readString(formData, "streamVideoId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error(
+      parsed.error.issues[0]?.message ?? "Stream Video ID inválido.",
+    );
+  }
+
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: lessonId },
+    select: { title: true },
+  });
+
+  // Set the new Stream Video ID and reset cached metadata.
+  await prisma.lesson.update({
+    where: { id: lessonId },
+    data: {
+      streamVideoId: parsed.data.streamVideoId,
+      videoProvider: "Cloudflare Stream",
+      videoStatus: "PROCESSING",
+      videoTitle: lesson?.title ?? null,
+      videoUrl: null,
+      videoThumbnailUrl: null,
+      videoDuration: null,
+    },
+  });
+
+  // Immediately fetch real status from Cloudflare so the admin sees the
+  // result without needing to click "Refrescar estado".
+  try {
+    const video = await getCloudflareStreamVideo(parsed.data.streamVideoId);
+
+    await prisma.lesson.update({
+      where: { id: lessonId },
+      data: {
+        videoStatus: normalizeStreamVideoStatus(video),
+        videoThumbnailUrl: video?.thumbnail ?? undefined,
+        videoDuration: video?.duration ? Math.round(video.duration) : undefined,
+      },
+    });
+  } catch (error) {
+    console.error(
+      `[cloudflare-stream] associateLessonVideo: failed to fetch ${parsed.data.streamVideoId} for lesson ${lessonId}:`,
+      error instanceof Error ? error.message : error,
+    );
+    await prisma.lesson.update({
+      where: { id: lessonId },
+      data: { videoStatus: "STATUS_UNAVAILABLE" },
+    });
+    throw new Error(
+      "El UID se guardó pero Cloudflare no devolvió datos del video. Verifica que el UID exista en tu cuenta de Cloudflare Stream.",
+    );
+  }
+
+  revalidateContentPaths();
+}
+
+export async function clearLessonVideo(lessonId: string) {
+  await requireAdmin();
+  await ensureLessonExists(lessonId);
+
+  await prisma.lesson.update({
+    where: { id: lessonId },
+    data: {
+      streamVideoId: null,
+      videoProvider: null,
+      videoStatus: "NONE",
+      videoTitle: null,
+      videoUrl: null,
+      videoThumbnailUrl: null,
+      videoDuration: null,
+    },
   });
 
   revalidateContentPaths();

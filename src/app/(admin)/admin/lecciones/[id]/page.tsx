@@ -5,10 +5,13 @@ import {
   LessonForm,
   LessonPromptsManager,
   LessonResourcesManager,
+  LessonVideoManualAssociate,
 } from "@/components/admin/content/content-forms";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import {
+  associateLessonVideo,
+  clearLessonVideo,
   createLessonPrompt,
   createLessonResource,
   deleteLessonPrompt,
@@ -61,6 +64,17 @@ export default async function EditLessonPage({ params }: EditLessonPageProps) {
           modules={modules}
           lesson={lesson}
           submitLabel="Guardar cambios"
+        />
+      </Card>
+
+      <Card>
+        <LessonVideoManualAssociate
+          lessonId={lesson.id}
+          streamVideoId={lesson.streamVideoId}
+          videoStatus={lesson.videoStatus}
+          videoDuration={lesson.videoDuration}
+          associateAction={associateLessonVideo}
+          clearAction={clearLessonVideo}
         />
       </Card>
 

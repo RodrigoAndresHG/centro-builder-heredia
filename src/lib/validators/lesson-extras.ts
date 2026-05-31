@@ -35,3 +35,19 @@ export const resourceInputSchema = z.object({
 });
 
 export type ResourceInput = z.infer<typeof resourceInputSchema>;
+
+// Cloudflare Stream UIDs are 32-character lowercase hex strings.
+export const streamVideoIdSchema = z
+  .string()
+  .trim()
+  .min(1, "Stream Video ID es requerido.")
+  .regex(
+    /^[a-f0-9]{32}$/i,
+    "Stream Video ID debe ser un UID de Cloudflare (32 caracteres hexadecimales).",
+  );
+
+export const associateVideoSchema = z.object({
+  streamVideoId: streamVideoIdSchema,
+});
+
+export type AssociateVideoInput = z.infer<typeof associateVideoSchema>;

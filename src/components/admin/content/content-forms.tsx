@@ -564,6 +564,90 @@ export function LessonForm({
   );
 }
 
+export function LessonVideoManualAssociate({
+  lessonId,
+  streamVideoId,
+  videoStatus,
+  videoDuration,
+  associateAction,
+  clearAction,
+}: {
+  lessonId: string;
+  streamVideoId: string | null;
+  videoStatus: string | null;
+  videoDuration: number | null;
+  associateAction: (lessonId: string, formData: FormData) => Promise<void>;
+  clearAction: (lessonId: string) => Promise<void>;
+}) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-lg font-semibold text-foreground">
+          Asociar video por UID (alternativa manual)
+        </h2>
+        <p className="mt-1 text-sm leading-6 text-neutral-500">
+          Si la subida directa desde la lección falla, o ya tienes el video
+          subido a Cloudflare desde su Dashboard, pega aquí el Stream Video ID
+          para vincularlo manualmente. El UID es un código de 32 caracteres
+          hexadecimales — lo encuentras en la URL del video dentro de
+          Cloudflare Stream.
+        </p>
+      </div>
+
+      {streamVideoId ? (
+        <div className="rounded-md border border-border bg-surface-muted p-3 text-sm text-neutral-700">
+          <p>
+            Video actualmente vinculado:{" "}
+            <code className="rounded bg-background px-1.5 py-0.5 text-xs">
+              {streamVideoId}
+            </code>
+          </p>
+          <p className="mt-1 text-xs text-neutral-500">
+            Estado: {videoStatus ?? "NONE"}
+            {videoDuration ? ` · Duración: ${videoDuration}s` : ""}
+          </p>
+        </div>
+      ) : (
+        <p className="rounded-md border border-dashed border-border bg-surface-muted px-4 py-3 text-sm text-neutral-600">
+          Esta lección no tiene video vinculado todavía.
+        </p>
+      )}
+
+      <form
+        action={associateAction.bind(null, lessonId)}
+        className="space-y-3"
+      >
+        <label className="block space-y-2">
+          <FieldLabel>Stream Video ID (UID de Cloudflare)</FieldLabel>
+          <TextInput
+            name="streamVideoId"
+            required
+            placeholder="ej: 27973408cd1e32743b50302536377ab2"
+          />
+        </label>
+        <SubmitButton
+          label={
+            streamVideoId
+              ? "Reemplazar video con este UID"
+              : "Asociar video con este UID"
+          }
+        />
+      </form>
+
+      {streamVideoId ? (
+        <form action={clearAction.bind(null, lessonId)}>
+          <button
+            type="submit"
+            className="text-xs font-semibold uppercase tracking-[0.12em] text-red-600 hover:underline"
+          >
+            Desvincular video de esta lección
+          </button>
+        </form>
+      ) : null}
+    </div>
+  );
+}
+
 export function BuilderUpdateForm({
   action,
   update,

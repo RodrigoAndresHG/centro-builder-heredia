@@ -74,7 +74,11 @@ export function CloudflareStreamUpload({
       });
 
       if (!uploadResponse.ok) {
-        throw new Error("Cloudflare no aceptó el archivo de video.");
+        const errorBody = await uploadResponse.text().catch(() => "");
+        const truncated = errorBody.length > 300 ? `${errorBody.slice(0, 300)}…` : errorBody;
+        throw new Error(
+          `Cloudflare rechazó el archivo (HTTP ${uploadResponse.status} ${uploadResponse.statusText}).${truncated ? ` Detalle: ${truncated}` : ""}`,
+        );
       }
 
       await fetch("/api/admin/cloudflare-stream/complete", {
