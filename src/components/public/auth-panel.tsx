@@ -30,7 +30,7 @@ export function AuthPanel({ mode, intent, callbackUrl }: AuthPanelProps) {
       ? "Entra a Builder HeredIA"
       : "Crea tu acceso a Builder";
   const description = isBuyIntent
-    ? "Primero conectamos tu identidad con Google; después podrás completar la compra dentro del entorno privado."
+    ? "Primero conectas tu cuenta (con Google o con tu correo); después podrás completar la compra dentro del entorno privado."
     : mode === "login"
       ? "Accede al LMS oficial de Rodrigo HeredIA y continúa dentro de tu entorno privado."
       : "Entra al LMS oficial de Rodrigo HeredIA y prepárate para explorar el primer programa.";
@@ -57,7 +57,7 @@ export function AuthPanel({ mode, intent, callbackUrl }: AuthPanelProps) {
           </div>
 
           <div className="grid gap-3">
-            {["Build IdeaCash — Founder Access", "Acceso privado", "Lanzamiento 16 mayo 2026"].map(
+            {["Build IdeaCash — Founder Access", "Acceso privado", "Lanzamiento 30 mayo 2026"].map(
               (item) => (
                 <div
                   key={item}
@@ -114,7 +114,7 @@ export function AuthPanel({ mode, intent, callbackUrl }: AuthPanelProps) {
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-neutral-800" />
                 <span className="text-xs font-medium text-neutral-500">
-                  método principal
+                  {isEmailAuthConfigured ? "o con tu correo" : "método principal"}
                 </span>
                 <div className="h-px flex-1 bg-neutral-800" />
               </div>
