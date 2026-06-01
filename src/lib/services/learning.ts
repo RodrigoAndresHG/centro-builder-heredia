@@ -39,7 +39,7 @@ const publishedProgramWhere = {
 export async function listPublishedPrograms() {
   return prisma.program.findMany({
     where: publishedProgramWhere,
-    orderBy: { createdAt: "asc" },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     include: programInclude,
   });
 }
