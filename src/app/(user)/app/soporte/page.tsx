@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { CheckoutButton } from "@/components/app/checkout-button";
+import { CommunityCard } from "@/components/app/community-card";
 import {
   WorkspaceCard,
   WorkspaceHero,
@@ -110,6 +111,8 @@ export default async function SoportePage() {
           </div>
         </div>
       </WorkspaceHero>
+
+      <CommunityCard />
 
       <section className="space-y-5">
         <div>
