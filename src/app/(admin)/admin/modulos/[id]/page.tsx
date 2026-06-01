@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ModuleForm } from "@/components/admin/content/content-forms";
+import { DeleteEntityDangerZone } from "@/components/admin/content/danger-zone";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
-import { updateModule } from "@/lib/actions/admin-content";
+import { deleteModule, updateModule } from "@/lib/actions/admin-content";
 import { getAdminModule, listProgramOptions } from "@/lib/services";
 
 type EditModulePageProps = {
@@ -45,6 +46,14 @@ export default async function EditModulePage({ params }: EditModulePageProps) {
           submitLabel="Guardar cambios"
         />
       </Card>
+
+      <DeleteEntityDangerZone
+        action={deleteModule.bind(null, module.id)}
+        title="Zona de peligro"
+        description={`Eliminar este módulo lo quita del programa. Sus ${module._count.lessons} lección(es) NO se borran: quedan sin módulo asignado y puedes reasignarlas editándolas. Esta acción no se puede deshacer.`}
+        confirmMessage={`¿Eliminar el módulo "${module.title}"? Sus lecciones quedarán sin módulo asignado.`}
+        buttonLabel="Eliminar módulo"
+      />
     </div>
   );
 }

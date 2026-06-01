@@ -7,6 +7,7 @@ import {
   LessonResourcesManager,
   LessonVideoManualAssociate,
 } from "@/components/admin/content/content-forms";
+import { DeleteEntityDangerZone } from "@/components/admin/content/danger-zone";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import {
@@ -14,6 +15,7 @@ import {
   clearLessonVideo,
   createLessonPrompt,
   createLessonResource,
+  deleteLesson,
   deleteLessonPrompt,
   deleteLessonResource,
   updateLesson,
@@ -97,6 +99,14 @@ export default async function EditLessonPage({ params }: EditLessonPageProps) {
           deleteAction={deleteLessonResource}
         />
       </Card>
+
+      <DeleteEntityDangerZone
+        action={deleteLesson.bind(null, lesson.id)}
+        title="Zona de peligro"
+        description="Eliminar esta lección borra su contenido, prompts, recursos y el progreso registrado de los usuarios en ella. Esta acción no se puede deshacer."
+        confirmMessage={`¿Eliminar la lección "${lesson.title}"? Se borrarán sus prompts, recursos y el progreso de usuarios.`}
+        buttonLabel="Eliminar lección"
+      />
     </div>
   );
 }

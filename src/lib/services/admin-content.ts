@@ -52,12 +52,16 @@ export async function getAdminProgram(id: string) {
       lessons: {
         orderBy: { sortOrder: "asc" },
       },
+      _count: {
+        select: { modules: true, lessons: true, accesses: true },
+      },
     },
   });
 }
 
-export async function listAdminModules() {
+export async function listAdminModules(programId?: string) {
   return prisma.module.findMany({
+    where: programId ? { programId } : undefined,
     orderBy: [{ program: { title: "asc" } }, { sortOrder: "asc" }],
     include: {
       program: true,
@@ -74,12 +78,16 @@ export async function getAdminModule(id: string) {
       lessons: {
         orderBy: { sortOrder: "asc" },
       },
+      _count: {
+        select: { lessons: true },
+      },
     },
   });
 }
 
-export async function listAdminLessons() {
+export async function listAdminLessons(programId?: string) {
   return prisma.lesson.findMany({
+    where: programId ? { programId } : undefined,
     orderBy: [
       { program: { title: "asc" } },
       { module: { sortOrder: "asc" } },
