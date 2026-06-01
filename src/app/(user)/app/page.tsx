@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { CheckoutButton } from "@/components/app/checkout-button";
+import { CommunityCard } from "@/components/app/community-card";
+import { ProfileNamePrompt } from "@/components/app/profile-name-prompt";
 import { ProgressMeter } from "@/components/app/progress-meter";
 import { WelcomeVideoCard } from "@/components/app/welcome-video-card";
 import {
@@ -87,6 +89,10 @@ export default async function UserDashboardPage({
           </p>
         </WorkspaceCard>
       ) : null}
+
+      {!user.name ? <ProfileNamePrompt /> : null}
+
+      <CommunityCard />
 
       {program && progress ? (
         <>
