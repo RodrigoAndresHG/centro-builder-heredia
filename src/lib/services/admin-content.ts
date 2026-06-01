@@ -32,7 +32,7 @@ export async function getAdminProduct(id: string) {
 
 export async function listAdminPrograms() {
   return prisma.program.findMany({
-    orderBy: [{ createdAt: "desc" }],
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     include: {
       product: true,
       modules: true,

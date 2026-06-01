@@ -36,6 +36,7 @@ type ProgramFormValue = {
   description?: string | null;
   productId?: string | null;
   status?: string | null;
+  sortOrder?: number;
   opensAt?: Date | string | null;
   presaleMessage?: string | null;
   isPublished?: boolean;
@@ -249,6 +250,18 @@ export function ProgramForm({
           defaultValue={program?.description}
           placeholder="Describe la promesa y alcance del programa."
         />
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Orden de aparición</FieldLabel>
+        <div className="max-w-[180px]">
+          <NumberInput name="sortOrder" defaultValue={program?.sortOrder ?? 0} />
+        </div>
+        <span className="block text-xs leading-5 text-neutral-500">
+          Controla en qué orden aparecen los programas para el usuario. Menor
+          número = aparece primero. El primero disponible para cada usuario es
+          el que se muestra como programa principal.
+        </span>
       </label>
 
       <div className="rounded-xl border border-border bg-surface-muted p-4">

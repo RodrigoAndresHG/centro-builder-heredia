@@ -29,6 +29,7 @@ export default async function AdminProgramasPage() {
           <table className="w-full min-w-[760px] border-collapse text-left">
             <thead className="bg-surface-muted text-xs uppercase tracking-[0.14em] text-neutral-500">
               <tr>
+                <th className="px-5 py-3 font-semibold">Orden</th>
                 <th className="px-5 py-3 font-semibold">Programa</th>
                 <th className="px-5 py-3 font-semibold">Producto</th>
                 <th className="px-5 py-3 font-semibold">Contenido</th>
@@ -39,6 +40,9 @@ export default async function AdminProgramasPage() {
             <tbody className="divide-y divide-border">
               {programs.map((program) => (
                 <tr key={program.id}>
+                  <td className="px-5 py-4 text-sm font-semibold text-neutral-600">
+                    {program.sortOrder}
+                  </td>
                   <td className="px-5 py-4">
                     <p className="font-semibold text-foreground">{program.title}</p>
                     <p className="mt-1 text-sm text-neutral-500">{program.slug}</p>
