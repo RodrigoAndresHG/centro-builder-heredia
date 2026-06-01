@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProgramForm } from "@/components/admin/content/content-forms";
+import { DeleteProgramDangerZone } from "@/components/admin/content/danger-zone";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
-import { updateProgram } from "@/lib/actions/admin-content";
+import { deleteProgram, updateProgram } from "@/lib/actions/admin-content";
 import { getAdminProgram, listAdminProducts } from "@/lib/services";
 
 type EditProgramPageProps = {
@@ -45,6 +46,14 @@ export default async function EditProgramPage({ params }: EditProgramPageProps) 
           submitLabel="Guardar cambios"
         />
       </Card>
+
+      <DeleteProgramDangerZone
+        action={deleteProgram.bind(null, program.id)}
+        programSlug={program.slug}
+        moduleCount={program._count.modules}
+        lessonCount={program._count.lessons}
+        accessCount={program._count.accesses}
+      />
     </div>
   );
 }

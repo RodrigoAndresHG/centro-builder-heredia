@@ -185,6 +185,74 @@ export async function toggleProgramPublished(id: string, isPublished: boolean) {
   revalidateContentPaths();
 }
 
+export async function deleteProgram(id: string, formData: FormData) {
+  await requireAdmin();
+
+  const program = await prisma.program.findUnique({
+    where: { id },
+    select: { slug: true, _count: { select: { accesses: true } } },
+  });
+
+  if (!program) {
+    throw new Error("Programa no encontrado.");
+  }
+
+  // Typed-slug safeguard: the admin must type the program slug exactly.
+  const confirmSlug = readString(formData, "confirmSlug");
+  if (confirmSlug !== program.slug) {
+    throw new Error(
+      `Para eliminar, escribe exactamente el slug del programa: "${program.slug}".`,
+    );
+  }
+
+  // Cascade deletes modules, lessons, prompts, resources, lesson
+  // progress, and accesses (per schema onDelete: Cascade). Purchases
+  // are preserved (productId set null) so commercial history survives.
+  await prisma.program.delete({ where: { id } });
+
+  revalidateContentPaths();
+  redirect("/admin/programas");
+}
+
+export async function deleteModule(id: string) {
+  await requireAdmin();
+
+  const programModule = await prisma.module.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+
+  if (!programModule) {
+    throw new Error("Modulo no encontrado.");
+  }
+
+  // Lessons survive: their moduleId is set to null (onDelete: SetNull),
+  // so content is not lost — only the module grouping is removed.
+  await prisma.module.delete({ where: { id } });
+
+  revalidateContentPaths();
+  redirect("/admin/modulos");
+}
+
+export async function deleteLesson(id: string) {
+  await requireAdmin();
+
+  const lesson = await prisma.lesson.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+
+  if (!lesson) {
+    throw new Error("Leccion no encontrada.");
+  }
+
+  // Cascade deletes the lesson's prompts, resources, and progress.
+  await prisma.lesson.delete({ where: { id } });
+
+  revalidateContentPaths();
+  redirect("/admin/lecciones");
+}
+
 export async function createModule(formData: FormData) {
   await requireAdmin();
 
