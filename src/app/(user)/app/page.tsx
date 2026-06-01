@@ -34,7 +34,7 @@ const premiumUnlockItems = [
 
 const activationReinforcements = [
   "Precio fundador hoy: USD 47",
-  "Apertura oficial: 30 de mayo de 2026",
+  "Apertura oficial: 4 de junio de 2026",
   "Precio regular después: USD 67",
 ];
 

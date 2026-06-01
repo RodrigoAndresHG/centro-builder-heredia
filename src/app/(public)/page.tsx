@@ -34,7 +34,7 @@ const programBullets = [
 
 const finalReinforcements = [
   "Precio fundador hoy: USD 47",
-  "Apertura oficial: 30 de mayo de 2026",
+  "Apertura oficial: 4 de junio de 2026",
   "Precio regular después: USD 67",
 ];
 
@@ -134,7 +134,7 @@ function HeroSystemVisual() {
             {[
               ["Primer programa", "Build IdeaCash — Founder Access"],
               ["Sistema", "OpenAI + Anthropic + Gemini"],
-              ["Apertura", "Sábado 30 de mayo de 2026"],
+              ["Apertura", "Jueves 4 de junio de 2026"],
             ].map(([label, value], index) => (
               <div
                 key={label}
@@ -206,7 +206,7 @@ export default function HomePage() {
             </Reveal>
             <Reveal delay={390}>
               <p className="mt-4 text-sm font-semibold text-neutral-400">
-                Precio fundador hoy: USD 47 · Apertura oficial: 30 de mayo de
+                Precio fundador hoy: USD 47 · Apertura oficial: 4 de junio de
                 2026
               </p>
             </Reveal>
@@ -240,7 +240,7 @@ export default function HomePage() {
               Asegura el precio fundador antes de la apertura
             </h2>
             <p className="mt-4 text-base leading-8 text-neutral-200">
-              Build IdeaCash — Founder Access abrirá oficialmente el 30 de mayo
+              Build IdeaCash — Founder Access abrirá oficialmente el 4 de junio
               de 2026. Hasta entonces, puedes entrar con el precio de apertura
               antes del siguiente aumento.
             </p>
@@ -270,7 +270,7 @@ export default function HomePage() {
           <LaunchCountdown />
           <div className="mt-5 grid gap-3 text-sm text-neutral-300">
             <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-4">
-              Sábado 30 de mayo de 2026: lanzamiento oficial en vivo
+              Jueves 4 de junio de 2026: lanzamiento oficial en vivo
             </div>
             <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-4">
               El precio fundador queda disponible antes de la apertura
@@ -343,7 +343,7 @@ export default function HomePage() {
           <div>
             <SectionIntro
               title="Elige cómo quieres entrar a Builder"
-              description="Puedes asegurar el precio fundador hoy, entrar a explorar la plataforma o reservar prioridad antes de la apertura oficial del 30 de mayo."
+              description="Puedes asegurar el precio fundador hoy, entrar a explorar la plataforma o reservar prioridad antes de la apertura oficial del 4 de junio."
             />
             <Reveal
               delay={120}
