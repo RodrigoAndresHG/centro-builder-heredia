@@ -6,36 +6,70 @@ import { Reveal } from "@/components/public/reveal";
 import { VideoShowcase } from "@/components/public/video-showcase";
 
 const heroBullets = [
-  "Construye con OpenAI, Anthropic y Gemini",
-  "Entra al primer programa de Builder HeredIA",
-  "Asegura el precio fundador antes del lanzamiento",
+  "Construido en vivo, paso a paso, sin relleno",
+  "Conecta IA real: OpenAI, Anthropic y Gemini",
+  "Te llevas el agente funcionando, no solo teoría",
 ];
 
-const earlyBenefits = [
-  "Aviso antes de la apertura",
-  "Precio fundador reservado",
-  "Prioridad de acceso al lanzamiento",
+type ProgramCardData = {
+  badge: string;
+  badgeTone: "free" | "live" | "flagship";
+  name: string;
+  description: string;
+  price: string;
+  priceNote: string;
+  href: string;
+  cta: string;
+};
+
+const programs: ProgramCardData[] = [
+  {
+    badge: "Gratis",
+    badgeTone: "free",
+    name: "Claude desde Cero",
+    description:
+      "Tu punto de entrada al ecosistema. Aprende a usar Claude con criterio, desde cero y sin costo.",
+    price: "Gratis",
+    priceNote: "Empieza hoy sin tarjeta",
+    href: "/registro?intent=explore",
+    cta: "Empezar gratis",
+  },
+  {
+    badge: "El del Live",
+    badgeTone: "live",
+    name: "Crea tu Agente de Noticias de IA en 1 Hora",
+    description:
+      "El programa que construyo en vivo el jueves. Llévate el paso a paso completo para dejar tu agente funcionando a tu ritmo.",
+    price: "USD 9.99",
+    priceNote: "Pago único · acceso inmediato",
+    href: "/registro?intent=buy",
+    cta: "Obtener el programa",
+  },
+  {
+    badge: "Programa insignia",
+    badgeTone: "flagship",
+    name: "Builder Multi-IA",
+    description:
+      "El recorrido completo para construir productos Multi-IA reales, módulo a módulo, con contenido nuevo cada semana.",
+    price: "USD 47",
+    priceNote: "Acceso al programa completo",
+    href: "/registro?intent=buy",
+    cta: "Activar acceso",
+  },
 ];
 
 const builderPoints = [
   ["Entorno privado", "Un espacio cerrado para aprender con foco."],
-  ["Programas guiados", "Rutas claras desde arquitectura hasta producto."],
-  ["Continuidad", "Siguiente paso, progreso y contexto."],
+  ["Programas guiados", "Rutas claras desde la idea hasta el producto."],
+  ["Continuidad", "Siguiente paso, progreso y contexto guardados."],
   ["Updates del build", "Nuevas piezas dentro del mismo sistema."],
-  ["Soporte centralizado", "Acceso, compra y ayuda en un solo lugar."],
+  ["Comunidad", "Builders construyendo en paralelo, en WhatsApp."],
 ];
 
-const programBullets = [
-  "Replica la app desde cero",
-  "Conecta OpenAI, Anthropic y Gemini",
-  "Sigue el build dentro del LMS",
-  "Avanza con continuidad, updates y soporte",
-];
-
-const finalReinforcements = [
-  "Precio fundador hoy: USD 47",
-  "Apertura oficial: 4 de junio de 2026",
-  "Precio regular después: USD 67",
+const liveHighlights = [
+  "Qué vamos a construir y por qué",
+  "Conectar la IA y traer noticias reales",
+  "Dejar el agente listo para usar",
 ];
 
 function BuyCta({ children }: { children: string }) {
@@ -57,28 +91,6 @@ function ExploreCta({ children }: { children: string }) {
     <Link
       href="/registro?intent=explore"
       className="inline-flex min-h-12 items-center justify-center rounded-md border border-teal-400/30 bg-teal-400/10 px-5 py-3 text-sm font-semibold text-teal-100 transition duration-300 hover:-translate-y-0.5 hover:border-teal-300/60 hover:bg-teal-400/15"
-    >
-      {children}
-    </Link>
-  );
-}
-
-function EarlyAccessCta({ children }: { children: string }) {
-  return (
-    <a
-      href="#acceso-temprano"
-      className="inline-flex min-h-11 items-center justify-center rounded-md border border-neutral-800 bg-neutral-950 px-4 py-2.5 text-sm font-semibold text-neutral-300 transition duration-300 hover:-translate-y-0.5 hover:border-neutral-600 hover:text-white"
-    >
-      {children}
-    </a>
-  );
-}
-
-function ProgramCta({ children }: { children: string }) {
-  return (
-    <Link
-      href="/programas/build-ideacash"
-      className="inline-flex min-h-12 items-center justify-center rounded-md border border-neutral-700 bg-neutral-950 px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:border-neutral-400 hover:bg-neutral-900"
     >
       {children}
     </Link>
@@ -111,54 +123,90 @@ function SectionIntro({
   );
 }
 
-function HeroSystemVisual() {
+const badgeToneClass: Record<ProgramCardData["badgeTone"], string> = {
+  free: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
+  live: "border-teal-300/40 bg-teal-300/15 text-teal-100",
+  flagship: "border-amber-400/30 bg-amber-400/10 text-amber-200",
+};
+
+function ProgramCard({ program }: { program: ProgramCardData }) {
+  const isLive = program.badgeTone === "live";
+
+  return (
+    <div
+      className={`flex h-full flex-col rounded-2xl border p-6 shadow-xl shadow-black/10 transition duration-300 hover:-translate-y-1 ${
+        isLive
+          ? "border-teal-400/40 bg-teal-400/10 hover:border-teal-300/60"
+          : "border-neutral-800 bg-neutral-900 hover:border-teal-400/40"
+      }`}
+    >
+      <span
+        className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${badgeToneClass[program.badgeTone]}`}
+      >
+        {program.badge}
+      </span>
+      <h3 className="mt-4 text-xl font-semibold leading-tight text-white">
+        {program.name}
+      </h3>
+      <p className="mt-3 flex-1 text-sm leading-7 text-neutral-300">
+        {program.description}
+      </p>
+      <div className="mt-5">
+        <p className="text-2xl font-semibold text-white">{program.price}</p>
+        <p className="mt-1 text-xs text-neutral-500">{program.priceNote}</p>
+      </div>
+      <Link
+        href={program.href}
+        className={`mt-5 inline-flex min-h-11 items-center justify-center rounded-md px-4 py-2.5 text-sm font-semibold transition duration-300 hover:-translate-y-0.5 ${
+          isLive
+            ? "bg-teal-300 text-neutral-950 shadow-lg shadow-teal-950/40 hover:bg-teal-200"
+            : "border border-neutral-700 bg-neutral-950 text-white hover:border-neutral-400"
+        }`}
+      >
+        {program.cta}
+      </Link>
+    </div>
+  );
+}
+
+function LiveCard() {
   return (
     <Reveal delay={160}>
-      <div className="relative rounded-2xl border border-neutral-800 bg-neutral-900 p-3 shadow-2xl shadow-black/40 transition duration-500 hover:-translate-y-1 hover:border-neutral-700">
-        <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-4">
+      <div className="relative rounded-2xl border border-neutral-800 bg-neutral-900 p-3 shadow-2xl shadow-black/40">
+        <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-5">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase text-teal-300">
-                Rodrigo HeredIA LMS
-              </p>
-              <p className="mt-1 text-sm font-semibold text-white">
-                Builder.rodriheredia.com
+            <div className="flex items-center gap-2">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-red-300">
+                Live en TikTok
               </p>
             </div>
-            <span className="rounded-md border border-amber-400/20 bg-amber-400/10 px-2.5 py-1 text-xs font-semibold text-amber-300">
-              Pre-lanzamiento
+            <span className="rounded-md border border-teal-400/20 bg-teal-400/10 px-2.5 py-1 text-xs font-semibold text-teal-200">
+              Gratis
             </span>
           </div>
 
-          <div className="mt-6 grid gap-3">
-            {[
-              ["Primer programa", "Build IdeaCash — Founder Access"],
-              ["Sistema", "OpenAI + Anthropic + Gemini"],
-              ["Apertura", "Jueves 4 de junio de 2026"],
-            ].map(([label, value], index) => (
-              <div
-                key={label}
-                className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 transition duration-300 hover:border-teal-400/40"
-                style={{ transitionDelay: `${index * 40}ms` }}
-              >
-                <p className="text-xs font-semibold uppercase text-neutral-500">
-                  {label}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-white">{value}</p>
-              </div>
-            ))}
+          <h3 className="mt-4 text-lg font-semibold leading-tight text-white">
+            Construyo un Agente de Noticias con IA, en vivo
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-neutral-400">
+            Jueves 4 de junio · 9:00 PM (hora Ecuador)
+          </p>
+
+          <div className="mt-5">
+            <LaunchCountdown />
           </div>
 
-          <div className="mt-6 rounded-lg border border-teal-400/20 bg-teal-400/10 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-teal-100">
-                Acceso fundador
-              </p>
-              <p className="text-sm font-semibold text-white">USD 47</p>
-            </div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-neutral-800">
-              <div className="h-full w-2/5 rounded-full bg-teal-300" />
-            </div>
+          <div className="mt-5 grid gap-2">
+            {liveHighlights.map((item) => (
+              <div
+                key={item}
+                className="flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm text-neutral-200"
+              >
+                <span className="text-teal-300">✓</span>
+                {item}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -173,17 +221,17 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1fr_0.82fr] lg:px-8 lg:py-24">
           <div className="flex flex-col justify-center">
             <Reveal>
-              <div className="inline-flex w-fit rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase text-teal-300">
-                LMS oficial de Rodrigo HeredIA
+              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-red-300">
+                <span className="flex h-2 w-2 rounded-full bg-red-500" />
+                Live gratis · Jueves 4 de junio · 9PM · TikTok
               </div>
               <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.04] text-white sm:text-5xl lg:text-6xl">
-                Aprende a construir productos Multi-IA reales dentro de Builder
-                HeredIA.
+                Construye tu primer Agente de IA, en vivo y gratis.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-300">
-                Explora por dentro cómo diseño, conecto y convierto múltiples
-                IAs en productos reales, empezando con Build IdeaCash — Founder
-                Access.
+                El jueves construimos juntos un Agente de Noticias con IA, paso
+                a paso, en TikTok. ¿Quieres tenerlo completo y a tu ritmo? El
+                programa está dentro del LMS oficial de Rodrigo HeredIA.
               </p>
             </Reveal>
 
@@ -201,168 +249,70 @@ export default function HomePage() {
               delay={320}
               className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
             >
-              <BuyCta>Comprar acceso ahora</BuyCta>
-              <ExploreCta>Entrar y explorar</ExploreCta>
+              <BuyCta>Obtener el programa · USD 9.99</BuyCta>
+              <ExploreCta>Empezar gratis</ExploreCta>
             </Reveal>
             <Reveal delay={390}>
               <p className="mt-4 text-sm font-semibold text-neutral-400">
-                Precio fundador hoy: USD 47 · Apertura oficial: 4 de junio de
-                2026
+                Agente de Noticias de IA: USD 9.99 · pago único · acceso
+                inmediato dentro del LMS
               </p>
             </Reveal>
           </div>
 
-          <HeroSystemVisual />
+          <LiveCard />
         </div>
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
         <div className="flex flex-col justify-center">
           <SectionIntro
-            title="Mira cómo se siente Builder"
-            description="Un preview breve del LMS, el enfoque de aprendizaje y el primer build Multi-IA antes de entrar."
+            title="Mira cómo se siente el LMS por dentro"
+            description="Un vistazo rápido al entorno, el ritmo de aprendizaje y la experiencia real antes de entrar."
           />
           <Reveal delay={160} className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <BuyCta>Comprar acceso ahora</BuyCta>
-            <ExploreCta>Entrar y explorar</ExploreCta>
+            <BuyCta>Obtener el programa</BuyCta>
+            <ExploreCta>Empezar gratis</ExploreCta>
           </Reveal>
         </div>
         <VideoShowcase />
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
-        <Reveal>
-          <div className="rounded-2xl border border-teal-400/30 bg-teal-400/10 p-6 shadow-2xl shadow-black/20">
-            <p className="text-sm font-semibold uppercase text-teal-200">
-              Precio fundador antes del lanzamiento
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold leading-tight text-white">
-              Asegura el precio fundador antes de la apertura
-            </h2>
-            <p className="mt-4 text-base leading-8 text-neutral-200">
-              Build IdeaCash — Founder Access abrirá oficialmente el 4 de junio
-              de 2026. Hasta entonces, puedes entrar con el precio de apertura
-              antes del siguiente aumento.
-            </p>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl border border-teal-300/25 bg-neutral-950/70 p-4">
-                <p className="text-xs font-semibold uppercase text-neutral-500">
-                  Precio fundador hoy
-                </p>
-                <p className="mt-2 text-3xl font-semibold text-white">USD 47</p>
-              </div>
-              <div className="rounded-xl border border-neutral-800 bg-neutral-950/70 p-4">
-                <p className="text-xs font-semibold uppercase text-neutral-500">
-                  Precio regular después de la apertura
-                </p>
-                <p className="mt-2 text-3xl font-semibold text-neutral-300">
-                  USD 67
-                </p>
-              </div>
-            </div>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <BuyCta>Comprar acceso ahora</BuyCta>
-              <ExploreCta>Entrar y explorar</ExploreCta>
-            </div>
-          </div>
-        </Reveal>
-        <Reveal delay={140} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 shadow-2xl shadow-black/20">
-          <LaunchCountdown />
-          <div className="mt-5 grid gap-3 text-sm text-neutral-300">
-            <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-4">
-              Jueves 4 de junio de 2026: lanzamiento oficial en vivo
-            </div>
-            <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-4">
-              El precio fundador queda disponible antes de la apertura
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
       <section className="border-y border-neutral-800 bg-neutral-900/70">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 lg:px-8">
           <SectionIntro
-            title="El LMS oficial de Rodrigo HeredIA"
-            description="Un entorno privado para aprender a construir productos Multi-IA con estructura, continuidad y criterio."
+            eyebrow="Ecosistema de programas"
+            title="Elige por dónde empezar"
+            description="Builder HeredIA crece como un ecosistema: empieza gratis, llévate el programa del Live, y profundiza con el recorrido completo. Cada semana se suma contenido nuevo."
           />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {builderPoints.map(([title, description], index) => (
-              <Reveal key={title} delay={index * 70}>
-                <div className="h-full rounded-xl border border-neutral-800 bg-neutral-950 p-4 transition duration-300 hover:-translate-y-1 hover:border-teal-400/40">
-                  <p className="text-sm font-semibold leading-6 text-white">
-                    {title}
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-neutral-500">
-                    {description}
-                  </p>
-                </div>
+          <div className="mt-8 grid gap-5 lg:grid-cols-3">
+            {programs.map((program, index) => (
+              <Reveal key={program.name} delay={index * 90}>
+                <ProgramCard program={program} />
               </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-        <div>
-          <SectionIntro
-            eyebrow="Programa activo"
-            title="Empieza por el primer programa de Builder"
-            description="Aprende cómo nace, se estructura y evoluciona una app Multi-IA real, entendiendo cómo conectar OpenAI, Anthropic y Gemini dentro de un producto usable y vendible."
-          />
-          <Reveal delay={90}>
-            <div className="mt-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-xl shadow-black/10">
-              <p className="text-xs font-semibold uppercase text-teal-300">
-                Build IdeaCash — Founder Access
-              </p>
-              <p className="mt-3 text-sm leading-7 text-neutral-300">
-                No entras a contenido suelto. Entras al build real del primer
-                programa de Builder HeredIA.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={140} className="mt-7">
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <BuyCta>Comprar acceso ahora</BuyCta>
-              <ProgramCta>Ver el programa activo</ProgramCta>
-            </div>
-          </Reveal>
-        </div>
-        <div className="grid gap-3">
-          {programBullets.map((bullet, index) => (
-            <Reveal key={bullet} delay={index * 80}>
-              <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-5 text-sm font-medium text-neutral-100 shadow-xl shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-teal-400/40">
-                {bullet}
+      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-6 lg:px-8">
+        <SectionIntro
+          title="El LMS oficial de Rodrigo HeredIA"
+          description="Un entorno privado para aprender a construir con IA con estructura, continuidad y criterio — no contenido suelto."
+        />
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {builderPoints.map(([title, description], index) => (
+            <Reveal key={title} delay={index * 70}>
+              <div className="h-full rounded-xl border border-neutral-800 bg-neutral-950 p-4 transition duration-300 hover:-translate-y-1 hover:border-teal-400/40">
+                <p className="text-sm font-semibold leading-6 text-white">
+                  {title}
+                </p>
+                <p className="mt-3 text-sm leading-6 text-neutral-500">
+                  {description}
+                </p>
               </div>
             </Reveal>
           ))}
-        </div>
-      </section>
-
-      <section className="border-t border-neutral-800">
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
-          <div>
-            <SectionIntro
-              title="Elige cómo quieres entrar a Builder"
-              description="Puedes asegurar el precio fundador hoy, entrar a explorar la plataforma o reservar prioridad antes de la apertura oficial del 4 de junio."
-            />
-            <Reveal
-              delay={120}
-              className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
-            >
-              <BuyCta>Comprar acceso ahora</BuyCta>
-              <ExploreCta>Entrar y explorar</ExploreCta>
-              <EarlyAccessCta>Quiero acceso prioritario</EarlyAccessCta>
-            </Reveal>
-          </div>
-          <div className="grid gap-3">
-            {finalReinforcements.map((item, index) => (
-              <Reveal key={item} delay={index * 70}>
-                <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4 text-sm font-medium text-neutral-200 transition duration-300 hover:border-teal-400/40">
-                  {item}
-                </div>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -373,12 +323,16 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-5 py-16 sm:px-6 lg:grid-cols-[0.84fr_1fr] lg:px-8">
           <div>
             <SectionIntro
-              eyebrow="Acceso prioritario"
-              title="¿Aún no quieres entrar? Reserva tu acceso prioritario"
-              description="Deja tus datos y te avisaré antes de la apertura oficial para que puedas entrar con precio fundador y prioridad de acceso."
+              eyebrow="Mantente al día"
+              title="Recibe aviso de cada nuevo programa y Live"
+              description="Déjame tu correo y te avisaré cuando abra un nuevo programa, módulo o Live. Sin spam, solo lo importante del ecosistema Builder."
             />
             <div className="mt-7 grid gap-3">
-              {earlyBenefits.map((benefit, index) => (
+              {[
+                "Aviso de nuevos programas y módulos",
+                "Invitación a los próximos Lives",
+                "Acceso temprano a lanzamientos",
+              ].map((benefit, index) => (
                 <Reveal key={benefit} delay={index * 90}>
                   <div className="rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm font-medium text-neutral-200 transition duration-300 hover:border-teal-400/40">
                     {benefit}
@@ -389,7 +343,7 @@ export default function HomePage() {
           </div>
           <EarlyAccessForm source="home" />
           <p className="text-sm font-medium text-neutral-500 lg:col-start-2">
-            Sin compromiso. Solo te avisaré antes de la apertura.
+            Sin compromiso. Solo te aviso de lo importante.
           </p>
         </div>
       </section>
