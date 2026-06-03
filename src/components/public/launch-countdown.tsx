@@ -37,10 +37,10 @@ export function LaunchCountdown() {
     <div className="space-y-4">
       <div>
         <p className="text-xs font-semibold uppercase text-teal-300">
-          Tiempo restante para entrar con precio fundador
+          Faltan para el Live en TikTok
         </p>
         <p className="mt-1 text-sm font-medium text-neutral-400">
-          Apertura del primer programa del LMS
+          Jueves 4 de junio · 9:00 PM (Ecuador)
         </p>
       </div>
       <div className="grid grid-cols-4 gap-2 sm:gap-3">
