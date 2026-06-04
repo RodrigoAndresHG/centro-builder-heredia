@@ -17,28 +17,71 @@ const toneAccent: Record<BioLink["tone"], string> = {
   social: "from-white/[0.06] to-white/[0.02] border-white/10",
 };
 
-function Avatar() {
-  const { photoSrc, initials, name } = bioConfig.profile;
+function ProfileHeader() {
+  const { photoSrc, initials, name, title, tagline, verified } =
+    bioConfig.profile;
 
-  return (
-    <div className="relative mx-auto w-fit">
-      <div className="rounded-full bg-gradient-to-tr from-teal-300 via-emerald-400 to-teal-500 p-[3px] shadow-2xl shadow-teal-500/30">
-        {photoSrc ? (
-          // eslint-disable-next-line @next/next/no-img-element
+  // Hero con foto: imagen grande estilo CIO con degradado y nombre encima.
+  if (photoSrc) {
+    return (
+      <div>
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/50">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={photoSrc}
             alt={name}
-            className="h-28 w-28 rounded-full object-cover sm:h-32 sm:w-32"
+            className="aspect-[4/5] w-full object-cover object-top"
           />
-        ) : (
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/30 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-5">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                {name}
+              </h1>
+              {verified ? (
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-300 text-xs font-bold text-neutral-950">
+                  ✓
+                </span>
+              ) : null}
+            </div>
+            <p className="mt-2 inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-teal-200 backdrop-blur">
+              {title}
+            </p>
+          </div>
+        </div>
+        <p className="mt-4 text-center text-sm leading-7 text-neutral-300">
+          {tagline}
+        </p>
+      </div>
+    );
+  }
+
+  // Fallback sin foto: avatar circular con iniciales.
+  return (
+    <div>
+      <div className="relative mx-auto w-fit">
+        <div className="rounded-full bg-gradient-to-tr from-teal-300 via-emerald-400 to-teal-500 p-[3px] shadow-2xl shadow-teal-500/30">
           <div className="flex h-28 w-28 items-center justify-center rounded-full bg-neutral-900 text-4xl font-semibold tracking-tight text-white sm:h-32 sm:w-32">
             {initials}
           </div>
-        )}
+        </div>
+        {verified ? (
+          <span className="absolute bottom-1 right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-neutral-950 bg-teal-300 text-sm font-bold text-neutral-950">
+            ✓
+          </span>
+        ) : null}
       </div>
-      <span className="absolute bottom-1 right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-neutral-950 bg-teal-300 text-sm font-bold text-neutral-950">
-        ✓
-      </span>
+      <div className="mt-5 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          {name}
+        </h1>
+        <p className="mt-2 inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-teal-200">
+          {title}
+        </p>
+        <p className="mx-auto mt-4 max-w-sm text-sm leading-7 text-neutral-300">
+          {tagline}
+        </p>
+      </div>
     </div>
   );
 }
@@ -81,7 +124,7 @@ function LinkCard({ link }: { link: BioLink }) {
 }
 
 export default function BioPage() {
-  const { profile, stats, featured, links } = bioConfig;
+  const { stats, featured, links } = bioConfig;
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-neutral-950 text-white">
@@ -92,18 +135,7 @@ export default function BioPage() {
 
       <div className="relative mx-auto flex min-h-dvh max-w-md flex-col px-5 py-12 sm:py-16">
         <Reveal>
-          <Avatar />
-          <div className="mt-5 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              {profile.name}
-            </h1>
-            <p className="mt-2 inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-teal-200">
-              {profile.title}
-            </p>
-            <p className="mx-auto mt-4 max-w-sm text-sm leading-7 text-neutral-300">
-              {profile.tagline}
-            </p>
-          </div>
+          <ProfileHeader />
         </Reveal>
 
         <Reveal delay={120}>
