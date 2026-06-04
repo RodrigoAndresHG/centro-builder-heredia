@@ -3,8 +3,13 @@
 // pública en /bio. Es lo único que tocas para cambiar foto, textos y links.
 // ─────────────────────────────────────────────────────────────────────────
 
+export type BrandKey = "tiktok" | "instagram" | "whatsapp";
+
 export type BioLink = {
+  // icon = emoji para cursos/LMS. Para redes usa `brand` y se renderiza
+  // el logo oficial (icon se ignora si hay brand).
   icon: string;
+  brand?: BrandKey;
   title: string;
   subtitle: string;
   href: string;
@@ -58,6 +63,7 @@ export const bioConfig = {
     },
     {
       icon: "📣",
+      brand: "whatsapp",
       title: "Canal de WhatsApp",
       subtitle: "Novedades, módulos y Lives",
       href: "https://whatsapp.com/channel/0029VbD3AGkLikg5aJbgRq0l",
@@ -65,6 +71,7 @@ export const bioConfig = {
     },
     {
       icon: "🎵",
+      brand: "tiktok",
       title: "TikTok",
       subtitle: "@rodrigo_heredia_cio",
       href: "https://www.tiktok.com/@rodrigo_heredia_cio",
@@ -72,6 +79,7 @@ export const bioConfig = {
     },
     {
       icon: "📸",
+      brand: "instagram",
       title: "Instagram",
       subtitle: "@rodrigo_heredia_cio",
       href: "https://www.instagram.com/rodrigo_heredia_cio",
@@ -85,4 +93,10 @@ export const bioConfig = {
       tone: "social",
     },
   ] satisfies BioLink[],
+
+  // Nota sutil de programas próximos (no clickeable).
+  upcoming: {
+    label: "5 programas más en construcción",
+    note: "Síguelos primero desde el canal de WhatsApp.",
+  },
 };
