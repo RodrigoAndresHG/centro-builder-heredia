@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Reveal } from "@/components/public/reveal";
 import { bioConfig, type BioLink, type BrandKey } from "./bio-config";
+import { OpenInBrowserBanner } from "./open-in-browser-banner";
 
 export const metadata: Metadata = {
   title: `${bioConfig.profile.name} · Builder HeredIA`,
@@ -181,6 +182,8 @@ export default function BioPage() {
       <div className="pointer-events-none absolute left-0 top-1/3 h-64 w-64 rounded-full bg-teal-500/10 blur-[120px]" />
 
       <div className="relative mx-auto flex min-h-dvh max-w-md flex-col px-5 py-12 sm:py-16">
+        <OpenInBrowserBanner />
+
         <Reveal>
           <ProfileHeader />
         </Reveal>
