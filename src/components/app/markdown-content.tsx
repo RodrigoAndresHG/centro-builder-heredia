@@ -7,7 +7,7 @@ type MarkdownContentProps = {
 
 export function MarkdownContent({ content }: MarkdownContentProps) {
   return (
-    <div className="space-y-5 text-base leading-8 text-neutral-200">
+    <div className="space-y-5 break-words text-base leading-8 text-neutral-200">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -37,7 +37,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
               href={href}
               target="_blank"
               rel="noreferrer"
-              className="text-teal-300 underline decoration-teal-500/40 underline-offset-4 transition hover:text-teal-200"
+              className="text-teal-300 underline decoration-teal-500/40 underline-offset-4 transition hover:text-teal-200 [overflow-wrap:anywhere]"
             >
               {children}
             </a>

@@ -178,7 +178,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
       {canConsumeLesson ? (
         <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <div className="aspect-video overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-950 text-white shadow-2xl shadow-black/30">
               {lesson.streamVideoId ? (
                 <iframe
@@ -255,12 +255,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
                       className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950"
                     >
                       <div className="flex items-start justify-between gap-3 border-b border-neutral-800 px-4 py-3">
-                        <p className="text-sm font-semibold text-white">
+                        <p className="min-w-0 break-words text-sm font-semibold text-white">
                           {prompt.title}
                         </p>
                         <CopyButton value={prompt.body} />
                       </div>
-                      <pre className="overflow-x-auto whitespace-pre-wrap break-words px-4 py-4 font-mono text-sm leading-6 text-neutral-200">
+                      <pre className="whitespace-pre-wrap break-words px-4 py-4 font-mono text-sm leading-6 text-neutral-200 [overflow-wrap:anywhere]">
                         {prompt.body}
                       </pre>
                     </div>
@@ -296,7 +296,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                         href={resource.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="group flex flex-col rounded-xl border border-neutral-800 bg-neutral-950 p-4 transition hover:-translate-y-0.5 hover:border-neutral-600"
+                        className="group flex min-w-0 flex-col rounded-xl border border-neutral-800 bg-neutral-950 p-4 transition hover:-translate-y-0.5 hover:border-neutral-600"
                       >
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
@@ -306,15 +306,15 @@ export default async function LessonPage({ params }: LessonPageProps) {
                             {meta.label}
                           </span>
                         </div>
-                        <p className="mt-2 text-sm font-semibold text-white transition group-hover:text-teal-200">
+                        <p className="mt-2 break-words text-sm font-semibold text-white transition group-hover:text-teal-200">
                           {resource.title}
                         </p>
                         {resource.description ? (
-                          <p className="mt-1 text-xs leading-5 text-neutral-400">
+                          <p className="mt-1 break-words text-xs leading-5 text-neutral-400">
                             {resource.description}
                           </p>
                         ) : null}
-                        <p className="mt-3 text-xs text-teal-300">
+                        <p className="mt-3 break-words text-xs text-teal-300">
                           {safeHostname(resource.url)}
                         </p>
                       </a>
@@ -325,7 +325,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
             ) : null}
           </div>
 
-          <aside className="space-y-4">
+          <aside className="min-w-0 space-y-4">
             <WorkspaceCard>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
                 Acción de progreso
