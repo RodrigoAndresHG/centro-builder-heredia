@@ -16,9 +16,8 @@ export const bioConfig = {
   profile: {
     name: "Rodrigo HeredIA",
     initials: "RH",
-    // Para usar TU foto: sube el archivo a public/bio/rodrigo.jpg y cambia
-    // esta línea a:  photoSrc: "/bio/rodrigo.jpg"
-    photoSrc: null as string | null,
+    // Foto hero. Para cambiarla, reemplaza public/bio/rodrigo.jpg.
+    photoSrc: "/bio/rodrigo.jpg" as string | null,
     title: "CIO · Founder de Builder HeredIA",
     tagline:
       "Lidero tecnología con IA y te enseño a construir productos reales, paso a paso y sin relleno.",
