@@ -1,9 +1,8 @@
-// WhatsApp Community invite link. Public by design (it's an invite link
-// meant to be shared). Override with NEXT_PUBLIC_COMMUNITY_URL in the
-// environment if the community link is ever rotated, otherwise this
-// default is used.
+// WhatsApp Channel link. Public by design (it's meant to be shared).
+// Override with NEXT_PUBLIC_COMMUNITY_URL in the environment if the
+// channel link is ever changed, otherwise this default is used.
 const DEFAULT_COMMUNITY_URL =
-  "https://chat.whatsapp.com/IdWV38L3Lw6DvP2LzHsNMj?mode=gi_t";
+  "https://whatsapp.com/channel/0029VbD3AGkLikg5aJbgRq0l";
 
 export function getCommunityUrl() {
   const fromEnv = process.env.NEXT_PUBLIC_COMMUNITY_URL?.trim();
