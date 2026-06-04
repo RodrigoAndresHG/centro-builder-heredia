@@ -19,9 +19,9 @@ export const bioConfig = {
     // Para usar TU foto: sube el archivo a public/bio/rodrigo.jpg y cambia
     // esta línea a:  photoSrc: "/bio/rodrigo.jpg"
     photoSrc: null as string | null,
-    title: "Founder · Builder HeredIA LMS",
+    title: "CIO · Founder de Builder HeredIA",
     tagline:
-      "Construyo productos reales con IA y te enseño a hacerlo paso a paso, sin relleno.",
+      "Lidero tecnología con IA y te enseño a construir productos reales, paso a paso y sin relleno.",
     verified: true,
   },
 
@@ -65,19 +65,25 @@ export const bioConfig = {
       tone: "channel",
     },
     {
+      icon: "🎵",
+      title: "TikTok",
+      subtitle: "@rodrigo_heredia_cio",
+      href: "https://www.tiktok.com/@rodrigo_heredia_cio",
+      tone: "social",
+    },
+    {
+      icon: "📸",
+      title: "Instagram",
+      subtitle: "@rodrigo_heredia_cio",
+      href: "https://www.instagram.com/rodrigo_heredia_cio",
+      tone: "social",
+    },
+    {
       icon: "🌐",
       title: "Entrar al LMS",
       subtitle: "builder.rodriheredia.com",
       href: "/",
       tone: "social",
     },
-    // ↓ Reemplaza el href con tu link real de TikTok y descomenta para mostrarlo.
-    // {
-    //   icon: "🎵",
-    //   title: "TikTok",
-    //   subtitle: "@tu_usuario",
-    //   href: "https://www.tiktok.com/@tu_usuario",
-    //   tone: "social",
-    // },
   ] satisfies BioLink[],
 };
