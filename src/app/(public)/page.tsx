@@ -63,7 +63,7 @@ const builderPoints = [
   ["Programas guiados", "Rutas claras desde la idea hasta el producto."],
   ["Continuidad", "Siguiente paso, progreso y contexto guardados."],
   ["Updates del build", "Nuevas piezas dentro del mismo sistema."],
-  ["Comunidad", "Builders construyendo en paralelo, en WhatsApp."],
+  ["Canal de WhatsApp", "Novedades, módulos y Lives directo en tu WhatsApp."],
 ];
 
 const liveHighlights = [
