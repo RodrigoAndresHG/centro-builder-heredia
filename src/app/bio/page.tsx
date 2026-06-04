@@ -123,7 +123,9 @@ function ProfileHeader() {
 }
 
 function LinkCard({ link }: { link: BioLink }) {
-  const isExternal = link.href.startsWith("http");
+  // Usa appHref (esquema/universal link de la app) si existe.
+  const href = link.appHref ?? link.href;
+  const isInternal = href.startsWith("/");
 
   const content = (
     <div
@@ -144,18 +146,27 @@ function LinkCard({ link }: { link: BioLink }) {
     </div>
   );
 
-  if (isExternal) {
+  if (isInternal) {
     return (
-      <a href={link.href} target="_blank" rel="noreferrer" className="group block">
+      <Link href={href} className="group block">
         {content}
-      </a>
+      </Link>
     );
   }
 
+  // Redes/links externos: navega en el mismo contexto (sin target=_blank)
+  // para que el sistema entregue el control a la app nativa en vez de abrir
+  // una pestaña web que se cuelga en los navegadores internos.
+  const openInNewTab = !link.brand;
+
   return (
-    <Link href={link.href} className="group block">
+    <a
+      href={href}
+      className="group block"
+      {...(openInNewTab ? { target: "_blank", rel: "noreferrer" } : {})}
+    >
       {content}
-    </Link>
+    </a>
   );
 }
 

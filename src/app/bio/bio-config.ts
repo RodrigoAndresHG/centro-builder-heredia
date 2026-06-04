@@ -13,6 +13,9 @@ export type BioLink = {
   title: string;
   subtitle: string;
   href: string;
+  // Opcional: link que abre la app nativa directamente (esquema o universal
+  // link). Si está, se usa en vez de href para abrir la app y no la web.
+  appHref?: string;
   // "live" resalta la tarjeta (úsalo en tu oferta principal).
   tone: "live" | "flagship" | "free" | "channel" | "social";
 };
@@ -83,6 +86,8 @@ export const bioConfig = {
       title: "Instagram",
       subtitle: "@rodrigo_heredia_cio",
       href: "https://www.instagram.com/rodrigo_heredia_cio",
+      // Abre la app de Instagram directamente (no la web).
+      appHref: "instagram://user?username=rodrigo_heredia_cio",
       tone: "social",
     },
     {
