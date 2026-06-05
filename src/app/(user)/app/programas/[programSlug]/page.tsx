@@ -95,7 +95,7 @@ export default async function ProgramPage({ params }: ProgramPageProps) {
           title="Ya estás dentro de la preventa"
           description={
             program.presaleMessage ??
-            "Tu acceso fundador ya quedó activo. El recorrido completo se abrirá oficialmente el 4 de junio de 2026. Hasta entonces, estás entrando antes que el público general."
+            "Tu acceso fundador ya quedó activo. El recorrido completo se abrirá en la fecha de apertura oficial. Hasta entonces, estás entrando antes que el público general."
           }
         >
           <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">

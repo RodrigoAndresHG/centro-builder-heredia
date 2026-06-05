@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { EarlyAccessForm } from "@/components/public/early-access-form";
-import { LaunchCountdown } from "@/components/public/launch-countdown";
 import { Reveal } from "@/components/public/reveal";
 import { VideoShowcase } from "@/components/public/video-showcase";
 
@@ -39,7 +38,7 @@ const programs: ProgramCardData[] = [
     badgeTone: "live",
     name: "Crea tu Agente de Noticias de IA en 1 Hora",
     description:
-      "El programa que construyo en vivo el jueves. Llévate el paso a paso completo para dejar tu agente funcionando a tu ritmo.",
+      "El programa que construí en vivo en TikTok. Llévate el paso a paso completo para dejar tu agente funcionando a tu ritmo.",
     price: "USD 9.99",
     priceNote: "Pago único · acceso inmediato",
     href: "/registro?intent=buy",
@@ -67,9 +66,9 @@ const builderPoints = [
 ];
 
 const liveHighlights = [
-  "Qué vamos a construir y por qué",
   "Conectar la IA y traer noticias reales",
-  "Dejar el agente listo para usar",
+  "Dejar el agente funcionando, paso a paso",
+  "El recorrido completo, sin relleno",
 ];
 
 function BuyCta({ children }: { children: string }) {
@@ -169,7 +168,7 @@ function ProgramCard({ program }: { program: ProgramCardData }) {
   );
 }
 
-function LiveCard() {
+function FeaturedAgentCard() {
   return (
     <Reveal delay={160}>
       <div className="relative rounded-2xl border border-neutral-800 bg-neutral-900 p-3 shadow-2xl shadow-black/40">
@@ -178,24 +177,21 @@ function LiveCard() {
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-red-300">
-                Live en TikTok
+                Construido en vivo · TikTok
               </p>
             </div>
             <span className="rounded-md border border-teal-400/20 bg-teal-400/10 px-2.5 py-1 text-xs font-semibold text-teal-200">
-              Gratis
+              Disponible ahora
             </span>
           </div>
 
           <h3 className="mt-4 text-lg font-semibold leading-tight text-white">
-            Construyo un Agente de Noticias con IA, en vivo
+            Agente de Noticias con IA, paso a paso
           </h3>
           <p className="mt-2 text-sm leading-6 text-neutral-400">
-            Jueves 4 de junio · 9:00 PM (hora Ecuador)
+            Lo construí en vivo en TikTok. Llévate el recorrido completo a tu
+            ritmo.
           </p>
-
-          <div className="mt-5">
-            <LaunchCountdown />
-          </div>
 
           <div className="mt-5 grid gap-2">
             {liveHighlights.map((item) => (
@@ -207,6 +203,17 @@ function LiveCard() {
                 {item}
               </div>
             ))}
+          </div>
+
+          <div className="mt-5 flex items-center justify-between border-t border-neutral-800 pt-4">
+            <span className="text-xl font-semibold text-white">USD 9.99</span>
+            <Link
+              href="/registro?intent=buy"
+              className="inline-flex items-center gap-2 rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-teal-200"
+            >
+              Obtener
+              <span>→</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -223,15 +230,15 @@ export default function HomePage() {
             <Reveal>
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-red-300">
                 <span className="flex h-2 w-2 rounded-full bg-red-500" />
-                Live gratis · Jueves 4 de junio · 9PM · TikTok
+                El programa de mi Live · Visto en TikTok
               </div>
               <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.04] text-white sm:text-5xl lg:text-6xl">
-                Construye tu primer Agente de IA, en vivo y gratis.
+                Construye tu primer Agente de Noticias con IA.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-neutral-300">
-                El jueves construimos juntos un Agente de Noticias con IA, paso
-                a paso, en TikTok. ¿Quieres tenerlo completo y a tu ritmo? El
-                programa está dentro del LMS oficial de Rodrigo HeredIA.
+                Lo construí en vivo en TikTok, paso a paso. ¿Te lo perdiste o
+                quieres tenerlo completo y a tu ritmo? El recorrido entero está
+                dentro del LMS oficial de Rodrigo HeredIA.
               </p>
             </Reveal>
 
@@ -260,7 +267,7 @@ export default function HomePage() {
             </Reveal>
           </div>
 
-          <LiveCard />
+          <FeaturedAgentCard />
         </div>
       </section>
 

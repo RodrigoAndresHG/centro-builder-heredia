@@ -5,7 +5,7 @@ import { AuthPanel } from "@/components/public/auth-panel";
 export const metadata: Metadata = {
   title: "Registro | Builder HeredIA",
   description:
-    "Crea tu acceso al LMS oficial de Rodrigo HeredIA y prepárate para el lanzamiento del primer programa.",
+    "Crea tu acceso al LMS oficial de Rodrigo HeredIA y entra a los programas para construir productos reales con IA.",
 };
 
 type RegistroPageProps = {

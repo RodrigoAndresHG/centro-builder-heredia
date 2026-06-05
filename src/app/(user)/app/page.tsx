@@ -35,9 +35,9 @@ const premiumUnlockItems = [
 ];
 
 const activationReinforcements = [
-  "Precio fundador hoy: USD 47",
-  "Apertura oficial: 4 de junio de 2026",
-  "Precio regular después: USD 67",
+  "Acceso inmediato al programa completo",
+  "Contenido nuevo cada semana",
+  "Soporte y comunidad incluidos",
 ];
 
 type UserDashboardPageProps = {
@@ -271,8 +271,8 @@ export default async function UserDashboardPage({
           <section id="activar-acceso" className="scroll-mt-8">
             <WorkspaceHero
               eyebrow="Activación"
-              title="Activa tu acceso antes del lanzamiento"
-              description="Entra hoy con el precio fundador y desbloquea el recorrido completo dentro de Builder antes del siguiente aumento."
+              title="Activa tu acceso al programa"
+              description="Desbloquea el recorrido completo dentro de Builder y avanza con continuidad, updates y soporte."
               action={<SignOutButton variant="dark" />}
             >
               <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">

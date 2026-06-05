@@ -40,10 +40,10 @@ export const bioConfig = {
 
   // Tarjeta destacada arriba de los links (tu oferta principal del momento).
   featured: {
-    badge: "En vivo · Jueves 9PM · TikTok",
+    badge: "El programa de mi Live · TikTok",
     title: "Crea tu Agente de Noticias de IA en 1 Hora",
     description:
-      "El programa que construyo en vivo. Llévate el paso a paso completo para dejar tu agente funcionando.",
+      "Lo construí en vivo en TikTok. Llévate el paso a paso completo para dejar tu agente funcionando.",
     price: "USD 9.99",
     href: "/registro?intent=buy",
     cta: "Obtener el programa",
