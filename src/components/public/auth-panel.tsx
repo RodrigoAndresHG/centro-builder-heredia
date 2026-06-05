@@ -57,7 +57,7 @@ export function AuthPanel({ mode, intent, callbackUrl }: AuthPanelProps) {
           </div>
 
           <div className="grid gap-3">
-            {["Ecosistema de programas con IA", "Acceso privado al LMS", "Live gratis · Jueves 4 de junio · TikTok"].map(
+            {["Ecosistema de programas con IA", "Acceso privado al LMS", "Construido en vivo en TikTok"].map(
               (item) => (
                 <div
                   key={item}

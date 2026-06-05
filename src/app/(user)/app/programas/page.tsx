@@ -46,9 +46,9 @@ const premiumUnlockItems = [
 ];
 
 const activationReinforcements = [
-  "Precio fundador hoy: USD 47",
-  "Apertura oficial: 4 de junio de 2026",
-  "Precio regular después: USD 67",
+  "Acceso inmediato al programa completo",
+  "Contenido nuevo cada semana",
+  "Soporte y comunidad incluidos",
 ];
 
 export default async function ProgramasPage() {
