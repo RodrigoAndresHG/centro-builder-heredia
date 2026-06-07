@@ -59,6 +59,14 @@ export const bioConfig = {
     },
   ] satisfies BioCourse[],
 
+  // Canal de WhatsApp destacado (tarjeta propia, antes de las redes).
+  channel: {
+    title: "Únete a mi Canal de WhatsApp",
+    note: "Novedades, nuevos módulos y Lives — directo a tu WhatsApp. Gratis.",
+    cta: "Unirme al canal",
+    href: "https://whatsapp.com/channel/0029VbD3AGkLikg5aJbgRq0l",
+  },
+
   socials: [
     {
       brand: "tiktok",
@@ -70,11 +78,6 @@ export const bioConfig = {
       label: "Instagram",
       href: "https://www.instagram.com/rodrigo_heredia_cio",
       appHref: "instagram://user?username=rodrigo_heredia_cio",
-    },
-    {
-      brand: "whatsapp",
-      label: "Canal",
-      href: "https://whatsapp.com/channel/0029VbD3AGkLikg5aJbgRq0l",
     },
   ] satisfies BioSocial[],
 
