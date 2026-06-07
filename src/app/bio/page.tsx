@@ -109,6 +109,29 @@ function CourseCard({ course }: { course: BioCourse }) {
   );
 }
 
+function ChannelCard() {
+  const { channel } = bioConfig;
+  return (
+    <a
+      href={channel.href}
+      className="group flex items-center gap-4 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-500/20 to-emerald-400/5 p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-emerald-400/70"
+    >
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-400/15">
+        <BrandIcon brand="whatsapp" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-white">{channel.title}</p>
+        <p className="mt-0.5 text-xs leading-5 text-emerald-100/80">
+          {channel.note}
+        </p>
+      </div>
+      <span className="shrink-0 rounded-md bg-emerald-400 px-3 py-2 text-xs font-semibold text-neutral-950 transition group-hover:bg-emerald-300">
+        Unirme
+      </span>
+    </a>
+  );
+}
+
 function SocialButton({ social }: { social: BioSocial }) {
   const href = social.appHref ?? social.href;
   return (
@@ -157,6 +180,11 @@ export default function BioPage() {
           {courses.map((course) => (
             <CourseCard key={course.name} course={course} />
           ))}
+        </div>
+
+        {/* Canal de WhatsApp destacado */}
+        <div className="mt-5">
+          <ChannelCard />
         </div>
 
         {/* Sígueme */}
