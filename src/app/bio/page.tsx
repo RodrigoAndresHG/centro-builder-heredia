@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Reveal } from "@/components/public/reveal";
-import { bioConfig, type BioLink, type BrandKey } from "./bio-config";
+import { bioConfig, type BioCourse, type BioSocial, type BrandKey } from "./bio-config";
 import { OpenInBrowserBanner } from "./open-in-browser-banner";
 
 export const metadata: Metadata = {
@@ -10,19 +9,11 @@ export const metadata: Metadata = {
   description: bioConfig.profile.tagline,
 };
 
-const toneAccent: Record<BioLink["tone"], string> = {
-  live: "from-teal-300/20 to-emerald-400/10 border-teal-300/40",
-  flagship: "from-amber-400/15 to-orange-400/5 border-amber-400/30",
-  free: "from-emerald-400/15 to-teal-400/5 border-emerald-400/30",
-  channel: "from-emerald-500/15 to-emerald-400/5 border-emerald-400/30",
-  social: "from-white/[0.06] to-white/[0.02] border-white/10",
-};
-
-// Logos oficiales (glifos de marca). fill por marca.
+// Logos oficiales (glifos de marca).
 function BrandIcon({ brand }: { brand: BrandKey }) {
   if (brand === "whatsapp") {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-[#25D366]">
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 fill-[#25D366]">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
       </svg>
     );
@@ -30,7 +21,7 @@ function BrandIcon({ brand }: { brand: BrandKey }) {
 
   if (brand === "instagram") {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
         <defs>
           <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#FFD600" />
@@ -46,222 +37,154 @@ function BrandIcon({ brand }: { brand: BrandKey }) {
     );
   }
 
-  // tiktok
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-white">
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 fill-white">
       <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
     </svg>
   );
 }
 
-function ProfileHeader() {
-  const { photoSrc, initials, name, title, tagline, verified } =
-    bioConfig.profile;
+function CompactAvatar() {
+  const { photoSrc, initials, name, verified } = bioConfig.profile;
 
-  // Hero con foto: imagen grande estilo CIO con degradado y nombre encima.
-  if (photoSrc) {
-    return (
-      <div>
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/50">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+  return (
+    <div className="relative mx-auto w-fit">
+      <div className="rounded-full bg-gradient-to-tr from-teal-300 via-emerald-400 to-teal-500 p-[3px] shadow-2xl shadow-teal-500/30">
+        {photoSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={photoSrc}
             alt={name}
-            className="aspect-[4/5] w-full object-cover object-top"
+            className="h-24 w-24 rounded-full object-cover object-top"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/30 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-5">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                {name}
-              </h1>
-              {verified ? (
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-300 text-xs font-bold text-neutral-950">
-                  ✓
-                </span>
-              ) : null}
-            </div>
-            <p className="mt-2 inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-teal-200 backdrop-blur">
-              {title}
-            </p>
-          </div>
-        </div>
-        <p className="mt-4 text-center text-sm leading-7 text-neutral-300">
-          {tagline}
-        </p>
-      </div>
-    );
-  }
-
-  // Fallback sin foto: avatar circular con iniciales.
-  return (
-    <div>
-      <div className="relative mx-auto w-fit">
-        <div className="rounded-full bg-gradient-to-tr from-teal-300 via-emerald-400 to-teal-500 p-[3px] shadow-2xl shadow-teal-500/30">
-          <div className="flex h-28 w-28 items-center justify-center rounded-full bg-neutral-900 text-4xl font-semibold tracking-tight text-white sm:h-32 sm:w-32">
+        ) : (
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-neutral-900 text-3xl font-semibold text-white">
             {initials}
           </div>
-        </div>
-        {verified ? (
-          <span className="absolute bottom-1 right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-neutral-950 bg-teal-300 text-sm font-bold text-neutral-950">
-            ✓
-          </span>
-        ) : null}
+        )}
       </div>
-      <div className="mt-5 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          {name}
-        </h1>
-        <p className="mt-2 inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-teal-200">
-          {title}
-        </p>
-        <p className="mx-auto mt-4 max-w-sm text-sm leading-7 text-neutral-300">
-          {tagline}
-        </p>
-      </div>
+      {verified ? (
+        <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-neutral-950 bg-teal-300 text-xs font-bold text-neutral-950">
+          ✓
+        </span>
+      ) : null}
     </div>
   );
 }
 
-function LinkCard({ link }: { link: BioLink }) {
-  // Usa appHref (esquema/universal link de la app) si existe.
-  const href = link.appHref ?? link.href;
-  const isInternal = href.startsWith("/");
-
-  const content = (
-    <div
-      className={`flex items-center gap-4 rounded-2xl border bg-gradient-to-r ${toneAccent[link.tone]} p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-white/30`}
+function CourseCard({ course }: { course: BioCourse }) {
+  return (
+    <Link
+      href={course.href}
+      className={`group flex items-center gap-3 rounded-2xl border p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 ${
+        course.highlight
+          ? "border-teal-300/50 bg-gradient-to-r from-teal-400/15 to-emerald-500/5 hover:border-teal-300/70"
+          : "border-white/10 bg-white/[0.04] hover:border-white/25"
+      }`}
     >
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/[0.06] text-xl">
-        {link.brand ? <BrandIcon brand={link.brand} /> : link.icon}
-      </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-white">
-          {link.title}
+        <span
+          className={`inline-flex rounded-full px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.1em] ${
+            course.highlight
+              ? "bg-teal-300 text-neutral-950"
+              : course.price === "Gratis"
+                ? "bg-emerald-400/20 text-emerald-200"
+                : "bg-white/10 text-neutral-300"
+          }`}
+        >
+          {course.tag}
+        </span>
+        <p className="mt-1.5 truncate text-sm font-semibold text-white">
+          {course.name}
         </p>
-        <p className="truncate text-xs text-neutral-400">{link.subtitle}</p>
+        <p className="truncate text-xs text-neutral-400">{course.note}</p>
       </div>
-      <span className="shrink-0 text-neutral-500 transition group-hover:translate-x-0.5 group-hover:text-white">
-        →
-      </span>
-    </div>
+      <div className="shrink-0 text-right">
+        <p className="text-sm font-bold text-white">{course.price}</p>
+        <span className="text-xs font-semibold text-teal-300 transition group-hover:translate-x-0.5">
+          {course.highlight ? "Obtener →" : "Ver →"}
+        </span>
+      </div>
+    </Link>
   );
+}
 
-  if (isInternal) {
-    return (
-      <Link href={href} className="group block">
-        {content}
-      </Link>
-    );
-  }
-
-  // Redes/links externos: navega en el mismo contexto (sin target=_blank)
-  // para que el sistema entregue el control a la app nativa en vez de abrir
-  // una pestaña web que se cuelga en los navegadores internos.
-  const openInNewTab = !link.brand;
-
+function SocialButton({ social }: { social: BioSocial }) {
+  const href = social.appHref ?? social.href;
   return (
     <a
       href={href}
-      className="group block"
-      {...(openInNewTab ? { target: "_blank", rel: "noreferrer" } : {})}
+      className="group flex flex-1 flex-col items-center gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] py-3 transition duration-300 hover:-translate-y-0.5 hover:border-white/25"
     >
-      {content}
+      <BrandIcon brand={social.brand} />
+      <span className="text-[0.7rem] font-semibold text-neutral-300">
+        {social.label}
+      </span>
     </a>
   );
 }
 
 export default function BioPage() {
-  const { stats, featured, links, upcoming } = bioConfig;
+  const { profile, courses, socials, upcoming } = bioConfig;
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-neutral-950 text-white">
-      {/* Glows de fondo */}
-      <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-teal-400/20 blur-[120px]" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-72 w-72 rounded-full bg-emerald-500/10 blur-[120px]" />
-      <div className="pointer-events-none absolute left-0 top-1/3 h-64 w-64 rounded-full bg-teal-500/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-teal-400/20 blur-[110px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-64 w-64 rounded-full bg-emerald-500/10 blur-[110px]" />
 
-      <div className="relative mx-auto flex min-h-dvh max-w-md flex-col px-5 py-12 sm:py-16">
+      <div className="relative mx-auto flex min-h-dvh max-w-md flex-col px-5 py-8">
         <OpenInBrowserBanner />
 
-        <Reveal>
-          <ProfileHeader />
-        </Reveal>
+        {/* Header compacto */}
+        <CompactAvatar />
+        <div className="mt-4 text-center">
+          <h1 className="text-xl font-semibold tracking-tight text-white">
+            {profile.name}
+          </h1>
+          <p className="mt-1.5 inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-teal-200">
+            {profile.title}
+          </p>
+          <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-neutral-300">
+            {profile.tagline}
+          </p>
+        </div>
 
-        <Reveal delay={120}>
-          <div className="mt-6 grid grid-cols-3 gap-2">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-center backdrop-blur"
-              >
-                <p className="text-base font-semibold text-white">
-                  {stat.value}
-                </p>
-                <p className="mt-1 text-[0.65rem] leading-tight text-neutral-400">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-
-        <Reveal delay={200}>
-          <Link
-            href={featured.href}
-            className="group mt-7 block overflow-hidden rounded-2xl border border-teal-300/40 bg-gradient-to-br from-teal-400/15 to-emerald-500/5 p-5 shadow-xl shadow-teal-950/30 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-teal-300/60"
-          >
-            <span className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-red-300">
-              <span className="flex h-1.5 w-1.5 rounded-full bg-red-500" />
-              {featured.badge}
-            </span>
-            <h2 className="mt-3 text-lg font-semibold leading-tight text-white">
-              {featured.title}
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-neutral-300">
-              {featured.description}
-            </p>
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-xl font-semibold text-white">
-                {featured.price}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-md bg-teal-300 px-4 py-2 text-sm font-semibold text-neutral-950 transition group-hover:bg-teal-200">
-                {featured.cta}
-                <span className="transition-transform group-hover:translate-x-0.5">
-                  →
-                </span>
-              </span>
-            </div>
-          </Link>
-        </Reveal>
-
-        <div className="mt-4 space-y-3">
-          {links.map((link, index) => (
-            <Reveal key={link.title} delay={260 + index * 70}>
-              <LinkCard link={link} />
-            </Reveal>
+        {/* Cursos */}
+        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+          Cursos
+        </p>
+        <div className="mt-3 space-y-3">
+          {courses.map((course) => (
+            <CourseCard key={course.name} course={course} />
           ))}
         </div>
 
-        <Reveal delay={560}>
-          <div className="mt-3 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-4 text-center">
-            <p className="text-sm font-semibold text-neutral-300">
-              <span aria-hidden="true" className="mr-1.5">
-                🚧
-              </span>
-              {upcoming.label}
-            </p>
-            <p className="mt-1 text-xs text-neutral-500">{upcoming.note}</p>
-          </div>
-        </Reveal>
+        {/* Sígueme */}
+        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+          Sígueme
+        </p>
+        <div className="mt-3 flex gap-3">
+          {socials.map((social) => (
+            <SocialButton key={social.brand} social={social} />
+          ))}
+        </div>
 
-        <Reveal delay={620}>
-          <footer className="mt-auto pt-10 text-center">
-            <p className="text-xs text-neutral-600">
-              © {bioConfig.profile.name} · builder.rodriheredia.com
-            </p>
-          </footer>
-        </Reveal>
+        {/* Próximos */}
+        <div className="mt-5 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-3 text-center">
+          <p className="text-xs font-semibold text-neutral-300">
+            <span aria-hidden="true" className="mr-1">
+              🚧
+            </span>
+            {upcoming.label}
+          </p>
+          <p className="mt-0.5 text-[0.7rem] text-neutral-500">{upcoming.note}</p>
+        </div>
+
+        <footer className="mt-auto pt-8 text-center">
+          <p className="text-[0.7rem] text-neutral-600">
+            © {profile.name} · builder.rodriheredia.com
+          </p>
+        </footer>
       </div>
     </main>
   );

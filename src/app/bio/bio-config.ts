@@ -5,99 +5,78 @@
 
 export type BrandKey = "tiktok" | "instagram" | "whatsapp";
 
-export type BioLink = {
-  // icon = emoji para cursos/LMS. Para redes usa `brand` y se renderiza
-  // el logo oficial (icon se ignora si hay brand).
-  icon: string;
-  brand?: BrandKey;
-  title: string;
-  subtitle: string;
+export type BioCourse = {
+  tag: string;
+  name: string;
+  note: string;
+  price: string;
   href: string;
-  // Opcional: link que abre la app nativa directamente (esquema o universal
-  // link). Si está, se usa en vez de href para abrir la app y no la web.
+  // true = tarjeta destacada (tu oferta principal).
+  highlight?: boolean;
+};
+
+export type BioSocial = {
+  brand: BrandKey;
+  label: string;
+  href: string;
+  // Opcional: abre la app nativa directamente (esquema/universal link).
   appHref?: string;
-  // "live" resalta la tarjeta (úsalo en tu oferta principal).
-  tone: "live" | "flagship" | "free" | "channel" | "social";
 };
 
 export const bioConfig = {
   profile: {
     name: "Rodrigo HeredIA",
     initials: "RH",
-    // Foto hero. Para cambiarla, reemplaza public/bio/rodrigo.jpg.
+    // Foto. Para cambiarla, reemplaza public/bio/rodrigo.jpg.
     photoSrc: "/bio/rodrigo.jpg" as string | null,
     title: "CIO · Founder de Builder HeredIA",
-    tagline:
-      "Lidero tecnología con IA y te enseño a construir productos reales, paso a paso y sin relleno.",
+    tagline: "Te enseño a construir productos reales con IA, paso a paso.",
     verified: true,
   },
 
-  stats: [
-    { value: "3", label: "Programas" },
-    { value: "Multi-IA", label: "OpenAI · Claude · Gemini" },
-    { value: "LMS", label: "Entorno privado" },
-  ],
-
-  // Tarjeta destacada arriba de los links (tu oferta principal del momento).
-  featured: {
-    badge: "El programa de mi Live · TikTok",
-    title: "Crea tu Agente de Noticias de IA en 1 Hora",
-    description:
-      "Lo construí en vivo en TikTok. Llévate el paso a paso completo para dejar tu agente funcionando.",
-    price: "USD 9.99",
-    href: "/registro?intent=buy",
-    cta: "Obtener el programa",
-  },
-
-  links: [
+  courses: [
     {
-      icon: "🚀",
-      title: "Builder Multi-IA",
-      subtitle: "Programa insignia · USD 47",
+      tag: "El del Live",
+      name: "Agente de Noticias de IA",
+      note: "El programa de mi Live · paso a paso",
+      price: "USD 9.99",
       href: "/registro?intent=buy",
-      tone: "flagship",
+      highlight: true,
     },
     {
-      icon: "🎓",
-      title: "Claude desde Cero",
-      subtitle: "Empieza gratis · sin tarjeta",
+      tag: "Gratis",
+      name: "Claude desde Cero",
+      note: "Tu punto de entrada · sin tarjeta",
+      price: "Gratis",
       href: "/registro?intent=explore",
-      tone: "free",
     },
     {
-      icon: "📣",
-      brand: "whatsapp",
-      title: "Canal de WhatsApp",
-      subtitle: "Novedades, módulos y Lives",
-      href: "https://whatsapp.com/channel/0029VbD3AGkLikg5aJbgRq0l",
-      tone: "channel",
+      tag: "Insignia",
+      name: "Builder Multi-IA",
+      note: "El recorrido completo, módulo a módulo",
+      price: "USD 47",
+      href: "/registro?intent=buy",
     },
+  ] satisfies BioCourse[],
+
+  socials: [
     {
-      icon: "🎵",
       brand: "tiktok",
-      title: "TikTok",
-      subtitle: "@rodrigo_heredia_cio",
+      label: "TikTok",
       href: "https://www.tiktok.com/@rodrigo_heredia_cio",
-      tone: "social",
     },
     {
-      icon: "📸",
       brand: "instagram",
-      title: "Instagram",
-      subtitle: "@rodrigo_heredia_cio",
+      label: "Instagram",
       href: "https://www.instagram.com/rodrigo_heredia_cio",
-      // Abre la app de Instagram directamente (no la web).
       appHref: "instagram://user?username=rodrigo_heredia_cio",
-      tone: "social",
     },
     {
-      icon: "🌐",
-      title: "Entrar al LMS",
-      subtitle: "builder.rodriheredia.com",
-      href: "/",
-      tone: "social",
+      brand: "whatsapp",
+      label: "Canal",
+      href: "https://whatsapp.com/channel/0029VbD3AGkLikg5aJbgRq0l",
     },
-  ] satisfies BioLink[],
+  ] satisfies BioSocial[],
 
   // Nota sutil de programas próximos (no clickeable).
   upcoming: {
