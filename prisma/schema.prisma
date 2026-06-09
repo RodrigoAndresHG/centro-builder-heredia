@@ -25,6 +25,7 @@ model User {
   accesses       Access[]
   purchases      Purchase[]
   lessonProgress LessonProgress[]
+  assistantUsage AssistantUsage[]
 
   @@map("users")
 }
@@ -336,4 +337,18 @@ model PromptAsset {
   @@index([isPublished, platform])
   @@index([category])
   @@map("prompt_assets")
+}
+
+// Contador diario de mensajes al asistente IA, por usuario (anti-abuso).
+model AssistantUsage {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  day       String
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+  @@map("assistant_usage")
 }
