@@ -181,12 +181,32 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
           className="h-11 w-full rounded-xl border border-neutral-800 bg-neutral-900 px-4 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-teal-300"
         />
 
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        {/* Celular: selector desplegable (claro y compacto). */}
+        <div className="sm:hidden">
+          <select
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+            aria-label="Filtrar por categoría"
+            className="h-11 w-full rounded-xl border border-neutral-800 bg-neutral-900 px-3 text-sm font-semibold text-white outline-none transition focus:border-teal-300"
+          >
+            <option value={ALL_CATEGORIES}>
+              Todas las categorías ({prompts.length})
+            </option>
+            {categories.map(([name, count]) => (
+              <option key={name} value={name}>
+                {name} ({count})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Desktop: chips envueltos en filas — todas las categorías visibles. */}
+        <div className="hidden flex-wrap gap-2 sm:flex">
           <button
             type="button"
             onClick={() => setCategory(ALL_CATEGORIES)}
             aria-pressed={category === ALL_CATEGORIES}
-            className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
               category === ALL_CATEGORIES
                 ? "border-teal-300/60 bg-teal-300/15 text-teal-100"
                 : "border-neutral-800 bg-neutral-900 text-neutral-400 hover:border-neutral-600"
@@ -203,7 +223,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
                 type="button"
                 onClick={() => setCategory(isActive ? ALL_CATEGORIES : name)}
                 aria-pressed={isActive}
-                className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+                className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
                   isActive
                     ? "border-teal-300/60 bg-teal-300/15 text-teal-100"
                     : "border-neutral-800 bg-neutral-900 text-neutral-400 hover:border-neutral-600"
@@ -217,12 +237,12 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
         </div>
 
         {showPlatformRow ? (
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setPlatform(ALL_PLATFORMS)}
               aria-pressed={platform === ALL_PLATFORMS}
-              className={`shrink-0 rounded-full border px-3 py-1 text-[0.7rem] font-semibold transition ${
+              className={`rounded-full border px-3 py-1 text-[0.7rem] font-semibold transition ${
                 platform === ALL_PLATFORMS
                   ? "border-white/40 bg-white/15 text-white"
                   : "border-neutral-800 bg-neutral-900 text-neutral-500 hover:border-neutral-600"
@@ -238,7 +258,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
                   type="button"
                   onClick={() => setPlatform(isActive ? ALL_PLATFORMS : value)}
                   aria-pressed={isActive}
-                  className={`shrink-0 rounded-full border px-3 py-1 text-[0.7rem] font-semibold transition ${
+                  className={`rounded-full border px-3 py-1 text-[0.7rem] font-semibold transition ${
                     isActive
                       ? platformMeta[value].chip
                       : "border-neutral-800 bg-neutral-900 text-neutral-500 hover:border-neutral-600"
