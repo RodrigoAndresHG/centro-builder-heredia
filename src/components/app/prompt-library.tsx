@@ -42,70 +42,65 @@ const platformMeta: Record<
   },
 };
 
-const platformFilters = ["TODOS", "CLAUDE", "CHATGPT", "GEMINI", "MULTI"] as const;
-type PlatformFilter = (typeof platformFilters)[number];
+const ALL_CATEGORIES = "__todas__";
+const ALL_PLATFORMS = "__todas__";
 
 function PromptCard({ prompt }: { prompt: LibraryPrompt }) {
   const [expanded, setExpanded] = useState(false);
   const meta = platformMeta[prompt.platform];
 
   return (
-    <article className="rounded-2xl border border-neutral-800 bg-neutral-900/70 p-5 transition duration-300 hover:border-neutral-700">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <span
-            className={`inline-flex rounded-full border px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.1em] ${meta.badge}`}
-          >
-            {meta.label}
+    <article className="flex h-full min-w-0 flex-col rounded-2xl border border-neutral-800 bg-neutral-900/70 p-4 transition duration-300 hover:border-neutral-700">
+      <div className="flex items-center justify-between gap-3">
+        <span
+          className={`inline-flex shrink-0 rounded-full border px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.1em] ${meta.badge}`}
+        >
+          {meta.label}
+        </span>
+        {prompt.locked ? (
+          <span className="shrink-0 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-amber-200">
+            🔒 Premium
           </span>
-          <h3 className="mt-2 break-words text-base font-semibold text-white">
-            {prompt.title}
-          </h3>
-          {prompt.description ? (
-            <p className="mt-1 break-words text-sm leading-6 text-neutral-400">
-              {prompt.description}
-            </p>
-          ) : null}
-        </div>
-        {!prompt.locked ? (
-          <div className="shrink-0">
-            <CopyButton value={prompt.body} />
-          </div>
-        ) : null}
+        ) : (
+          <CopyButton value={prompt.body} />
+        )}
       </div>
 
+      <h3 className="mt-2.5 break-words text-sm font-semibold leading-snug text-white">
+        {prompt.title}
+      </h3>
+      {prompt.description ? (
+        <p className="mt-1 break-words text-xs leading-5 text-neutral-400">
+          {prompt.description}
+        </p>
+      ) : null}
+
       {prompt.locked ? (
-        <div className="mt-4 rounded-xl border border-amber-400/25 bg-amber-400/10 p-4">
-          <p className="text-sm font-semibold text-amber-100">
-            🔒 Prompt premium
+        <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/5 px-3 py-2">
+          <p className="text-xs leading-5 text-amber-200/80">
+            Se desbloquea con cualquier programa de pago.{" "}
+            <Link
+              href="/app/programas"
+              className="font-semibold text-amber-200 underline underline-offset-2"
+            >
+              Ver programas
+            </Link>
           </p>
-          <p className="mt-1 text-xs leading-5 text-amber-200/80">
-            Se desbloquea con la compra de cualquier programa de Builder.
-          </p>
-          <Link
-            href="/app/programas"
-            className="mt-3 inline-flex rounded-md bg-amber-300 px-3 py-1.5 text-xs font-semibold text-neutral-950 transition hover:bg-amber-200"
-          >
-            Ver programas →
-          </Link>
         </div>
       ) : (
-        <div className="mt-4">
-          <pre
-            className={`whitespace-pre-wrap break-words rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 font-mono text-xs leading-6 text-neutral-300 [overflow-wrap:anywhere] ${
-              expanded ? "" : "max-h-28 overflow-hidden"
-            }`}
+        <div className="mt-auto pt-3">
+          <button
+            type="button"
+            onClick={() => setExpanded((value) => !value)}
+            aria-expanded={expanded}
+            className="text-xs font-semibold text-teal-300 transition hover:text-teal-200"
           >
-            {prompt.body}
-          </pre>
-          {prompt.body.length > 220 ? (
-            <button
-              type="button"
-              onClick={() => setExpanded((value) => !value)}
-              className="mt-2 text-xs font-semibold text-teal-300 transition hover:text-teal-200"
-            >
-              {expanded ? "Ocultar ↑" : "Ver prompt completo ↓"}
-            </button>
+            {expanded ? "Ocultar prompt ↑" : "Ver prompt ↓"}
+          </button>
+          {expanded ? (
+            <pre className="mt-2 whitespace-pre-wrap break-words rounded-xl border border-neutral-800 bg-neutral-950 px-3.5 py-3 font-mono text-xs leading-6 text-neutral-300 [overflow-wrap:anywhere]">
+              {prompt.body}
+            </pre>
           ) : null}
         </div>
       )}
@@ -115,13 +110,38 @@ function PromptCard({ prompt }: { prompt: LibraryPrompt }) {
 
 export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const [query, setQuery] = useState("");
-  const [platform, setPlatform] = useState<PlatformFilter>("TODOS");
+  const [category, setCategory] = useState<string>(ALL_CATEGORIES);
+  const [platform, setPlatform] = useState<string>(ALL_PLATFORMS);
+
+  // Categorías con conteo, en el orden que llegan (ya ordenadas del server).
+  const categories = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const prompt of prompts) {
+      map.set(prompt.category, (map.get(prompt.category) ?? 0) + 1);
+    }
+    return Array.from(map.entries());
+  }, [prompts]);
+
+  // Plataformas presentes con conteo. El filtro solo se muestra si hay
+  // más de una (con una sola, es ruido).
+  const platforms = useMemo(() => {
+    const map = new Map<LibraryPrompt["platform"], number>();
+    for (const prompt of prompts) {
+      map.set(prompt.platform, (map.get(prompt.platform) ?? 0) + 1);
+    }
+    return Array.from(map.entries());
+  }, [prompts]);
+  const showPlatformRow = platforms.length > 1;
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
 
     return prompts.filter((prompt) => {
-      if (platform !== "TODOS" && prompt.platform !== platform) {
+      if (category !== ALL_CATEGORIES && prompt.category !== category) {
+        return false;
+      }
+
+      if (platform !== ALL_PLATFORMS && prompt.platform !== platform) {
         return false;
       }
 
@@ -134,9 +154,8 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
 
       return haystack.includes(normalized);
     });
-  }, [prompts, query, platform]);
+  }, [prompts, query, category, platform]);
 
-  // Agrupar por categoría preservando el orden de llegada (ya viene ordenado).
   const groups = useMemo(() => {
     const map = new Map<string, LibraryPrompt[]>();
     for (const prompt of filtered) {
@@ -150,57 +169,92 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
     return Array.from(map.entries());
   }, [filtered]);
 
-  const counts = useMemo(() => {
-    const base: Record<PlatformFilter, number> = {
-      TODOS: prompts.length,
-      CLAUDE: 0,
-      CHATGPT: 0,
-      GEMINI: 0,
-      MULTI: 0,
-    };
-    for (const prompt of prompts) {
-      base[prompt.platform] += 1;
-    }
-    return base;
-  }, [prompts]);
-
   return (
     <div className="space-y-6">
-      <div className="space-y-3">
+      {/* Barra de búsqueda y filtros pegajosa: queda a mano aunque bajes. */}
+      <div className="sticky top-0 z-10 -mx-2 space-y-2.5 rounded-b-2xl bg-neutral-950/95 px-2 pb-3 pt-2 backdrop-blur">
         <input
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Busca por tema, categoría o palabra clave..."
-          className="h-12 w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-teal-300"
+          className="h-11 w-full rounded-xl border border-neutral-800 bg-neutral-900 px-4 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-teal-300"
         />
 
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {platformFilters.map((value) => {
-            const isActive = platform === value;
-            const label = value === "TODOS" ? "Todos" : platformMeta[value].label;
-            const count = counts[value];
-
+          <button
+            type="button"
+            onClick={() => setCategory(ALL_CATEGORIES)}
+            aria-pressed={category === ALL_CATEGORIES}
+            className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+              category === ALL_CATEGORIES
+                ? "border-teal-300/60 bg-teal-300/15 text-teal-100"
+                : "border-neutral-800 bg-neutral-900 text-neutral-400 hover:border-neutral-600"
+            }`}
+          >
+            Todas
+            <span className="ml-1.5 opacity-60">{prompts.length}</span>
+          </button>
+          {categories.map(([name, count]) => {
+            const isActive = category === name;
             return (
               <button
-                key={value}
+                key={name}
                 type="button"
-                onClick={() => setPlatform(value)}
+                onClick={() => setCategory(isActive ? ALL_CATEGORIES : name)}
                 aria-pressed={isActive}
                 className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
                   isActive
-                    ? value === "TODOS"
-                      ? "border-white/40 bg-white/15 text-white"
-                      : platformMeta[value].chip
+                    ? "border-teal-300/60 bg-teal-300/15 text-teal-100"
                     : "border-neutral-800 bg-neutral-900 text-neutral-400 hover:border-neutral-600"
                 }`}
               >
-                {label}
+                {name}
                 <span className="ml-1.5 opacity-60">{count}</span>
               </button>
             );
           })}
         </div>
+
+        {showPlatformRow ? (
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button
+              type="button"
+              onClick={() => setPlatform(ALL_PLATFORMS)}
+              aria-pressed={platform === ALL_PLATFORMS}
+              className={`shrink-0 rounded-full border px-3 py-1 text-[0.7rem] font-semibold transition ${
+                platform === ALL_PLATFORMS
+                  ? "border-white/40 bg-white/15 text-white"
+                  : "border-neutral-800 bg-neutral-900 text-neutral-500 hover:border-neutral-600"
+              }`}
+            >
+              Todas las IA
+            </button>
+            {platforms.map(([value, count]) => {
+              const isActive = platform === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setPlatform(isActive ? ALL_PLATFORMS : value)}
+                  aria-pressed={isActive}
+                  className={`shrink-0 rounded-full border px-3 py-1 text-[0.7rem] font-semibold transition ${
+                    isActive
+                      ? platformMeta[value].chip
+                      : "border-neutral-800 bg-neutral-900 text-neutral-500 hover:border-neutral-600"
+                  }`}
+                >
+                  {platformMeta[value].label}
+                  <span className="ml-1.5 opacity-60">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <p className="text-[0.7rem] font-medium text-neutral-600">
+          {filtered.length} de {prompts.length} prompts
+        </p>
       </div>
 
       {groups.length === 0 ? (
@@ -213,13 +267,13 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
           </p>
         </div>
       ) : (
-        groups.map(([category, items]) => (
-          <section key={category} className="space-y-3">
+        groups.map(([categoryName, items]) => (
+          <section key={categoryName} className="space-y-3">
             <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-              {category}
+              {categoryName}
               <span className="ml-2 text-neutral-600">{items.length}</span>
             </h2>
-            <div className="space-y-3">
+            <div className="grid gap-3 md:grid-cols-2">
               {items.map((prompt) => (
                 <PromptCard key={prompt.id} prompt={prompt} />
               ))}
