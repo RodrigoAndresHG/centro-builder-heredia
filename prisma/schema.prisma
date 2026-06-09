@@ -312,3 +312,28 @@ model BuilderUpdate {
   @@index([type])
   @@map("builder_updates")
 }
+
+enum PromptPlatform {
+  CLAUDE
+  CHATGPT
+  GEMINI
+  MULTI
+}
+
+model PromptAsset {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  body        String         @db.Text
+  platform    PromptPlatform @default(MULTI)
+  category    String
+  isPremium   Boolean        @default(false) @map("is_premium")
+  isPublished Boolean        @default(false) @map("is_published")
+  sortOrder   Int            @default(0) @map("sort_order")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  @@index([isPublished, platform])
+  @@index([category])
+  @@map("prompt_assets")
+}

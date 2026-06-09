@@ -14,6 +14,7 @@ const adminItems = [
   { label: "Modulos", href: "/admin/modulos" },
   { label: "Lecciones", href: "/admin/lecciones" },
   { label: "Videos", href: "/admin/videos" },
+  { label: "Biblioteca", href: "/admin/biblioteca" },
   { label: "Novedades", href: "/admin/updates" },
   { label: "Usuarios", href: "/admin/usuarios" },
   { label: "Accesos", href: "/admin/accesos" },
