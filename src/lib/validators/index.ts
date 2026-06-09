@@ -4,3 +4,4 @@ export * from "./cloudflare-stream";
 export * from "./product";
 export * from "./lesson-extras";
 export * from "./prompt-asset";
+export * from "./assistant";

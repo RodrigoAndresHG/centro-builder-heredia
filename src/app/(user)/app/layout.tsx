@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app/app-shell";
+import { AssistantWidget } from "@/components/app/assistant-widget";
 import { auth } from "@/lib/auth";
 
 export default async function UserAppLayout({
@@ -15,5 +16,10 @@ export default async function UserAppLayout({
     redirect("/login?callbackUrl=/app");
   }
 
-  return <AppShell>{children}</AppShell>;
+  return (
+    <AppShell>
+      {children}
+      <AssistantWidget />
+    </AppShell>
+  );
 }
