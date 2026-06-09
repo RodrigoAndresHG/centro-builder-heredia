@@ -1126,3 +1126,123 @@ export function ProductForm({
     </form>
   );
 }
+
+type PromptAssetFormValue = {
+  title?: string | null;
+  category?: string | null;
+  description?: string | null;
+  body?: string | null;
+  platform?: string | null;
+  isPremium?: boolean;
+  isPublished?: boolean;
+  sortOrder?: number;
+};
+
+const promptPlatformOptions = [
+  ["CLAUDE", "Claude"],
+  ["CHATGPT", "ChatGPT"],
+  ["GEMINI", "Gemini"],
+  ["MULTI", "Multi-IA (sirve en cualquiera)"],
+] as const;
+
+export function PromptAssetForm({
+  action,
+  promptAsset,
+  submitLabel,
+}: {
+  action: FormAction;
+  promptAsset?: PromptAssetFormValue | null;
+  submitLabel: string;
+}) {
+  return (
+    <form action={action} className="space-y-5">
+      <div className="grid gap-4 md:grid-cols-[1fr_160px]">
+        <label className="block space-y-2">
+          <FieldLabel>Título</FieldLabel>
+          <TextInput
+            name="title"
+            required
+            defaultValue={promptAsset?.title}
+            placeholder="Resumen ejecutivo de cualquier artículo"
+          />
+        </label>
+        <label className="block space-y-2">
+          <FieldLabel>Orden</FieldLabel>
+          <NumberInput
+            name="sortOrder"
+            defaultValue={promptAsset?.sortOrder ?? 0}
+          />
+        </label>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <label className="block space-y-2">
+          <FieldLabel>Categoría</FieldLabel>
+          <TextInput
+            name="category"
+            required
+            defaultValue={promptAsset?.category}
+            placeholder="Marketing, Código, Productividad..."
+          />
+          <span className="block text-xs leading-5 text-neutral-500">
+            Los prompts se agrupan por categoría en la biblioteca. Usa el mismo
+            nombre exacto para agrupar varios.
+          </span>
+        </label>
+
+        <label className="block space-y-2">
+          <FieldLabel>Plataforma</FieldLabel>
+          <select
+            name="platform"
+            defaultValue={promptAsset?.platform ?? "MULTI"}
+            className="h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none transition focus:border-accent"
+          >
+            {promptPlatformOptions.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <label className="block space-y-2">
+        <FieldLabel>Descripción corta (opcional)</FieldLabel>
+        <TextInput
+          name="description"
+          defaultValue={promptAsset?.description}
+          placeholder="Para qué sirve este prompt, en una línea."
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <FieldLabel>Cuerpo del prompt</FieldLabel>
+        <TextArea
+          name="body"
+          rows={10}
+          required
+          defaultValue={promptAsset?.body}
+          placeholder="Pega aquí el prompt completo que el usuario copiará."
+        />
+      </label>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="flex items-center gap-3 rounded-md border border-border bg-background px-3 py-3">
+          <input
+            type="checkbox"
+            name="isPremium"
+            defaultChecked={promptAsset?.isPremium}
+            className="h-4 w-4 accent-[var(--accent)]"
+          />
+          <span className="text-sm font-semibold text-foreground">
+            Premium (solo usuarios con compra)
+          </span>
+        </label>
+
+        <PublishCheckbox defaultChecked={promptAsset?.isPublished} />
+      </div>
+
+      <SubmitButton label={submitLabel} />
+    </form>
+  );
+}

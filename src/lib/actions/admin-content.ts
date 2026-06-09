@@ -16,9 +16,12 @@ import {
   associateVideoSchema,
   lessonResourceTypes,
   productInputSchema,
+  promptAssetInputSchema,
   promptInputSchema,
+  promptPlatforms,
   resourceInputSchema,
   type LessonResourceTypeValue,
+  type PromptPlatformValue,
 } from "@/lib/validators";
 
 async function requireAdmin() {
@@ -865,4 +868,78 @@ export async function clearLessonVideo(lessonId: string) {
   });
 
   revalidateContentPaths();
+}
+
+function isPromptPlatform(value: string): value is PromptPlatformValue {
+  return (promptPlatforms as readonly string[]).includes(value);
+}
+
+function parsePromptAssetFormData(formData: FormData) {
+  const rawPlatform = readString(formData, "platform");
+  const parsed = promptAssetInputSchema.safeParse({
+    title: readString(formData, "title"),
+    category: readString(formData, "category"),
+    description: readString(formData, "description"),
+    body: readString(formData, "body"),
+    platform: isPromptPlatform(rawPlatform) ? rawPlatform : "MULTI",
+    isPremium: readBoolean(formData, "isPremium"),
+    isPublished: readBoolean(formData, "isPublished"),
+    sortOrder: readSortOrder(formData),
+  });
+
+  if (!parsed.success) {
+    throw new Error(
+      parsed.error.issues[0]?.message ?? "Datos del prompt inválidos.",
+    );
+  }
+
+  return parsed.data;
+}
+
+export async function createPromptAsset(formData: FormData) {
+  await requireAdmin();
+  const data = parsePromptAssetFormData(formData);
+
+  const promptAsset = await prisma.promptAsset.create({ data });
+
+  revalidateContentPaths();
+  redirect(`/admin/biblioteca/${promptAsset.id}`);
+}
+
+export async function updatePromptAsset(id: string, formData: FormData) {
+  await requireAdmin();
+  const data = parsePromptAssetFormData(formData);
+
+  await prisma.promptAsset.update({
+    where: { id },
+    data,
+  });
+
+  revalidateContentPaths();
+  redirect("/admin/biblioteca");
+}
+
+export async function togglePromptAssetPublished(
+  id: string,
+  isPublished: boolean,
+) {
+  await requireAdmin();
+
+  await prisma.promptAsset.update({
+    where: { id },
+    data: { isPublished },
+  });
+
+  revalidateContentPaths();
+}
+
+export async function deletePromptAsset(id: string) {
+  await requireAdmin();
+
+  await prisma.promptAsset.delete({
+    where: { id },
+  });
+
+  revalidateContentPaths();
+  redirect("/admin/biblioteca");
 }

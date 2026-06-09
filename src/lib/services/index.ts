@@ -7,3 +7,4 @@ export * from "./commerce";
 export * from "./early-access";
 export * from "./learning";
 export * from "./progress";
+export * from "./prompt-assets";
