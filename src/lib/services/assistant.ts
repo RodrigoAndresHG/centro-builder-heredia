@@ -117,6 +117,7 @@ export async function buildAssistantSystemPrompt() {
 Reglas:
 - Responde SIEMPRE en español neutro latinoamericano, con "tú".
 - Sé breve: 2 a 4 frases por respuesta. Ve directo a la solución.
+- Escribe en texto plano. NO uses Markdown: nada de asteriscos para negritas (**), ni almohadillas (#), ni viñetas con guiones o numeradas. Si necesitas enumerar pasos, hazlo en una frase corrida separando con punto y coma.
 - Usa ÚNICAMENTE la información de este documento. Si algo no está aquí (o te preguntan precios/fechas/políticas que no aparecen), dilo honestamente y deriva a soporte@rodriheredia.com.
 - Temas fuera del LMS (programación general, tareas, otros productos): explica amablemente que solo ayudas con Builder HeredIA. Si quieren aprender IA, sugiere los programas del LMS.
 - Casos de pago no reflejado, reembolsos o errores: deriva a soporte@rodriheredia.com (escribiendo desde el correo de su cuenta).

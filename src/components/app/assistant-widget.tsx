@@ -17,6 +17,58 @@ const quickQuestions = [
 // Solo se envía la cola del historial para acotar tokens.
 const HISTORY_LIMIT = 8;
 
+// Burbuja de chat con destello: marca del asistente en el botón y el header.
+function AssistantIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
+      <path
+        d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 6.8l1 3.1 3.2 1-3.2 1-1 3.1-1-3.1-3.2-1 3.2-1z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
+      <path
+        d="M6 6l12 12M18 6 6 18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// El modelo tiene instrucción de responder en texto plano, pero si se le
+// escapa un **negrita** de Markdown lo renderizamos en vez de mostrar asteriscos.
+function renderAssistantContent(content: string) {
+  const parts = content.split("**");
+
+  if (parts.length < 3) {
+    return content;
+  }
+
+  return parts.map((part, index) =>
+    index % 2 === 1 ? (
+      <strong key={index} className="font-semibold text-white">
+        {part}
+      </strong>
+    ) : (
+      part
+    ),
+  );
+}
+
 export function AssistantWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -30,6 +82,33 @@ export function AssistantWidget() {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [open, messages, loading]);
+
+  // En móvil el panel es una hoja casi a pantalla completa: congela el
+  // scroll del fondo mientras está abierta.
+  useEffect(() => {
+    if (!open) return;
+    if (!window.matchMedia("(max-width: 639px)").matches) return;
+
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -77,28 +156,49 @@ export function AssistantWidget() {
 
   return (
     <>
-      {/* Botón flotante */}
+      {/* Botón flotante: abajo-izquierda en escritorio (zona libre bajo el
+          sidebar), abajo-derecha en móvil. En móvil se oculta al abrir la
+          hoja porque esta trae su propio botón de cierre. */}
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={open ? "Cerrar asistente" : "Abrir asistente"}
-        className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-teal-300 to-emerald-400 text-2xl shadow-2xl shadow-teal-950/50 transition hover:-translate-y-0.5 hover:shadow-teal-900/60"
+        className={`fixed right-5 bottom-5 z-40 h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-teal-300 to-emerald-400 text-neutral-950 shadow-2xl shadow-teal-950/50 transition hover:-translate-y-0.5 hover:shadow-teal-900/60 sm:right-auto sm:left-5 ${
+          open ? "hidden sm:flex" : "flex"
+        }`}
       >
         {open ? (
-          <span aria-hidden className="text-xl font-bold text-neutral-950">
-            ✕
-          </span>
+          <CloseIcon className="h-6 w-6" />
         ) : (
-          <span aria-hidden>✨</span>
+          <AssistantIcon className="h-7 w-7" />
         )}
       </button>
 
-      {/* Panel de chat */}
+      {/* Fondo oscurecido solo en móvil: enfoca la hoja y cierra al tocarlo */}
       {open ? (
-        <div className="fixed inset-x-3 bottom-22 z-40 flex max-h-[72dvh] flex-col overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-950 shadow-2xl shadow-black/60 sm:inset-x-auto sm:right-5 sm:bottom-22 sm:w-96">
-          <div className="flex items-center justify-between gap-3 border-b border-neutral-800 bg-neutral-900/70 px-5 py-4">
-            <div>
+        <button
+          type="button"
+          aria-label="Cerrar asistente"
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-40 cursor-default bg-black/60 backdrop-blur-[2px] sm:hidden"
+        />
+      ) : null}
+
+      {/* Panel de chat: hoja inferior a pantalla casi completa en móvil,
+          tarjeta flotante abajo-izquierda en escritorio */}
+      {open ? (
+        <div className="fixed inset-x-0 bottom-0 z-50 flex h-[85dvh] flex-col overflow-hidden rounded-t-3xl border border-neutral-800 bg-neutral-950 shadow-2xl shadow-black/60 sm:inset-x-auto sm:bottom-24 sm:left-5 sm:h-[32rem] sm:max-h-[calc(100dvh-8rem)] sm:w-96 sm:rounded-3xl">
+          {/* Grabber: señal de "hoja deslizable" solo en móvil */}
+          <div className="flex shrink-0 justify-center pt-2.5 pb-1 sm:hidden">
+            <span className="h-1 w-10 rounded-full bg-neutral-700" />
+          </div>
+
+          <div className="flex items-center gap-3 border-b border-neutral-800 bg-neutral-900/70 px-4 py-3.5">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-teal-400/30 bg-teal-400/10 text-teal-200">
+              <AssistantIcon className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-white">
                 Asistente Builder
               </p>
@@ -106,9 +206,14 @@ export function AssistantWidget() {
                 Respuestas con IA · puede cometer errores
               </p>
             </div>
-            <span className="rounded-full border border-teal-400/30 bg-teal-400/10 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-teal-200">
-              IA
-            </span>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Cerrar asistente"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 text-neutral-300 transition hover:border-neutral-600 hover:text-white"
+            >
+              <CloseIcon className="h-4 w-4" />
+            </button>
           </div>
 
           <div
@@ -144,7 +249,9 @@ export function AssistantWidget() {
                       : "mr-8 whitespace-pre-wrap break-words rounded-2xl rounded-bl-md border border-neutral-800 bg-neutral-900 px-3.5 py-2.5 text-sm leading-6 text-neutral-200"
                   }
                 >
-                  {message.content}
+                  {message.role === "assistant"
+                    ? renderAssistantContent(message.content)
+                    : message.content}
                 </div>
               ))
             )}
@@ -169,7 +276,7 @@ export function AssistantWidget() {
               event.preventDefault();
               void send(input);
             }}
-            className="flex items-center gap-2 border-t border-neutral-800 bg-neutral-900/70 px-3 py-3"
+            className="flex items-center gap-2 border-t border-neutral-800 bg-neutral-900/70 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
           >
             <input
               value={input}
