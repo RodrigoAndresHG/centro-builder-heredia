@@ -17,6 +17,7 @@ model User {
   emailVerified DateTime? @map("email_verified")
   image         String?
   roleKey       String    @default("INVITADO") @map("role_key")
+  signupSource  String?   @map("signup_source")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -351,4 +352,17 @@ model AssistantUsage {
 
   @@unique([userId, day])
   @@map("assistant_usage")
+}
+
+// Rate limit por IP+minuto para los endpoints públicos /api/external/*
+// (serverless-safe: el contador vive en la DB, no en memoria del proceso).
+// `bucket` = "<ip>:<minuto-ISO>". Las filas viejas se pueden purgar luego.
+model ExternalSignupThrottle {
+  id        String   @id @default(cuid())
+  bucket    String   @unique
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("external_signup_throttle")
 }
