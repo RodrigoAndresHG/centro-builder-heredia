@@ -26,6 +26,20 @@ function getProviderLabel(provider?: string | null) {
   return "Sin proveedor";
 }
 
+// Fecha de registro en hora de Ecuador (el servidor corre en UTC).
+const registroFormatter = new Intl.DateTimeFormat("es-EC", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+  timeZone: "America/Guayaquil",
+});
+
+const registroHoraFormatter = new Intl.DateTimeFormat("es-EC", {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "America/Guayaquil",
+});
+
 export default async function AdminUsuariosPage() {
   const users = await listAdminUsers();
 
@@ -39,10 +53,11 @@ export default async function AdminUsuariosPage() {
 
       <Card className="overflow-hidden p-0">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[860px] border-collapse text-left">
+          <table className="w-full min-w-[960px] border-collapse text-left">
             <thead className="bg-surface-muted text-xs uppercase tracking-[0.14em] text-neutral-500">
               <tr>
                 <th className="px-5 py-3 font-semibold">Usuario</th>
+                <th className="px-5 py-3 font-semibold">Registro</th>
                 <th className="px-5 py-3 font-semibold">Rol</th>
                 <th className="px-5 py-3 font-semibold">Entrada</th>
                 <th className="px-5 py-3 font-semibold">Accesos</th>
@@ -64,6 +79,14 @@ export default async function AdminUsuariosPage() {
                       </p>
                       <p className="mt-1 text-sm text-neutral-500">
                         {user.email ?? "Sin correo"}
+                      </p>
+                    </td>
+                    <td className="px-5 py-4">
+                      <p className="text-sm font-medium text-foreground">
+                        {registroFormatter.format(user.createdAt)}
+                      </p>
+                      <p className="mt-1 text-xs text-neutral-500">
+                        {registroHoraFormatter.format(user.createdAt)}
                       </p>
                     </td>
                     <td className="px-5 py-4 text-sm font-semibold text-neutral-700">
