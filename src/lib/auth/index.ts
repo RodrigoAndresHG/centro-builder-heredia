@@ -6,6 +6,7 @@ import Nodemailer from "next-auth/providers/nodemailer";
 import { ATTRIBUTION_COOKIE, computeAttributionUpdate } from "@/lib/attribution";
 import { prisma } from "@/lib/db/prisma";
 import { TRUSTED_EXTERNAL_ORIGINS } from "@/lib/external/config";
+import { enrollUserInOnboarding } from "@/lib/services/email-sequence";
 
 const emailProvider =
   process.env.EMAIL_SERVER && process.env.EMAIL_FROM
@@ -79,6 +80,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async createUser({ user }) {
       if (!user.id) {
         return;
+      }
+
+      // Inscripción al drip de onboarding: solo necesita el objeto User (no
+      // cookies), así que aquí SÍ es confiable. En su propio try/catch para
+      // que no bloquee el registro ni la atribución.
+      try {
+        await enrollUserInOnboarding(user.id, user.email);
+      } catch (error) {
+        console.error("[auth] No se pudo inscribir en el onboarding:", error);
       }
 
       try {

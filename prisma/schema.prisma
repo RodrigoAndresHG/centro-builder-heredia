@@ -31,6 +31,7 @@ model User {
   purchases      Purchase[]
   lessonProgress LessonProgress[]
   assistantUsage AssistantUsage[]
+  emailSequence  EmailSequenceState?
 
   @@map("users")
 }
@@ -381,4 +382,32 @@ model LinkClickEvent {
 
   @@index([target, src])
   @@map("link_click_events")
+}
+
+enum EmailSequenceStatus {
+  pending
+  done
+  unsubscribed
+  failed
+}
+
+// Estado del drip de onboarding por email (5 correos en 7 días) por usuario.
+// step = índice del PRÓXIMO correo a enviar (0..5). Al llegar a 5 → done.
+model EmailSequenceState {
+  id               String              @id @default(cuid())
+  userId           String              @unique @map("user_id")
+  email            String
+  step             Int                 @default(0)
+  status           EmailSequenceStatus @default(pending)
+  attempts         Int                 @default(0)
+  nextSendAt       DateTime            @map("next_send_at")
+  lastSentAt       DateTime?           @map("last_sent_at")
+  unsubscribeToken String              @unique @map("unsubscribe_token")
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, nextSendAt])
+  @@map("email_sequence_state")
 }
