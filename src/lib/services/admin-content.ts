@@ -190,6 +190,33 @@ export async function listAdminUsers() {
   });
 }
 
+// Registros agrupados por fuente de atribución (utm_source), de mayor a menor.
+// El grupo con source=null es intencional: son los registros sin fuente
+// (tráfico directo). La UI lo muestra como "Directo / sin fuente".
+export async function getSignupAttributionSummary() {
+  const rows = await prisma.user.groupBy({
+    by: ["utmSource"],
+    _count: { _all: true },
+  });
+
+  return rows
+    .map((row) => ({ source: row.utmSource, count: row._count._all }))
+    .sort((a, b) => b.count - a.count);
+}
+
+// Clics al canal de WhatsApp agrupados por fuente (vía /go/whatsapp).
+export async function getWhatsappClickSummary() {
+  const rows = await prisma.linkClickEvent.groupBy({
+    by: ["src"],
+    where: { target: "whatsapp" },
+    _count: { _all: true },
+  });
+
+  return rows
+    .map((row) => ({ src: row.src, count: row._count._all }))
+    .sort((a, b) => b.count - a.count);
+}
+
 export async function getAdminLesson(id: string) {
   return prisma.lesson.findUnique({
     where: { id },

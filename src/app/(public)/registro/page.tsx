@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AttributionCapture } from "@/components/public/attribution-capture";
 import { AuthPanel } from "@/components/public/auth-panel";
 
 export const metadata: Metadata = {
@@ -34,10 +35,13 @@ export default async function RegistroPage({ searchParams }: RegistroPageProps) 
   const { callbackUrl, intent } = await searchParams;
 
   return (
-    <AuthPanel
-      mode="registro"
-      intent={normalizeIntent(intent, callbackUrl)}
-      callbackUrl={callbackUrl}
-    />
+    <>
+      <AttributionCapture />
+      <AuthPanel
+        mode="registro"
+        intent={normalizeIntent(intent, callbackUrl)}
+        callbackUrl={callbackUrl}
+      />
+    </>
   );
 }
