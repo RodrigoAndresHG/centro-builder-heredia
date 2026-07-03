@@ -219,6 +219,41 @@ export async function deleteProgram(id: string, formData: FormData) {
   redirect("/admin/programas");
 }
 
+export async function deleteUser(userId: string, formData: FormData) {
+  await requireAdmin();
+
+  const session = await auth();
+  if (session?.user?.id === userId) {
+    throw new Error("No puedes eliminar tu propia cuenta.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true, roleKey: true },
+  });
+
+  if (!user) {
+    throw new Error("Usuario no encontrado.");
+  }
+
+  if (user.roleKey === "ADMIN") {
+    throw new Error("No se puede eliminar una cuenta de administrador.");
+  }
+
+  // Salvaguarda: escribir exactamente el correo (o el ID si no tiene correo).
+  const expected = user.email?.trim() || userId;
+  const confirmValue = readString(formData, "confirmValue");
+  if (confirmValue.toLowerCase() !== expected.toLowerCase()) {
+    throw new Error(`Para eliminar, escribe exactamente: "${expected}".`);
+  }
+
+  // Cascade borra accounts, sessions, accesses, purchases, lessonProgress,
+  // assistantUsage y el estado de la secuencia de email (onDelete: Cascade).
+  await prisma.user.delete({ where: { id: userId } });
+
+  revalidatePath("/admin/usuarios");
+}
+
 export async function deleteModule(id: string) {
   await requireAdmin();
 
