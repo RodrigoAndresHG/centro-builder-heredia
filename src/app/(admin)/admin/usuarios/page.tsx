@@ -1,5 +1,8 @@
+import { deleteUser } from "@/lib/actions/admin-content";
 import { Card } from "@/components/shared/card";
+import { DeleteUserControl } from "@/components/admin/users/delete-user-control";
 import { PageHeader } from "@/components/shared/page-header";
+import { auth } from "@/lib/auth";
 import {
   getSignupAttributionSummary,
   getWhatsappClickSummary,
@@ -49,11 +52,14 @@ const registroHoraFormatter = new Intl.DateTimeFormat("es-EC", {
 });
 
 export default async function AdminUsuariosPage() {
-  const [users, attribution, whatsappClicks] = await Promise.all([
+  const [session, users, attribution, whatsappClicks] = await Promise.all([
+    auth(),
     listAdminUsers(),
     getSignupAttributionSummary(),
     getWhatsappClickSummary(),
   ]);
+
+  const currentUserId = session?.user?.id;
 
   const totalRegistros = attribution.reduce((sum, row) => sum + row.count, 0);
 
@@ -136,7 +142,7 @@ export default async function AdminUsuariosPage() {
 
       <Card className="overflow-hidden p-0">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1080px] border-collapse text-left">
+          <table className="w-full min-w-[1240px] border-collapse text-left">
             <thead className="bg-surface-muted text-xs uppercase tracking-[0.14em] text-neutral-500">
               <tr>
                 <th className="px-5 py-3 font-semibold">Usuario</th>
@@ -147,6 +153,7 @@ export default async function AdminUsuariosPage() {
                 <th className="px-5 py-3 font-semibold">Accesos</th>
                 <th className="px-5 py-3 font-semibold">Compras</th>
                 <th className="px-5 py-3 font-semibold">Estado</th>
+                <th className="px-5 py-3 font-semibold">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -207,6 +214,20 @@ export default async function AdminUsuariosPage() {
                           ? "Con acceso"
                           : "Sin acceso"}
                       </span>
+                    </td>
+                    <td className="px-5 py-4 align-top">
+                      {user.roleKey === "ADMIN" || user.id === currentUserId ? (
+                        <span className="text-xs text-neutral-400">
+                          Protegido
+                        </span>
+                      ) : (
+                        <DeleteUserControl
+                          action={deleteUser.bind(null, user.id)}
+                          expected={user.email ?? user.id}
+                          purchaseCount={user.purchases.length}
+                          accessCount={activeAccesses.length}
+                        />
+                      )}
                     </td>
                   </tr>
                 );
