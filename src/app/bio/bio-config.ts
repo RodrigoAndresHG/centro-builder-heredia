@@ -3,15 +3,24 @@
 // pública en /bio. Es lo único que tocas para cambiar foto, textos y links.
 // ─────────────────────────────────────────────────────────────────────────
 
+import type { RegistroIntent } from "@/lib/attribution";
+
 export type BrandKey = "tiktok" | "instagram" | "whatsapp";
+
+// ¿Está activa la temporada del Mundial? Pon en false después del 19-jul-2026
+// para ocultar la tarjeta de PronostiGol sin tocar nada más.
+export const MUNDIAL_ACTIVO = true;
 
 export type BioCourse = {
   tag: string;
   name: string;
   note: string;
   price: string;
-  href: string;
-  // true = tarjeta destacada (tu oferta principal).
+  // intent=explore para el curso gratis; intent=buy para los de pago.
+  // El link real (con UTMs) lo arma /bio según el ?src= de la visita.
+  intent: RegistroIntent;
+  cta: string;
+  // true = tarjeta destacada (héroe).
   highlight?: boolean;
 };
 
@@ -19,8 +28,6 @@ export type BioSocial = {
   brand: BrandKey;
   label: string;
   href: string;
-  // Opcional: abre la app nativa directamente (esquema/universal link).
-  appHref?: string;
 };
 
 export const bioConfig = {
@@ -34,37 +41,53 @@ export const bioConfig = {
     verified: true,
   },
 
+  // Orden pensado como embudo: primero el gratis (héroe), luego el tripwire
+  // de USD 9.99, luego el flagship de USD 47.
   courses: [
+    {
+      tag: "Empieza aquí · Gratis",
+      name: "Claude desde Cero",
+      note: "Tu punto de entrada · sin tarjeta",
+      price: "Gratis",
+      intent: "explore",
+      cta: "Empezar gratis →",
+      highlight: true,
+    },
     {
       tag: "El del Live",
       name: "Agente de Noticias de IA",
       note: "El programa de mi Live · paso a paso",
       price: "USD 9.99",
-      href: "/registro?intent=buy",
-      highlight: true,
-    },
-    {
-      tag: "Gratis",
-      name: "Claude desde Cero",
-      note: "Tu punto de entrada · sin tarjeta",
-      price: "Gratis",
-      href: "/registro?intent=explore",
+      intent: "buy",
+      cta: "Obtener →",
     },
     {
       tag: "Insignia",
       name: "Builder Multi-IA",
       note: "El recorrido completo, módulo a módulo",
       price: "USD 47",
-      href: "/registro?intent=buy",
+      intent: "buy",
+      cta: "Activar →",
     },
   ] satisfies BioCourse[],
 
+  // Tarjeta destacada de PronostiGol (solo visible si MUNDIAL_ACTIVO).
+  mundial: {
+    tag: "Mundial 2026",
+    title: "PronostiGol · Predice el Mundial",
+    note: "Juega gratis, predice los partidos y compite. En vivo durante el Mundial.",
+    cta: "Jugar",
+    href: "https://pronostigol.rodriheredia.com",
+  },
+
   // Canal de WhatsApp destacado (tarjeta propia, antes de las redes).
+  // La URL del canal NO vive aquí: el botón pasa por /go/whatsapp (para medir
+  // clics) y ese redirect usa getCommunityUrl() en src/lib/community.ts, que
+  // es la única fuente de verdad de la URL del canal.
   channel: {
     title: "Únete a mi Canal de WhatsApp",
     note: "Novedades, nuevos módulos y Lives — directo a tu WhatsApp. Gratis.",
     cta: "Unirme al canal",
-    href: "https://whatsapp.com/channel/0029VbD3AGkLikg5aJbgRq0l",
   },
 
   socials: [
@@ -77,7 +100,6 @@ export const bioConfig = {
       brand: "instagram",
       label: "Instagram",
       href: "https://www.instagram.com/rodrigo_heredia_cio",
-      appHref: "instagram://user?username=rodrigo_heredia_cio",
     },
   ] satisfies BioSocial[],
 

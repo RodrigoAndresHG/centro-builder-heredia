@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { bioConfig, type BioCourse, type BioSocial, type BrandKey } from "./bio-config";
+import { buildRegistroHref, normalizeSrc } from "@/lib/attribution";
+import {
+  MUNDIAL_ACTIVO,
+  bioConfig,
+  type BioCourse,
+  type BioSocial,
+  type BrandKey,
+} from "./bio-config";
 import { OpenInBrowserBanner } from "./open-in-browser-banner";
 
 export const metadata: Metadata = {
@@ -72,10 +79,10 @@ function CompactAvatar() {
   );
 }
 
-function CourseCard({ course }: { course: BioCourse }) {
+function CourseCard({ course, href }: { course: BioCourse; href: string }) {
   return (
     <Link
-      href={course.href}
+      href={href}
       className={`group flex items-center gap-3 rounded-2xl border p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 ${
         course.highlight
           ? "border-teal-300/50 bg-gradient-to-r from-teal-400/15 to-emerald-500/5 hover:border-teal-300/70"
@@ -102,18 +109,44 @@ function CourseCard({ course }: { course: BioCourse }) {
       <div className="shrink-0 text-right">
         <p className="text-sm font-bold text-white">{course.price}</p>
         <span className="text-xs font-semibold text-teal-300 transition group-hover:translate-x-0.5">
-          {course.highlight ? "Obtener →" : "Ver →"}
+          {course.cta}
         </span>
       </div>
     </Link>
   );
 }
 
-function ChannelCard() {
+function MundialCard({ href }: { href: string }) {
+  const { mundial } = bioConfig;
+  return (
+    <a
+      href={href}
+      className="group flex items-center gap-4 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-orange-500/5 p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-amber-300/70"
+    >
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-400/15 text-2xl">
+        ⚽
+      </span>
+      <div className="min-w-0 flex-1">
+        <span className="inline-flex rounded-full bg-amber-400/20 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-amber-200">
+          {mundial.tag}
+        </span>
+        <p className="mt-1 truncate text-sm font-semibold text-white">
+          {mundial.title}
+        </p>
+        <p className="truncate text-xs text-amber-100/80">{mundial.note}</p>
+      </div>
+      <span className="shrink-0 rounded-md bg-amber-400 px-3 py-2 text-xs font-semibold text-neutral-950 transition group-hover:bg-amber-300">
+        {mundial.cta}
+      </span>
+    </a>
+  );
+}
+
+function ChannelCard({ href }: { href: string }) {
   const { channel } = bioConfig;
   return (
     <a
-      href={channel.href}
+      href={href}
       className="group flex items-center gap-4 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-500/20 to-emerald-400/5 p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-emerald-400/70"
     >
       <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-400/15">
@@ -133,7 +166,7 @@ function ChannelCard() {
 }
 
 function SocialButton({ social }: { social: BioSocial }) {
-  const href = social.appHref ?? social.href;
+  const href = social.href;
   return (
     <a
       href={href}
@@ -147,8 +180,22 @@ function SocialButton({ social }: { social: BioSocial }) {
   );
 }
 
-export default function BioPage() {
-  const { profile, courses, socials, upcoming } = bioConfig;
+type BioPageProps = {
+  searchParams: Promise<{ src?: string }>;
+};
+
+export default async function BioPage({ searchParams }: BioPageProps) {
+  const { profile, courses, socials, upcoming, mundial } = bioConfig;
+  const { src: rawSrc } = await searchParams;
+  const src = normalizeSrc(rawSrc);
+
+  // El canal de WhatsApp no acepta UTMs → redirect interno /go/whatsapp que
+  // registra el clic por fuente y luego 302 al canal.
+  const whatsappHref = `/go/whatsapp?src=${encodeURIComponent(src)}`;
+  // PronostiGol es externo; le pasamos UTMs por si su lado los lee.
+  const mundialHref = `${mundial.href}?utm_source=${encodeURIComponent(
+    src,
+  )}&utm_medium=bio`;
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-neutral-950 text-white">
@@ -178,13 +225,24 @@ export default function BioPage() {
         </p>
         <div className="mt-3 space-y-3">
           {courses.map((course) => (
-            <CourseCard key={course.name} course={course} />
+            <CourseCard
+              key={course.name}
+              course={course}
+              href={buildRegistroHref(course.intent, src)}
+            />
           ))}
         </div>
 
+        {/* Tarjeta Mundial (PronostiGol) — solo en temporada */}
+        {MUNDIAL_ACTIVO ? (
+          <div className="mt-5">
+            <MundialCard href={mundialHref} />
+          </div>
+        ) : null}
+
         {/* Canal de WhatsApp destacado */}
         <div className="mt-5">
-          <ChannelCard />
+          <ChannelCard href={whatsappHref} />
         </div>
 
         {/* Sígueme */}

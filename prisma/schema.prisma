@@ -18,6 +18,10 @@ model User {
   image         String?
   roleKey       String    @default("INVITADO") @map("role_key")
   signupSource  String?   @map("signup_source")
+  utmSource     String?   @map("utm_source")
+  utmMedium     String?   @map("utm_medium")
+  utmCampaign   String?   @map("utm_campaign")
+  signupIntent  String?   @map("signup_intent")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -365,4 +369,16 @@ model ExternalSignupThrottle {
 
   @@index([createdAt])
   @@map("external_signup_throttle")
+}
+
+// Clics a links que no aceptan UTMs (ej. el canal de WhatsApp), registrados
+// vía redirect interno /go/* para poder medir la atribución por fuente.
+model LinkClickEvent {
+  id        String   @id @default(cuid())
+  target    String
+  src       String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([target, src])
+  @@map("link_click_events")
 }

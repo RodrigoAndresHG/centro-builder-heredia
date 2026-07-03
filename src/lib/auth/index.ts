@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Nodemailer from "next-auth/providers/nodemailer";
 
+import { ATTRIBUTION_COOKIE, parseAttributionCookie } from "@/lib/attribution";
 import { prisma } from "@/lib/db/prisma";
 import { TRUSTED_EXTERNAL_ORIGINS } from "@/lib/external/config";
 
@@ -65,6 +66,42 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       return baseUrl;
+    },
+  },
+  events: {
+    // Se dispara UNA sola vez, al crear un usuario nuevo (no en logins
+    // posteriores) → atribución de primer toque. Lee la cookie que /registro
+    // persistió al aterrizar y la guarda junto al usuario. Nunca rompe el
+    // registro si algo falla. Import dinámico de next/headers para no
+    // arrastrarlo al bundle del middleware.
+    async createUser({ user }) {
+      if (!user.id) {
+        return;
+      }
+
+      try {
+        const { cookies } = await import("next/headers");
+        const store = await cookies();
+        const attribution = parseAttributionCookie(
+          store.get(ATTRIBUTION_COOKIE)?.value,
+        );
+
+        if (!attribution) {
+          return;
+        }
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            utmSource: attribution.source,
+            utmMedium: attribution.medium ?? null,
+            utmCampaign: attribution.campaign ?? null,
+            signupIntent: attribution.intent ?? null,
+          },
+        });
+      } catch (error) {
+        console.error("[auth] No se pudo guardar la atribución:", error);
+      }
     },
   },
 });
