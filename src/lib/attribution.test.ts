@@ -2,9 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildRegistroHref,
+  computeAttributionUpdate,
   normalizeSrc,
   parseAttributionCookie,
 } from "./attribution";
+
+function cookieWith(payload: Record<string, unknown>) {
+  return encodeURIComponent(JSON.stringify(payload));
+}
 
 describe("normalizeSrc", () => {
   it("devuelve 'bio' cuando no viene nada", () => {
@@ -78,5 +83,48 @@ describe("parseAttributionCookie", () => {
 
   it("no explota con JSON corrupto", () => {
     expect(parseAttributionCookie("no-es-json")).toBeNull();
+  });
+});
+
+describe("computeAttributionUpdate", () => {
+  it("escribe utmSource='tiktok' cuando el usuario nuevo no tiene fuente y la cookie trae tiktok/empieza", () => {
+    const cookie = cookieWith({
+      source: "tiktok",
+      medium: "bio",
+      campaign: "empieza",
+      intent: "explore",
+    });
+
+    expect(computeAttributionUpdate(null, cookie)).toEqual({
+      utmSource: "tiktok",
+      utmMedium: "bio",
+      utmCampaign: "empieza",
+      signupIntent: "explore",
+    });
+  });
+
+  it("NO reescribe si el usuario ya tiene fuente (primer toque gana)", () => {
+    const cookie = cookieWith({ source: "tiktok", campaign: "empieza" });
+    expect(computeAttributionUpdate("instagram", cookie)).toBeNull();
+  });
+
+  it("devuelve null si no hay cookie", () => {
+    expect(computeAttributionUpdate(null, undefined)).toBeNull();
+    expect(computeAttributionUpdate(null, "")).toBeNull();
+  });
+
+  it("devuelve null con cookie corrupta o sin fuente", () => {
+    expect(computeAttributionUpdate(null, "no-es-json")).toBeNull();
+    expect(computeAttributionUpdate(null, cookieWith({ medium: "bio" }))).toBeNull();
+  });
+
+  it("rellena medium/campaign/intent en null si faltan", () => {
+    const cookie = cookieWith({ source: "ig" });
+    expect(computeAttributionUpdate(null, cookie)).toEqual({
+      utmSource: "ig",
+      utmMedium: null,
+      utmCampaign: null,
+      signupIntent: null,
+    });
   });
 });

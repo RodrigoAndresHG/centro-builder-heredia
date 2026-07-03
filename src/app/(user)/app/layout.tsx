@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app/app-shell";
 import { AssistantWidget } from "@/components/app/assistant-widget";
+import { AttributionSync } from "@/components/app/attribution-sync";
 import { auth } from "@/lib/auth";
 
 export default async function UserAppLayout({
@@ -20,6 +21,7 @@ export default async function UserAppLayout({
     <AppShell>
       {children}
       <AssistantWidget />
+      <AttributionSync />
     </AppShell>
   );
 }
