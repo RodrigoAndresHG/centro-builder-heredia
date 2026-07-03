@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { AuthPanel } from "@/components/public/auth-panel";
+import { CaptureAttribution } from "@/components/public/capture-attribution";
 
 export const metadata: Metadata = {
   title: "Registro | Builder HeredIA",
@@ -34,10 +35,14 @@ export default async function RegistroPage({ searchParams }: RegistroPageProps) 
   const { callbackUrl, intent } = await searchParams;
 
   return (
-    <AuthPanel
-      mode="registro"
-      intent={normalizeIntent(intent, callbackUrl)}
-      callbackUrl={callbackUrl}
-    />
+    <>
+      {/* Captura UTMs del tráfico entrante (p. ej. PronostiGol → curso gratis). */}
+      <CaptureAttribution />
+      <AuthPanel
+        mode="registro"
+        intent={normalizeIntent(intent, callbackUrl)}
+        callbackUrl={callbackUrl}
+      />
+    </>
   );
 }

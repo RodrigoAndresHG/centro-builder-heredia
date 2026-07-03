@@ -17,6 +17,14 @@ model User {
   emailVerified DateTime? @map("email_verified")
   image         String?
   roleKey       String    @default("INVITADO") @map("role_key")
+  // Atribución de marketing: de dónde llegó el usuario. Se captura al crear la
+  // cuenta (evento createUser de NextAuth) leyendo la cookie de atribución que
+  // deja /registro cuando el tráfico trae UTMs (p. ej. desde PronostiGol).
+  source        String?   @map("source")
+  utmMedium     String?   @map("utm_medium")
+  utmCampaign   String?   @map("utm_campaign")
+  utmContent    String?   @map("utm_content")
+  landingIntent String?   @map("landing_intent")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -26,6 +34,7 @@ model User {
   purchases      Purchase[]
   lessonProgress LessonProgress[]
 
+  @@index([source])
   @@map("users")
 }
 
@@ -286,6 +295,25 @@ model EarlyAccessLead {
   @@index([source])
   @@index([status])
   @@map("early_access_leads")
+}
+
+// Registro de CLICKS entrantes con UTMs (p. ej. PronostiGol → /registro). A
+// diferencia del User (atribución de la cuenta ya creada), aquí queda cada
+// llegada aunque no complete el registro — mide el tráfico atribuido.
+model AttributionEvent {
+  id        String   @id @default(cuid())
+  source    String
+  medium    String?  @map("utm_medium")
+  campaign  String?  @map("utm_campaign")
+  content   String?  @map("utm_content")
+  intent    String?
+  path      String?
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([source])
+  @@index([createdAt])
+  @@map("attribution_events")
 }
 
 enum BuilderUpdateType {
