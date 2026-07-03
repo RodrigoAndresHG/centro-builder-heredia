@@ -26,10 +26,12 @@ export function AttributionCapture() {
       ts: Date.now(),
     };
 
+    // max-age 1h: margen para que la persistencia final (en /app tras el
+    // login) alcance a leerla aunque el flujo de OAuth tome su tiempo.
     const secure = window.location.protocol === "https:" ? "; Secure" : "";
     document.cookie = `${ATTRIBUTION_COOKIE}=${encodeURIComponent(
       JSON.stringify(payload),
-    )}; path=/; max-age=1800; SameSite=Lax${secure}`;
+    )}; path=/; max-age=3600; SameSite=Lax${secure}`;
   }, []);
 
   return null;

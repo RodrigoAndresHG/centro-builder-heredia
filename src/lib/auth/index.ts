@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Nodemailer from "next-auth/providers/nodemailer";
 
-import { ATTRIBUTION_COOKIE, parseAttributionCookie } from "@/lib/attribution";
+import { ATTRIBUTION_COOKIE, computeAttributionUpdate } from "@/lib/attribution";
 import { prisma } from "@/lib/db/prisma";
 import { TRUSTED_EXTERNAL_ORIGINS } from "@/lib/external/config";
 
@@ -69,11 +69,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   events: {
-    // Se dispara UNA sola vez, al crear un usuario nuevo (no en logins
-    // posteriores) → atribución de primer toque. Lee la cookie que /registro
-    // persistió al aterrizar y la guarda junto al usuario. Nunca rompe el
-    // registro si algo falla. Import dinámico de next/headers para no
-    // arrastrarlo al bundle del middleware.
+    // Intento BEST-EFFORT de atribución al crear el usuario. Dentro de este
+    // evento el acceso a cookies() de next/headers no es 100% confiable (puede
+    // no tener el contexto de request tras el round-trip de OAuth), por eso NO
+    // es la fuente de verdad: el respaldo confiable es el Server Action
+    // persistAttribution() que corre desde /app tras el login. Si esto falla,
+    // aquel lo captura. Import dinámico de next/headers para no arrastrarlo al
+    // bundle del middleware.
     async createUser({ user }) {
       if (!user.id) {
         return;
@@ -82,25 +84,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       try {
         const { cookies } = await import("next/headers");
         const store = await cookies();
-        const attribution = parseAttributionCookie(
+        // Usuario recién creado → sin fuente previa (currentUtmSource = null).
+        const data = computeAttributionUpdate(
+          null,
           store.get(ATTRIBUTION_COOKIE)?.value,
         );
 
-        if (!attribution) {
-          return;
+        if (data) {
+          await prisma.user.update({ where: { id: user.id }, data });
         }
-
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            utmSource: attribution.source,
-            utmMedium: attribution.medium ?? null,
-            utmCampaign: attribution.campaign ?? null,
-            signupIntent: attribution.intent ?? null,
-          },
-        });
       } catch (error) {
-        console.error("[auth] No se pudo guardar la atribución:", error);
+        console.error("[auth] Atribución best-effort en createUser falló:", error);
       }
     },
   },

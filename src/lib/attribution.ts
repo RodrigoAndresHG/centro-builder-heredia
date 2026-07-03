@@ -81,3 +81,35 @@ export function parseAttributionCookie(
     return null;
   }
 }
+
+export type AttributionUpdate = {
+  utmSource: string;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  signupIntent: string | null;
+};
+
+// Decide qué escribir en el User a partir de la cookie de atribución.
+// Semántica de PRIMER TOQUE: si el usuario ya tiene fuente, NO se reescribe
+// (devuelve null). Devuelve null también si la cookie no trae fuente válida.
+// Puro y sin dependencias → fácil de testear y de usar en cliente o servidor.
+export function computeAttributionUpdate(
+  currentUtmSource: string | null | undefined,
+  cookieValue: string | null | undefined,
+): AttributionUpdate | null {
+  if (currentUtmSource) {
+    return null;
+  }
+
+  const attribution = parseAttributionCookie(cookieValue);
+  if (!attribution) {
+    return null;
+  }
+
+  return {
+    utmSource: attribution.source,
+    utmMedium: attribution.medium ?? null,
+    utmCampaign: attribution.campaign ?? null,
+    signupIntent: attribution.intent ?? null,
+  };
+}
