@@ -133,7 +133,45 @@ export type AssistantTurn = {
   content: string;
 };
 
-export async function runAssistant(messages: AssistantTurn[]) {
+// Tope de caracteres del contenido de la lección inyectado al prompt
+// (control de costo: ~2k tokens; Haiku lo cachea entre preguntas seguidas).
+const LESSON_CONTEXT_MAX_CHARS = 8000;
+
+export type AssistantLessonContext = {
+  programTitle: string;
+  moduleTitle: string | null;
+  lessonTitle: string;
+  lessonContent: string | null;
+  lessonDescription: string | null;
+};
+
+// Bloque de sistema adicional cuando el usuario pregunta desde una lección.
+// El acceso YA fue validado por el route handler (getLessonBySlug).
+export function buildLessonContextBlock(
+  context: AssistantLessonContext,
+): string {
+  const body =
+    context.lessonContent?.trim() ||
+    context.lessonDescription?.trim() ||
+    "(La lección es principalmente en video; no hay texto adicional.)";
+
+  return `## Lección que el usuario está viendo AHORA
+Programa: ${context.programTitle}
+${context.moduleTitle ? `Módulo: ${context.moduleTitle}\n` : ""}Lección: ${context.lessonTitle}
+
+CONTENIDO DE LA LECCIÓN (fuente de verdad para preguntas sobre la lección):
+${body.slice(0, LESSON_CONTEXT_MAX_CHARS)}
+
+Instrucciones adicionales:
+- Si la pregunta es sobre esta lección, respóndela usando este contenido (explica, resume o aclara con tus palabras, en el mismo tono breve).
+- Si pide un resumen, entrega 3-4 ideas clave en frases cortas.
+- Si la pregunta va más allá del contenido de la lección, dilo honestamente y sugiere continuar con la lección o escribir a soporte.`;
+}
+
+export async function runAssistant(
+  messages: AssistantTurn[],
+  lessonBlock?: string,
+) {
   const client = getAnthropicClient();
   const systemPrompt = await buildAssistantSystemPrompt();
 
@@ -149,6 +187,17 @@ export async function runAssistant(messages: AssistantTurn[]) {
         // a ahorrar costo automáticamente cuando el conocimiento crezca.
         cache_control: { type: "ephemeral" },
       },
+      // Segundo bloque (opcional): la lección actual. Breakpoint de caché
+      // propio: preguntas seguidas sobre la misma lección reusan el prefijo.
+      ...(lessonBlock
+        ? [
+            {
+              type: "text" as const,
+              text: lessonBlock,
+              cache_control: { type: "ephemeral" as const },
+            },
+          ]
+        : []),
     ],
     messages,
   });

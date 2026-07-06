@@ -6,6 +6,7 @@ import { CommunityCard } from "@/components/app/community-card";
 import { NextStepUpsell } from "@/components/app/next-step-upsell";
 import { ProfileNamePrompt } from "@/components/app/profile-name-prompt";
 import { ProgressMeter } from "@/components/app/progress-meter";
+import { StreakCard } from "@/components/app/streak-card";
 import { WelcomeVideoCard } from "@/components/app/welcome-video-card";
 import {
   WorkspaceCard,
@@ -15,10 +16,12 @@ import {
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { auth } from "@/lib/auth";
 import {
+  getLessonCompletionDates,
   getProgramLessonCount,
   getProgramProgress,
   listProgramsForViewer,
 } from "@/lib/services";
+import { computeStreak } from "@/lib/streak";
 
 const featuredProgramBullets = [
   "Replica una app real desde cero",
@@ -65,6 +68,9 @@ export default async function UserDashboardPage({
   const lockedProgram = lockedPrograms[0] ?? null;
   const lessonCount = getProgramLessonCount(program);
   const progress = program ? await getProgramProgress(user.id, program) : null;
+  const streak = program
+    ? computeStreak(await getLessonCompletionDates(user.id))
+    : null;
   const continueHref = progress?.nextLesson
     ? progress.nextLesson.href
     : program
@@ -141,6 +147,11 @@ export default async function UserDashboardPage({
                   percent={progress.percent}
                   label={`${progress.completedCount}/${progress.totalCount} lecciones`}
                 />
+                {streak ? (
+                  <div className="mt-4">
+                    <StreakCard streak={streak} />
+                  </div>
+                ) : null}
                 <div className="mt-6 grid grid-cols-2 gap-3">
                   <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">
                     <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">Módulos</p>
