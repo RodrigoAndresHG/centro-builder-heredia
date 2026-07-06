@@ -32,6 +32,7 @@ model User {
   lessonProgress LessonProgress[]
   assistantUsage AssistantUsage[]
   emailSequence  EmailSequenceState?
+  certificates   Certificate[]
 
   @@map("users")
 }
@@ -117,12 +118,34 @@ model Program {
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
 
-  product  Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  modules  Module[]
-  lessons  Lesson[]
-  accesses Access[]
+  product      Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  modules      Module[]
+  lessons      Lesson[]
+  accesses     Access[]
+  certificates Certificate[]
 
   @@map("programs")
+}
+
+// Certificado de finalización por programa. Se emite una sola vez por
+// usuario+programa al llegar al 100% de lecciones publicadas. `code` es el
+// identificador público no adivinable de /cert/[code]; `recipientName` es un
+// snapshot del nombre al momento de emitir (el cert no cambia si el usuario
+// se renombra). `revokedAt` permite invalidarlo (ej. reembolso) sin borrarlo.
+model Certificate {
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  programId     String    @map("program_id")
+  code          String    @unique
+  recipientName String    @map("recipient_name")
+  issuedAt      DateTime  @default(now()) @map("issued_at")
+  revokedAt     DateTime? @map("revoked_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, programId])
+  @@map("certificates")
 }
 
 enum ProgramStatus {
