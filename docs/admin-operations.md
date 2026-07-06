@@ -7,15 +7,36 @@ El admin vive bajo `/admin` y requiere rol `ADMIN`.
 Sidebar admin actual:
 
 - Dashboard
+- Productos
 - Programas
 - Módulos
 - Lecciones
 - Videos
+- Biblioteca
 - Novedades
 - Usuarios
 - Accesos
 
 `Early Access` salió del sidebar, pero la ruta `/admin/early-access` existe como histórico.
+
+## Productos
+
+Rutas:
+
+```text
+/admin/productos
+/admin/productos/nuevo
+/admin/productos/[id]
+```
+
+Operaciones:
+
+- Crear producto.
+- Editar producto (slug, nombre, descripción).
+- Asociar `stripePriceId` (Stripe Price ID del producto, campo opcional en el modelo `Product`).
+- Activar/desactivar (`isActive`).
+
+El producto es la unidad comercial: los programas se asocian a un producto y Stripe cobra contra su `stripePriceId`.
 
 ## Programas
 
@@ -35,6 +56,13 @@ Operaciones:
 - Definir estado `DRAFT`, `PRESALE`, `OPEN`.
 - Definir `opensAt`.
 - Definir `presaleMessage`.
+- Definir orden de aparición (`sortOrder`).
+
+Borrado de programa:
+
+- En `/admin/programas/[id]` la acción `deleteProgram` exige escribir el slug exacto del programa (`confirmSlug`) antes de borrar.
+- El borrado cascada elimina módulos, lecciones, prompts, recursos, progreso y accesos.
+- Las compras (`Purchase`) se conservan (queda `productId = null`) para no perder historial comercial.
 
 ## Módulos
 
@@ -52,6 +80,7 @@ Operaciones:
 - Asociarlo a programa.
 - Editar slug, título, descripción, orden.
 - Publicar/despublicar.
+- Filtrar el listado por programa con `?program=<programId>`.
 
 ## Lecciones
 
@@ -71,6 +100,7 @@ Operaciones:
 - Editar video.
 - Marcar como preview.
 - Publicar/despublicar.
+- Filtrar el listado por programa con `?program=<programId>`.
 
 Regla operativa:
 
@@ -94,6 +124,15 @@ El slug es único por programa:
 - Validan duplicados reales.
 - En update excluyen la lección actual.
 
+## Prompts y recursos por lección
+
+Cada lección puede tener material adjunto editable desde su formulario:
+
+- `LessonPrompt`: prompts copiables por lección. Campos: `title`, `body`, `sortOrder`. Relación con `Lesson` con borrado en cascada.
+- `LessonResource`: recursos por lección. Campos: `title`, `description` opcional, `url`, `type` (enum `LINK`, `DOWNLOAD`, `REFERENCE`) y `sortOrder`.
+
+Ambos se muestran al usuario dentro de la vista de la lección.
+
 ## Videos
 
 Ruta:
@@ -109,6 +148,26 @@ Para cargar video:
 ```text
 Lecciones -> Editar lección -> Subida oficial a Cloudflare Stream
 ```
+
+La subida usa TUS reanudable (`tus-js-client`) con chunks de 50 MB y reintentos automáticos ante errores de red. Ver detalle en `docs/cloudflare-stream.md`.
+
+## Biblioteca
+
+Rutas:
+
+```text
+/admin/biblioteca
+/admin/biblioteca/nuevo
+/admin/biblioteca/[id]
+```
+
+CRUD de prompts reutilizables (modelo `PromptAsset`) que alimentan la Biblioteca de Prompts del usuario en `/app/biblioteca`:
+
+- `title`, `description` opcional, `body`.
+- `platform`: `CLAUDE`, `CHATGPT`, `GEMINI` o `MULTI`.
+- `category`.
+- `isPremium`: el prompt premium se desbloquea con cualquier programa de pago; sin acceso, el `body` se vacía server-side.
+- `isPublished` y `sortOrder`.
 
 ## Novedades
 
@@ -144,6 +203,20 @@ Muestra información útil para:
 - Rol.
 - Accesos.
 - Compras.
+- `Registro`: fecha y hora de registro en zona horaria de Ecuador.
+- `Entrada`: proveedor de acceso (Google, Correo, Sin proveedor).
+- `Fuente`: atribución de marketing (`utm_source` + `utm_campaign`).
+
+Arriba del listado hay dos resúmenes de atribución:
+
+- Registros por fuente (con porcentaje sobre el total).
+- Clics a WhatsApp (desde el redirect medible `/go/whatsapp?src=`).
+
+Borrado de usuario:
+
+- `DeleteUserControl` exige escribir el correo exacto del usuario (o su ID si no tiene correo) antes de habilitar el botón.
+- Avisa cuántas compras y accesos activos se borrarán: al eliminar un usuario, sus compras y accesos se eliminan a propósito.
+- No puedes eliminar tu propia cuenta.
 
 ## Accesos
 

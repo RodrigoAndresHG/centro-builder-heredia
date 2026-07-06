@@ -100,7 +100,7 @@ El servicio `listPublishedBuilderUpdates` acepta:
 - `pageSize`
 - `type`
 
-Por defecto el feed usa `pageSize = 7`.
+Por defecto el feed usa `pageSize = 7` (definido en `src/app/(user)/app/updates/page.tsx`, mismo default que `listPublishedBuilderUpdates` en `src/lib/services/builder-updates.ts`).
 
 ## Detalle por id
 
@@ -110,7 +110,7 @@ La ruta actual de detalle usa:
 /app/updates/[id]
 ```
 
-No existe slug editorial todavía.
+No existe slug editorial todavía: el modelo `BuilderUpdate` no tiene columna `slug` y el `[id]` es el CUID del registro.
 
 Mejora futura recomendada:
 

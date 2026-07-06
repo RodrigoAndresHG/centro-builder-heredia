@@ -67,6 +67,14 @@ El webhook valida firma con:
 STRIPE_WEBHOOK_SECRET
 ```
 
+## Admin de Productos
+
+Cada `Product` requiere un `stripePriceId` (Price ID obtenido del Stripe Dashboard).
+
+- Sin `stripePriceId`, el checkout falla con `400 El producto no tiene Stripe Price configurado.` (validación en `createProductCheckoutSession`, `src/lib/services/commerce.ts`).
+- `/admin/productos` permite crear/editar productos, incluyendo el campo Stripe Price ID.
+- Al crear un producto nuevo o cambiar de precio en Stripe, hay que actualizar este campo en el admin antes de vender.
+
 ## Idempotencia actual
 
 La idempotencia actual se resuelve por:
@@ -88,7 +96,7 @@ Hoy NO está endurecido por `event.id`.
 
 ## Access
 
-`Access` determina si el usuario puede abrir contenido premium.
+`Access` determina si el usuario puede abrir contenido premium. Puede vincularse a un PRODUCTO (acceso a todos los programas del producto) o a un PROGRAMA específico (acceso solo a ese programa).
 
 Campos importantes:
 
@@ -96,8 +104,19 @@ Campos importantes:
 - `source`: `STRIPE`, `MANUAL`, `TEST`.
 - `startsAt`.
 - `expiresAt`.
-- `productId`.
-- `programId`.
+- `productId` (opcional).
+- `programId` (opcional).
+
+Solo uno de `productId`/`programId` va poblado por acceso. En el schema hay restricciones únicas separadas: `@@unique([userId, productId])` y `@@unique([userId, programId])`.
+
+### Acceso a nivel de Programa
+
+Además del acceso por producto, el sistema soporta acceso directo a un programa individual (`hasActiveProgramAccess` en `src/lib/services/access-control.ts`).
+
+Casos de uso:
+
+- Producto = bundle: acceso por producto abre todos sus programas.
+- Acceso modular: habilitar un solo programa sin regalar el producto completo (por ejemplo, cortesía o promoción puntual).
 
 ## Origen de acceso
 
@@ -139,9 +158,9 @@ Nuevo acceso NO reemplaza Stripe.
 
 ## Promoción de rol
 
-Cuando un acceso queda `ACTIVE`, si el usuario no es admin, puede pasar a `USUARIO_PAGO`.
+Cuando un acceso queda `ACTIVE`, si el usuario no es admin, se promociona automáticamente a `USUARIO_PAGO` (`upgradePaidRoleIfNeeded`, usado tanto en `commerce.ts` como en `admin-access.ts`). No es opcional: siempre ocurre.
 
-Esto se hace para simplificar estado visible de usuario, pero el permiso real depende de `Access`.
+Esto se hace para simplificar el estado visible de usuario, pero el permiso real depende de `Access`.
 
 ## Permisos reales
 
@@ -159,6 +178,8 @@ Reglas:
 - `Access` debe estar activo por fecha:
   - `startsAt <= now`
   - `expiresAt` nulo o futuro.
+
+Nota de visibilidad: los programas publicados se ordenan en la UI por `Program.sortOrder` (entero, menor primero; ver `listPublishedPrograms` en `src/lib/services/learning.ts`). El orden no afecta permisos, solo presentación.
 
 ## Riesgos a cuidar
 
