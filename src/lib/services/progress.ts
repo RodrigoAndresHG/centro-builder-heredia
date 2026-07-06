@@ -108,6 +108,16 @@ export function getModuleProgress(
   };
 }
 
+// Fechas de completado de TODAS las lecciones del usuario (para la racha).
+export async function getLessonCompletionDates(userId: string) {
+  const rows = await prisma.lessonProgress.findMany({
+    where: { userId },
+    select: { completedAt: true },
+  });
+
+  return rows.map((row) => row.completedAt);
+}
+
 export async function isLessonCompleted(userId: string, lessonId: string) {
   const progress = await prisma.lessonProgress.findUnique({
     where: {
@@ -125,6 +135,10 @@ export async function isLessonCompleted(userId: string, lessonId: string) {
 }
 
 export async function markLessonCompleted(userId: string, lessonId: string) {
+  // completedAt explícito también en create: misma fuente de tiempo (la app)
+  // para la primera vez y las repeticiones — consistencia para la racha.
+  const completedAt = new Date();
+
   return prisma.lessonProgress.upsert({
     where: {
       userId_lessonId: {
@@ -133,11 +147,12 @@ export async function markLessonCompleted(userId: string, lessonId: string) {
       },
     },
     update: {
-      completedAt: new Date(),
+      completedAt,
     },
     create: {
       userId,
       lessonId,
+      completedAt,
     },
   });
 }

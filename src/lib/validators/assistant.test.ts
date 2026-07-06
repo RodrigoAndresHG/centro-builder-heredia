@@ -53,4 +53,30 @@ describe("assistantChatSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("acepta lessonContext válido", () => {
+    const result = assistantChatSchema.safeParse({
+      messages: [{ role: "user", content: "Explícame esta lección" }],
+      lessonContext: {
+        programSlug: "claude-desde-cero",
+        lessonSlug: "que-es-claude",
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rechaza lessonContext incompleto", () => {
+    const result = assistantChatSchema.safeParse({
+      messages: [{ role: "user", content: "Hola" }],
+      lessonContext: { programSlug: "claude-desde-cero" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("sigue aceptando peticiones sin lessonContext", () => {
+    const result = assistantChatSchema.safeParse({
+      messages: [{ role: "user", content: "¿Cómo guardo mi progreso?" }],
+    });
+    expect(result.success).toBe(true);
+  });
 });

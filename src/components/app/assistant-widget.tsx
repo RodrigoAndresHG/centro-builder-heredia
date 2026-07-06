@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type ChatMessage = {
@@ -7,15 +8,41 @@ type ChatMessage = {
   content: string;
 };
 
-const quickQuestions = [
+const baseQuickQuestions = [
   "¿Cómo activo el acceso a un programa?",
   "Ya pagué y no veo mi acceso",
   "¿Cómo guardo mi progreso?",
   "¿Qué incluye la Biblioteca?",
 ];
 
+const lessonQuickQuestions = [
+  "Resúmeme esta lección",
+  "Explícame esta lección con otras palabras",
+  "¿Cómo guardo mi progreso?",
+];
+
 // Solo se envía la cola del historial para acotar tokens.
 const HISTORY_LIMIT = 8;
+
+// ¿Estamos dentro de una lección? → el asistente recibe su contexto y
+// puede responder sobre el contenido (el servidor re-valida el acceso).
+function parseLessonPath(pathname: string | null) {
+  const match = pathname?.match(
+    /^\/app\/programas\/([^/]+)\/lecciones\/([^/]+)\/?$/,
+  );
+  if (!match) {
+    return null;
+  }
+
+  try {
+    return {
+      programSlug: decodeURIComponent(match[1]),
+      lessonSlug: decodeURIComponent(match[2]),
+    };
+  } catch {
+    return null;
+  }
+}
 
 // Burbuja de chat con destello: marca del asistente en el botón y el header.
 function AssistantIcon({ className }: { className?: string }) {
@@ -76,6 +103,11 @@ export function AssistantWidget() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const lessonContext = parseLessonPath(pathname);
+  const quickQuestions = lessonContext
+    ? lessonQuickQuestions
+    : baseQuickQuestions;
 
   useEffect(() => {
     if (open && scrollRef.current) {
@@ -130,6 +162,7 @@ export function AssistantWidget() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: nextMessages.slice(-HISTORY_LIMIT),
+          ...(lessonContext ? { lessonContext } : {}),
         }),
       });
 
@@ -223,9 +256,15 @@ export function AssistantWidget() {
             {messages.length === 0 ? (
               <div className="space-y-3">
                 <p className="text-sm leading-6 text-neutral-300">
-                  ¡Hola! Soy el asistente del LMS. Pregúntame sobre accesos,
-                  pagos, programas o cómo usar la plataforma.
+                  {lessonContext
+                    ? "¡Hola! Estoy viendo esta lección contigo — pregúntame sobre su contenido, o sobre accesos y la plataforma."
+                    : "¡Hola! Soy el asistente del LMS. Pregúntame sobre accesos, pagos, programas o cómo usar la plataforma."}
                 </p>
+                {lessonContext ? (
+                  <p className="inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-[0.65rem] font-semibold text-teal-200">
+                    📖 Con contexto de esta lección
+                  </p>
+                ) : null}
                 <div className="space-y-2">
                   {quickQuestions.map((question) => (
                     <button

@@ -25,7 +25,16 @@ Lógica en `src/lib/services/assistant.ts`, usando `@anthropic-ai/sdk`:
 
 ## Validación de entrada
 
-`src/lib/validators/assistant.ts` (`assistantChatSchema`): el cliente envía el historial completo (`messages`), máximo 12 turnos de máximo 1.500 caracteres cada uno, y el último mensaje debe ser del usuario. Acota costo y abuso antes de tocar la API de Anthropic.
+`src/lib/validators/assistant.ts` (`assistantChatSchema`): el cliente envía el historial completo (`messages`), máximo 12 turnos de máximo 1.500 caracteres cada uno, y el último mensaje debe ser del usuario. Acota costo y abuso antes de tocar la API de Anthropic. Acepta además un `lessonContext` opcional (`programSlug` + `lessonSlug`).
+
+## Contexto de lección (asistente consciente de la lección)
+
+Cuando el usuario abre el widget **dentro de una lección** (`/app/programas/[slug]/lecciones/[slug]`):
+
+- El widget detecta la ruta con `usePathname()` y envía `lessonContext` en cada petición; las preguntas rápidas cambian a modo lección ("Resúmeme esta lección", etc.) y el saludo muestra el chip "Con contexto de esta lección".
+- El route handler **re-valida el acceso en el servidor** con `getLessonBySlug(programSlug, lessonSlug, viewer)` Y aplica la misma regla de consumo que la página: en **PRESALE** solo las lecciones `isPreview` son consumibles (`program.status === "OPEN" || lesson.isPreview`). Un `lessonContext` falsificado hacia una lección premium/bloqueada/no-preview se ignora en silencio (el asistente responde sin contexto).
+- `buildLessonContextBlock()` (`src/lib/services/assistant.ts`) arma un **segundo bloque de sistema** con programa, módulo, título y contenido de la lección, truncado a 8.000 caracteres (control de costo). Ese bloque lleva su propio `cache_control: ephemeral`: preguntas seguidas sobre la misma lección reutilizan el prefijo cacheado.
+- Si la lección no tiene texto (solo video), se le dice al modelo explícitamente para que no invente contenido.
 
 ## System prompt
 

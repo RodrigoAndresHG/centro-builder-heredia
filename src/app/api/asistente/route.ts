@@ -4,10 +4,12 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import {
   ASSISTANT_DAILY_LIMIT,
+  buildLessonContextBlock,
   consumeAssistantQuota,
   isAssistantConfigured,
   runAssistant,
 } from "@/lib/services/assistant";
+import { getLessonBySlug } from "@/lib/services/learning";
 import { assistantChatSchema } from "@/lib/validators";
 
 export async function POST(request: Request) {
@@ -52,8 +54,45 @@ export async function POST(request: Request) {
     );
   }
 
+  // Contexto de lección (opcional): se inyecta SOLO si el usuario tiene
+  // acceso vigente a esa lección (getLessonBySlug aplica la misma regla que
+  // la página). Si algo falla, el asistente responde sin contexto.
+  let lessonBlock: string | undefined;
+  if (parsed.data.lessonContext) {
+    try {
+      const { programSlug, lessonSlug } = parsed.data.lessonContext;
+      const lessonData = await getLessonBySlug(programSlug, lessonSlug, {
+        id: user.id,
+        role: user.role,
+      });
+
+      // Misma regla de consumo que la página de la lección: en PRESALE solo
+      // las lecciones preview son consumibles — el asistente no debe resumir
+      // contenido que la UI bloquea hasta la apertura.
+      const canConsumeLesson =
+        lessonData.program?.status === "OPEN" ||
+        Boolean(lessonData.lesson?.isPreview);
+
+      if (
+        lessonData.access === "allowed" &&
+        lessonData.lesson &&
+        canConsumeLesson
+      ) {
+        lessonBlock = buildLessonContextBlock({
+          programTitle: lessonData.program?.title ?? programSlug,
+          moduleTitle: lessonData.lesson.moduleTitle ?? null,
+          lessonTitle: lessonData.lesson.title,
+          lessonContent: lessonData.lesson.content,
+          lessonDescription: lessonData.lesson.description,
+        });
+      }
+    } catch (error) {
+      console.error("[asistente] Contexto de lección falló:", error);
+    }
+  }
+
   try {
-    const reply = await runAssistant(parsed.data.messages);
+    const reply = await runAssistant(parsed.data.messages, lessonBlock);
 
     return NextResponse.json({ reply });
   } catch (error) {
