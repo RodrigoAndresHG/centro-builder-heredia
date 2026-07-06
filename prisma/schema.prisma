@@ -127,6 +127,19 @@ model Program {
   @@map("programs")
 }
 
+// Nudge de reactivación: UN solo correo conductual por usuario (los RCTs
+// muestran que el segundo es redundante). La fila actúa como claim de
+// idempotencia (userId único) y registra qué variante se envió.
+model ReactivationNudge {
+  id      String   @id @default(cuid())
+  userId  String   @unique @map("user_id")
+  email   String
+  variant String // "inactivo" | "sin-empezar"
+  sentAt  DateTime @default(now()) @map("sent_at")
+
+  @@map("reactivation_nudges")
+}
+
 // Certificado de finalización por programa. Se emite una sola vez por
 // usuario+programa al llegar al 100% de lecciones publicadas. `code` es el
 // identificador público no adivinable de /cert/[code]; `recipientName` es un

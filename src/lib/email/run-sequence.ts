@@ -2,13 +2,16 @@ import { getAppBaseUrl, isEmailSequenceConfigured } from "@/lib/email/config";
 import { renderOnboardingEmail, SEQUENCE_LENGTH } from "@/lib/email/onboarding-emails";
 import { sendEmail } from "@/lib/email/resend";
 import { prisma } from "@/lib/db/prisma";
-import { computeSentTransition } from "@/lib/services/email-sequence";
+import {
+  computeSentTransition,
+  SEQUENCE_MAX_ATTEMPTS,
+} from "@/lib/services/email-sequence";
 
 const CLAIM_WINDOW_MS = 6 * 60 * 60 * 1000; // 6h
 const BATCH = 100;
-// Tras 3 fallos de envío del MISMO correo se deja de reintentar (evita
-// martillar un correo inválido y dañar la reputación del dominio).
-const MAX_ATTEMPTS = 3;
+// Tras SEQUENCE_MAX_ATTEMPTS fallos de envío del MISMO correo se deja de
+// reintentar (evita martillar un correo inválido y dañar la reputación).
+const MAX_ATTEMPTS = SEQUENCE_MAX_ATTEMPTS;
 
 export type SequenceRunResult = {
   processed: number;
