@@ -14,11 +14,16 @@ Esta carpeta complementa el Documento Maestro Operativo del proyecto. Su objetiv
 8. [Cloudflare Stream](./cloudflare-stream.md)
 9. [Operación admin](./admin-operations.md)
 10. [Novedades Builder](./builder-updates.md)
-11. [Variables de entorno](./environment-variables.md)
-12. [Flujos críticos](./critical-flows.md)
-13. [Decisiones y tradeoffs](./decisions-and-tradeoffs.md)
-14. [Pendientes, riesgos y deuda técnica](./known-issues-and-next-steps.md)
-15. [Handoff para nuevo developer](./handoff-for-new-developer.md)
+11. [Biblioteca de Prompts](./prompt-library.md)
+12. [Asistente Builder (IA)](./ai-assistant.md)
+13. [Embudo /bio y atribución de marketing](./marketing-attribution.md)
+14. [Drip de onboarding por email](./email-onboarding.md)
+15. [API externa (PronostiGol)](./external-api.md)
+16. [Variables de entorno](./environment-variables.md)
+17. [Flujos críticos](./critical-flows.md)
+18. [Decisiones y tradeoffs](./decisions-and-tradeoffs.md)
+19. [Pendientes, riesgos y deuda técnica](./known-issues-and-next-steps.md)
+20. [Handoff para nuevo developer](./handoff-for-new-developer.md)
 
 ## Lectura recomendada para onboarding
 

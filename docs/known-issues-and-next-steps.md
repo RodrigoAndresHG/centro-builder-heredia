@@ -125,12 +125,36 @@ Actualmente el estado puede refrescarse vía servicios admin que consultan Cloud
 
 ## Tests automatizados
 
-No hay suite formal de tests e2e/unit documentada en scripts.
+Estado actual (resuelto parcialmente):
 
-Recomendado:
+- Existe suite unitaria con Vitest: 66 tests (`npm run test`).
+- Cubre validators, atribución, email-sequence, commerce y access-control.
 
-- Tests de servicios críticos: access-control, commerce, learning.
+Pendiente:
+
 - E2E smoke para login, checkout mock, admin content.
+- Tests de learning/progreso.
+
+## Atribución depende del primer acceso a `/app`
+
+Estado actual:
+
+- La cookie `bh_attribution` se persiste vía Server Action `persistAttribution()` al entrar a `/app` (ver decisions-and-tradeoffs).
+
+Riesgo:
+
+- Si un usuario se registra pero nunca abre `/app`, sus UTMs no se persisten (solo `signupSource`).
+- La cookie expira: campañas largas pueden perder atribución.
+
+## Borrado de usuario elimina compras
+
+Estado actual:
+
+- `deleteUser` borra en cascada, incluyendo `Purchase` (a propósito, con confirmación tipeada).
+
+Riesgo:
+
+- No usar con clientes reales cuyo historial de pago deba conservarse para conciliación con Stripe.
 
 ## Cuidado con cambios de slug
 

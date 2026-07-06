@@ -95,6 +95,8 @@ Regla actual:
 
 El objetivo es que el usuario sienta que ya está dentro temprano, no que el sistema está incompleto.
 
+Nota técnica: los módulos y lecciones devueltos siempre vienen filtrados por su programa (relación FK) y por `isPublished = true` en el `include` del query (`programInclude` en `src/lib/services/learning.ts`). La visibilidad de preventa opera a nivel de programa, no de módulo/lección individual.
+
 ## Admin
 
 `/admin/programas` y edición de programa permiten:
@@ -102,12 +104,27 @@ El objetivo es que el usuario sienta que ya está dentro temprano, no que el sis
 - Cambiar estado.
 - Definir fecha oficial de apertura.
 - Definir mensaje de preventa.
+- Definir `sortOrder`: orden de visualización (entero). Programas con `sortOrder` menor aparecen primero en `/app/programas`.
+
+## Relación con el Admin de Productos
+
+Un programa comprable debe estar asociado a un producto activo con `stripePriceId` configurado (ver `payments-and-access.md`). Los cambios de estado del programa afectan la compra en Stripe: si el producto solo tiene programas `DRAFT`, el checkout se rechaza. La asociación programa ↔ producto se gestiona en `/admin/programas`.
 
 ## Relación con `isPublished`
 
 `isPublished` sigue existiendo por compatibilidad histórica y por módulos/lecciones.
 
 Para programas, la lógica importante ahora es `status`.
+
+`Program.sortOrder`: los programas se ordenan por `sortOrder` (entero, default 0) en la UI (`listPublishedPrograms` ordena por `sortOrder: "asc"`). El admin en `/admin/programas` permite establecer este valor; programas con `sortOrder` menor aparecen primero.
+
+## Acceso a programas individuales
+
+Además del acceso a nivel de producto, un usuario puede tener un `Access` directo a un programa (relación `Program.accesses`). Caso de uso: habilitar un solo programa sin que el usuario compre el producto completo. Ver detalle en `payments-and-access.md`.
+
+## Casos extremos de preventa
+
+Si un programa cambia de `OPEN` a `PRESALE` después de lanzar, los accesos existentes NO se revocan: `Access.status` es independiente de `Program.status`. El usuario con acceso pasa a ver la experiencia de preventa (bloqueo de lecciones no preview) mientras el programa esté en `PRESALE`, pero su acceso comercial sigue intacto y vuelve a consumir todo al regresar a `OPEN`.
 
 ## Cuidado al cambiar
 

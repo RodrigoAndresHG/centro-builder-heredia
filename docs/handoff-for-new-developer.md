@@ -6,16 +6,22 @@ Este documento es la entrada práctica para retomar Builder HeredIA.
 
 Estás tomando una app Next.js que ya opera:
 
-- Landing pública.
-- Login/registro.
+- Landing pública (reorientada post-lanzamiento al Agente de Noticias USD 9.99).
+- Login/registro (Google OAuth + magic link con Nodemailer/Resend SMTP; `/acceso-confirmado`).
 - Workspace privado.
-- Admin.
+- Admin (incluye `/admin/productos`, `/admin/biblioteca`, `/admin/early-access`).
 - Stripe checkout/webhook.
 - Activación de acceso.
-- CRUD de programas/módulos/lecciones.
-- Cloudflare Stream para video.
+- CRUD de programas/módulos/lecciones (filtros por programa, borrados con confirmación tipeada).
+- Cloudflare Stream para video (direct upload + TUS reanudable hasta ~30GB).
 - Novedades Builder.
 - Preventa por programa.
+- Prompts y recursos por lección (`LessonPrompt`, `LessonResource`).
+- Biblioteca de Prompts (`/app/biblioteca`, modelo `PromptAsset`, premium vaciado server-side).
+- Asistente IA "Asistente Builder" (widget en `/app`, Claude Haiku, límite 20/día).
+- Embudo `/bio` + atribución de marketing (UTMs, cookie `bh_attribution`, `link_click_events`, `/go/whatsapp`).
+- API externa `POST /api/external/registro` (integración PronostiGol).
+- Drip de onboarding: 5 emails en 7 días vía Resend + cron diario.
 
 No es solo bootstrap.
 
@@ -41,29 +47,56 @@ Verificación:
 ```bash
 npm run lint
 npm run build
+npm run test
 ```
+
+La suite tiene 66 tests con Vitest (validators, atribución, email-sequence, commerce, access-control).
+
+Notas de infra:
+
+- `prisma.config.ts` usa `DATABASE_URL_UNPOOLED` para CLI/migraciones (fix de advisory locks con PgBouncer).
+- En Vercel el build es `vercel-build`: `prisma migrate deploy && next build`.
+- `.npmrc` fija `legacy-peer-deps`.
 
 ## 3. Variables mínimas para trabajar
 
 Para navegación básica:
 
 - `DATABASE_URL`
+- `DATABASE_URL_UNPOOLED` (migraciones/CLI)
 - `AUTH_SECRET`
 - `AUTH_URL`
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 
+Para magic link:
+
+- `EMAIL_SERVER`
+- `EMAIL_FROM`
+
 Para compra:
 
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
-- `STRIPE_IDEACASH_PRICE_ID`
 
 Para video:
 
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_STREAM_TOKEN`
 - `CLOUDFLARE_STREAM_REQUIRE_SIGNED_URLS=false`
+
+Para asistente IA:
+
+- `ANTHROPIC_API_KEY` (`ASSISTANT_MODEL` opcional)
+
+Para API externa:
+
+- `EXTERNAL_API_KEY` (`PRONOSTIGOL_APP_URL` opcional)
+
+Para drip de onboarding:
+
+- `RESEND_API_KEY`
+- `CRON_SECRET`
 
 ## 4. Primeros archivos a leer
 
@@ -76,6 +109,12 @@ src/lib/services/commerce.ts
 src/lib/actions/admin-content.ts
 src/lib/actions/admin-access.ts
 src/lib/services/cloudflare-stream.ts
+src/lib/services/assistant.ts
+src/lib/services/prompt-assets.ts
+src/lib/services/external-registro.ts
+src/lib/services/email-sequence.ts
+src/lib/actions/attribution.ts
+src/app/bio/bio-config.ts
 prisma/schema.prisma
 ```
 
@@ -111,6 +150,23 @@ prisma/schema.prisma
 - `PRESALE` visible/comprable.
 - `OPEN` consumible.
 - `DRAFT` oculto.
+
+### Atribución
+
+- `/bio?src=X` -> links con UTMs -> `/registro` guarda cookie `bh_attribution`.
+- La persistencia real ocurre en `persistAttribution()` (Server Action) al entrar a `/app`. NO mover esa lógica a `events.createUser`: `cookies()` no es confiable ahí.
+- `/go/whatsapp?src=` debe seguir registrando el clic en `link_click_events` antes del 302.
+
+### API externa
+
+- `X-API-Key` timing-safe, rate limit 5/min por IP en DB, CORS para PronostiGol.
+- El redirect del magic link se valida contra allowlist en el callback de Auth.js.
+
+### Drip de onboarding
+
+- Inscripción idempotente en `events.createUser`.
+- El cron `/api/cron/email-sequence` exige `CRON_SECRET`.
+- Respetar `unsubscribed`: no reenviar tras baja (RFC 8058 one-click).
 
 ## 6. Cómo probar rápido
 
@@ -169,6 +225,14 @@ Playback actual por iframe público. Signed URLs quedan para hardening futuro.
 
 No hay dedupe por `event.id` todavía. Idempotencia actual por `stripeCheckoutSessionId`.
 
+### ¿Por qué la atribución no se guarda en `events.createUser`?
+
+Porque `cookies()` no funciona de forma confiable dentro de los eventos de Auth.js v5. La persistencia confiable es el Server Action `persistAttribution()` disparado por `AttributionSync` en el layout de `/app`. Ver `decisions-and-tradeoffs.md`.
+
+### ¿Borrar un usuario borra sus compras?
+
+Sí, a propósito (cascade), con confirmación tipeada del email. Los admins no se pueden borrar. En cambio, borrar un programa preserva `Purchase`.
+
 ## 8. Antes de cambiar algo importante
 
 Lee:
@@ -181,18 +245,24 @@ Y valida:
 ```bash
 npm run lint
 npm run build
+npm run test
 ```
 
 ## 9. Mental model rápido
 
 ```text
-User tiene roleKey.
+User tiene roleKey + campos de atribución (utm*, signupSource, signupIntent).
 Access define permiso real.
-Product se vende con Stripe.
-Program puede estar DRAFT/PRESALE/OPEN.
+Product se vende con Stripe (Price ID gestionado en /admin/productos).
+Program puede estar DRAFT/PRESALE/OPEN y tiene sortOrder.
 Module organiza lecciones.
-Lesson contiene contenido, video y preview.
+Lesson contiene contenido, video, preview, prompts y recursos.
 LessonProgress guarda avance.
 BuilderUpdate alimenta Novedades.
+PromptAsset alimenta la Biblioteca (premium se desbloquea con programa pago).
+AssistantUsage limita el asistente IA (20/día).
+LinkClickEvent registra clics medibles (/bio, /go/whatsapp).
+EmailSequenceState controla el drip de onboarding.
+ExternalSignupThrottle limita la API externa por IP.
 ```
 
