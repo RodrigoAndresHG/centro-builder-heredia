@@ -101,7 +101,20 @@ function buildCtaHref(
   return `${baseUrl}${ctaPath(target)}?${params.toString()}`;
 }
 
-function renderHtml(params: {
+// Escape mínimo para interpolar texto en el HTML del correo. Importante en el
+// nudge: el nombre del usuario (controlado por él) entra en los párrafos.
+function escapeHtml(text: string): string {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+// Plantilla HTML de marca compartida por el drip de onboarding y el nudge de
+// reactivación (mismo look: tarjeta blanca, acento teal, pie con baja).
+export function renderBrandedEmail(params: {
   paragraphs: string[];
   ctaLabel: string;
   ctaHref: string;
@@ -111,21 +124,21 @@ function renderHtml(params: {
   const body = params.paragraphs
     .map(
       (p) =>
-        `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#1c1917;">${p}</p>`,
+        `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#1c1917;">${escapeHtml(p)}</p>`,
     )
     .join("");
 
   const closing = params.closing
     .map(
       (line) =>
-        `<p style="margin:0 0 4px;font-size:16px;line-height:1.6;color:#1c1917;">${line}</p>`,
+        `<p style="margin:0 0 4px;font-size:16px;line-height:1.6;color:#1c1917;">${escapeHtml(line)}</p>`,
     )
     .join("");
 
   return `<!doctype html>
 <html lang="es">
   <body style="margin:0;padding:0;background:#f5f5f4;">
-    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${params.ctaLabel}</div>
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(params.ctaLabel)}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f4;padding:24px 12px;">
       <tr>
         <td align="center">
@@ -141,7 +154,7 @@ function renderHtml(params: {
                 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 24px;">
                   <tr>
                     <td style="border-radius:10px;background:#0d9488;">
-                      <a href="${params.ctaHref}" style="display:inline-block;padding:14px 28px;font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;">${params.ctaLabel}</a>
+                      <a href="${params.ctaHref}" style="display:inline-block;padding:14px 28px;font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;">${escapeHtml(params.ctaLabel)}</a>
                     </td>
                   </tr>
                 </table>
@@ -181,7 +194,7 @@ export function renderOnboardingEmail(
 
   return {
     subject: email.subject,
-    html: renderHtml({
+    html: renderBrandedEmail({
       paragraphs: email.paragraphs,
       ctaLabel: email.ctaLabel,
       ctaHref: buildCtaHref(opts.baseUrl, email.ctaTarget, emailNumber),

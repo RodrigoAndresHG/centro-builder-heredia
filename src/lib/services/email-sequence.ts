@@ -11,6 +11,10 @@ import {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// Tope de reintentos de envío por correo del drip. Compartido con el nudge de
+// reactivación: un drip en "failed" con reintentos pendientes sigue EN VUELO.
+export const SEQUENCE_MAX_ATTEMPTS = 3;
+
 // Fecha de envío del correo `step`, anclada a la inscripción (sin drift).
 export function computeNextSendAt(createdAt: Date, step: number): Date {
   const offset =
@@ -62,6 +66,48 @@ export async function enrollUserInOnboarding(
     },
     update: {},
   });
+}
+
+// Garantiza que el usuario tenga un token de baja SIN inscribirlo al drip:
+// si no tiene estado, se crea uno ya terminado (status done, step final).
+// Lo usa el nudge de reactivación para usuarios anteriores al drip.
+export async function ensureUnsubscribeToken(
+  userId: string,
+  email: string,
+): Promise<{
+  token: string;
+  status: string;
+  lastSentAt: Date | null;
+  attempts: number;
+}> {
+  const state = await prisma.emailSequenceState.upsert({
+    where: { userId },
+    create: {
+      userId,
+      email,
+      step: SEQUENCE_LENGTH,
+      status: "done",
+      nextSendAt: new Date(),
+      unsubscribeToken: randomBytes(24).toString("hex"),
+    },
+    // update vacío a propósito: NUNCA modifica una fila existente (ni
+    // lastSentAt ni status) — solo la lee. Los valores devueltos reflejan
+    // lo que el drip haya hecho, incluso en esta misma corrida del cron.
+    update: {},
+    select: {
+      unsubscribeToken: true,
+      status: true,
+      lastSentAt: true,
+      attempts: true,
+    },
+  });
+
+  return {
+    token: state.unsubscribeToken,
+    status: state.status,
+    lastSentAt: state.lastSentAt,
+    attempts: state.attempts,
+  };
 }
 
 // Da de baja por token (link del pie de los correos). Detiene envíos futuros.
