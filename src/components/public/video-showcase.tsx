@@ -29,34 +29,34 @@ export function VideoShowcase() {
 
   return (
     <Reveal delay={140}>
-      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 p-4 shadow-2xl shadow-black/40 transition duration-500 hover:-translate-y-1 hover:border-teal-400/30">
-        <div className="absolute inset-x-8 top-6 h-24 rounded-full bg-teal-300/10 blur-3xl" />
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0c1019] p-4 shadow-2xl shadow-black/40 transition duration-500 hover:-translate-y-1 hover:border-sky-400/30">
+        <div className="absolute inset-x-8 top-6 h-24 rounded-full bg-sky-400/10 blur-3xl" />
 
         <div className="relative grid gap-5 lg:grid-cols-[0.78fr_1fr] lg:items-center">
-          <div className="order-2 rounded-xl border border-neutral-800 bg-neutral-950 p-4 lg:order-1">
-            <p className="text-xs font-semibold uppercase text-teal-300">
+          <div className="order-2 rounded-xl border border-white/10 bg-[#10151f] p-4 lg:order-1">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-sky-400">
               Preview real del LMS
             </p>
-            <h3 className="mt-3 text-2xl font-semibold leading-tight text-white">
+            <h3 className="mt-3 text-2xl font-medium leading-tight text-[#eef2f7]">
               Así se ve el workspace por dentro.
             </h3>
-            <p className="mt-3 text-sm leading-7 text-neutral-400">
+            <p className="mt-3 text-sm leading-7 text-[#aab6c6]">
               Un vistazo al ritmo, la estructura y la experiencia real del LMS
               antes de comprar.
             </p>
-            <div className="mt-5 grid gap-2 text-xs font-semibold uppercase text-neutral-500">
-              <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
+            <div className="mt-5 grid gap-2 font-mono text-xs uppercase tracking-[0.08em] text-[#5b6879]">
+              <span className="rounded-md border border-white/10 bg-[#0c1019] px-3 py-2">
                 Inicia en silencio
               </span>
-              <span className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
+              <span className="rounded-md border border-white/10 bg-[#0c1019] px-3 py-2">
                 Audio opcional
               </span>
             </div>
           </div>
 
           <div className="order-1 mx-auto w-full max-w-[22rem] lg:order-2">
-            <div className="rounded-[2rem] border border-neutral-700 bg-neutral-950 p-2 shadow-2xl shadow-teal-950/20">
-              <div className="relative aspect-[9/16] overflow-hidden rounded-[1.55rem] border border-neutral-800 bg-black">
+            <div className="rounded-[2rem] border border-white/10 bg-[#080b12] p-2 shadow-2xl shadow-black/40">
+              <div className="relative aspect-[9/16] overflow-hidden rounded-[1.55rem] border border-white/10 bg-black">
                 <video
                   ref={videoRef}
                   src="/video/builder-preview.mp4"
@@ -72,13 +72,13 @@ export function VideoShowcase() {
                   <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase text-white backdrop-blur">
                     {isMuted ? "Sin audio" : "Audio activo"}
                   </span>
-                  <span className="h-2 w-2 rounded-full bg-teal-300 shadow-lg shadow-teal-300/50" />
+                  <span className="h-2 w-2 rounded-full bg-sky-400 shadow-lg shadow-sky-400/50" />
                 </div>
                 <button
                   type="button"
                   onClick={toggleAudio}
                   aria-pressed={!isMuted}
-                  className="absolute right-4 top-12 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/45 px-3 py-2 text-[11px] font-semibold uppercase text-white shadow-xl shadow-black/30 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-teal-300/60 hover:bg-black/65 focus:outline-none focus:ring-2 focus:ring-teal-300/70"
+                  className="absolute right-4 top-12 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/45 px-3 py-2 text-[11px] font-semibold uppercase text-white shadow-xl shadow-black/30 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-sky-400/60 hover:bg-black/65 focus:outline-none focus:ring-2 focus:ring-sky-400/70"
                 >
                   <span
                     aria-hidden="true"
@@ -92,7 +92,7 @@ export function VideoShowcase() {
                   <p className="text-sm font-semibold text-white">
                     IdeaCash HeredIA
                   </p>
-                  <p className="mt-1 text-xs text-neutral-300">
+                  <p className="mt-1 text-xs text-[#aab6c6]">
                     Primer programa del LMS oficial
                   </p>
                 </div>

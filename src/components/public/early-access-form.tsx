@@ -68,41 +68,41 @@ export function EarlyAccessForm({ source }: EarlyAccessFormProps) {
     <Reveal delay={120}>
       <form
         onSubmit={handleSubmit}
-        className="rounded-2xl border border-teal-400/20 bg-neutral-950 p-5 shadow-2xl shadow-black/30"
+        className="rounded-2xl border border-white/10 bg-[#0c1019] p-5 shadow-2xl shadow-black/40"
       >
-        <div className="mb-5 rounded-xl border border-neutral-800 bg-neutral-900 p-4">
-          <p className="text-xs font-semibold uppercase text-teal-300">
+        <div className="mb-5 rounded-xl border border-white/10 bg-[#10151f] p-4">
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-sky-400">
             Lista prioritaria
           </p>
-          <p className="mt-2 text-lg font-semibold text-white">
+          <p className="mt-2 text-lg font-medium text-[#eef2f7]">
             Entra antes de la apertura.
           </p>
-          <p className="mt-2 text-sm leading-6 text-neutral-400">
+          <p className="mt-2 text-sm leading-6 text-[#aab6c6]">
             Nombre y email para recibir el aviso fundador.
           </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block space-y-2">
-            <span className="text-sm font-semibold text-neutral-300">Nombre</span>
+            <span className="text-sm font-medium text-[#aab6c6]">Nombre</span>
             <input
               name="name"
               placeholder="Tu nombre"
               required
               minLength={2}
               disabled={isLoading}
-              className="h-12 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 text-sm text-white outline-none transition duration-300 placeholder:text-neutral-600 focus:border-teal-300 focus:bg-neutral-950 disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-12 w-full rounded-md border border-white/10 bg-[#10151f] px-3 text-sm text-white outline-none transition duration-300 placeholder:text-[#5b6879] focus:border-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
             />
           </label>
           <label className="block space-y-2">
-            <span className="text-sm font-semibold text-neutral-300">Email</span>
+            <span className="text-sm font-medium text-[#aab6c6]">Email</span>
             <input
               name="email"
               type="email"
               placeholder="tu@email.com"
               required
               disabled={isLoading}
-              className="h-12 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 text-sm text-white outline-none transition duration-300 placeholder:text-neutral-600 focus:border-teal-300 focus:bg-neutral-950 disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-12 w-full rounded-md border border-white/10 bg-[#10151f] px-3 text-sm text-white outline-none transition duration-300 placeholder:text-[#5b6879] focus:border-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
             />
           </label>
         </div>
@@ -110,7 +110,7 @@ export function EarlyAccessForm({ source }: EarlyAccessFormProps) {
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-md bg-teal-300 px-5 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-teal-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-70"
+          className="btn btn--primary mt-5 w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isLoading ? "Guardando acceso..." : "Quiero acceso prioritario"}
         </button>
@@ -119,7 +119,7 @@ export function EarlyAccessForm({ source }: EarlyAccessFormProps) {
           <div
             className={`mt-4 rounded-xl border p-4 text-sm leading-6 ${
               isSuccess
-                ? "border-teal-400/30 bg-teal-400/10 text-teal-100"
+                ? "border-sky-400/30 bg-sky-400/10 text-sky-100"
                 : "border-red-400/30 bg-red-400/10 text-red-100"
             }`}
           >

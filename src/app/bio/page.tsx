@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { BlueprintFrame } from "@/components/marketing/blueprint-frame";
 import { buildRegistroHref, normalizeSrc } from "@/lib/attribution";
+import { inter, jetbrainsMono } from "../fonts";
 import {
   MUNDIAL_ACTIVO,
   bioConfig,
@@ -10,6 +12,7 @@ import {
   type BrandKey,
 } from "./bio-config";
 import { OpenInBrowserBanner } from "./open-in-browser-banner";
+import "../elevated.css";
 
 export const metadata: Metadata = {
   title: `${bioConfig.profile.name} · Builder HeredIA`,
@@ -56,7 +59,7 @@ function CompactAvatar() {
 
   return (
     <div className="relative mx-auto w-fit">
-      <div className="rounded-full bg-gradient-to-tr from-teal-300 via-emerald-400 to-teal-500 p-[3px] shadow-2xl shadow-teal-500/30">
+      <div className="rounded-full bg-gradient-to-tr from-sky-400 via-sky-500 to-indigo-500 p-[3px] shadow-2xl shadow-sky-500/30">
         {photoSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -65,13 +68,13 @@ function CompactAvatar() {
             className="h-24 w-24 rounded-full object-cover object-top"
           />
         ) : (
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-neutral-900 text-3xl font-semibold text-white">
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#0c1019] text-3xl font-semibold text-white">
             {initials}
           </div>
         )}
       </div>
       {verified ? (
-        <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-neutral-950 bg-teal-300 text-xs font-bold text-neutral-950">
+        <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#080b12] bg-sky-400 text-xs font-bold text-[#05070c]">
           ✓
         </span>
       ) : null}
@@ -85,18 +88,18 @@ function CourseCard({ course, href }: { course: BioCourse; href: string }) {
       href={href}
       className={`group flex items-center gap-3 rounded-2xl border p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 ${
         course.highlight
-          ? "border-teal-300/50 bg-gradient-to-r from-teal-400/15 to-emerald-500/5 hover:border-teal-300/70"
+          ? "border-sky-400/50 bg-gradient-to-r from-sky-400/15 to-indigo-500/5 hover:border-sky-300/70"
           : "border-white/10 bg-white/[0.04] hover:border-white/25"
       }`}
     >
       <div className="min-w-0 flex-1">
         <span
-          className={`inline-flex rounded-full px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.1em] ${
+          className={`inline-flex rounded-full px-2 py-0.5 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.1em] ${
             course.highlight
-              ? "bg-teal-300 text-neutral-950"
+              ? "bg-sky-400 text-[#05070c]"
               : course.price === "Gratis"
                 ? "bg-emerald-400/20 text-emerald-200"
-                : "bg-white/10 text-neutral-300"
+                : "bg-white/10 text-[#aab6c6]"
           }`}
         >
           {course.tag}
@@ -104,11 +107,11 @@ function CourseCard({ course, href }: { course: BioCourse; href: string }) {
         <p className="mt-1.5 truncate text-sm font-semibold text-white">
           {course.name}
         </p>
-        <p className="truncate text-xs text-neutral-400">{course.note}</p>
+        <p className="truncate text-xs text-[#aab6c6]">{course.note}</p>
       </div>
       <div className="shrink-0 text-right">
         <p className="text-sm font-bold text-white">{course.price}</p>
-        <span className="text-xs font-semibold text-teal-300 transition group-hover:translate-x-0.5">
+        <span className="text-xs font-semibold text-sky-400 transition group-hover:translate-x-0.5">
           {course.cta}
         </span>
       </div>
@@ -127,7 +130,7 @@ function MundialCard({ href }: { href: string }) {
         ⚽
       </span>
       <div className="min-w-0 flex-1">
-        <span className="inline-flex rounded-full bg-amber-400/20 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-amber-200">
+        <span className="inline-flex rounded-full bg-amber-400/20 px-2 py-0.5 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-amber-200">
           {mundial.tag}
         </span>
         <p className="mt-1 truncate text-sm font-semibold text-white">
@@ -170,10 +173,10 @@ function SocialButton({ social }: { social: BioSocial }) {
   return (
     <a
       href={href}
-      className="group flex flex-1 flex-col items-center gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] py-3 transition duration-300 hover:-translate-y-0.5 hover:border-white/25"
+      className="group flex flex-1 flex-col items-center gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] py-3 transition duration-300 hover:-translate-y-0.5 hover:border-sky-400/40"
     >
       <BrandIcon brand={social.brand} />
-      <span className="text-[0.7rem] font-semibold text-neutral-300">
+      <span className="text-[0.7rem] font-semibold text-[#aab6c6]">
         {social.label}
       </span>
     </a>
@@ -198,9 +201,12 @@ export default async function BioPage({ searchParams }: BioPageProps) {
   )}&utm_medium=bio`;
 
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-neutral-950 text-white">
-      <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-teal-400/20 blur-[110px]" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-64 w-64 rounded-full bg-emerald-500/10 blur-[110px]" />
+    <main
+      className={`${inter.variable} ${jetbrainsMono.variable} theme-elevated relative min-h-dvh overflow-hidden text-white`}
+    >
+      <BlueprintFrame />
+      <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-sky-400/15 blur-[110px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-64 w-64 rounded-full bg-indigo-500/10 blur-[110px]" />
 
       <div className="relative mx-auto flex min-h-dvh max-w-md flex-col px-5 py-8">
         <OpenInBrowserBanner />
@@ -211,16 +217,16 @@ export default async function BioPage({ searchParams }: BioPageProps) {
           <h1 className="text-xl font-semibold tracking-tight text-white">
             {profile.name}
           </h1>
-          <p className="mt-1.5 inline-flex rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-teal-200">
+          <p className="mt-1.5 inline-flex rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 font-mono text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-sky-200">
             {profile.title}
           </p>
-          <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-neutral-300">
+          <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-[#aab6c6]">
             {profile.tagline}
           </p>
         </div>
 
         {/* Cursos */}
-        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+        <p className="mt-7 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-[#5b6879]">
           Cursos
         </p>
         <div className="mt-3 space-y-3">
@@ -246,7 +252,7 @@ export default async function BioPage({ searchParams }: BioPageProps) {
         </div>
 
         {/* Sígueme */}
-        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+        <p className="mt-7 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-[#5b6879]">
           Sígueme
         </p>
         <div className="mt-3 flex gap-3">
@@ -257,17 +263,17 @@ export default async function BioPage({ searchParams }: BioPageProps) {
 
         {/* Próximos */}
         <div className="mt-5 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-3 text-center">
-          <p className="text-xs font-semibold text-neutral-300">
+          <p className="text-xs font-semibold text-[#aab6c6]">
             <span aria-hidden="true" className="mr-1">
               🚧
             </span>
             {upcoming.label}
           </p>
-          <p className="mt-0.5 text-[0.7rem] text-neutral-500">{upcoming.note}</p>
+          <p className="mt-0.5 text-[0.7rem] text-[#5b6879]">{upcoming.note}</p>
         </div>
 
         <footer className="mt-auto pt-8 text-center">
-          <p className="text-[0.7rem] text-neutral-600">
+          <p className="font-mono text-[0.7rem] text-[#5b6879]">
             © {profile.name} · builder.rodriheredia.com
           </p>
         </footer>
