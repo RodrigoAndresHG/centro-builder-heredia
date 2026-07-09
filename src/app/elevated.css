@@ -301,7 +301,8 @@
   z-index: 0;
   overflow: hidden;
 }
-.theme-elevated .hero-video video {
+.theme-elevated .hero-video video,
+.theme-elevated .hero-video img {
   position: absolute;
   inset: 0;
   width: 100%;

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { type MouseEvent, useRef } from "react";
 
+import { SafeVideo } from "@/components/shared/safe-video";
+
 export function Hero() {
   const heroRef = useRef<HTMLElement>(null);
 
@@ -20,17 +22,7 @@ export function Hero() {
   return (
     <section className="hero" id="top" ref={heroRef} onMouseMove={onMouseMove}>
       <div className="hero-video">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/videos/keyboard.jpg"
-          aria-hidden="true"
-        >
-          <source src="/videos/keyboard.mp4" type="video/mp4" />
-        </video>
+        <SafeVideo src="/videos/keyboard.mp4" poster="/videos/keyboard.jpg" />
       </div>
       <div className="hero__grid" aria-hidden="true" />
       <div className="hero__spot" aria-hidden="true" />

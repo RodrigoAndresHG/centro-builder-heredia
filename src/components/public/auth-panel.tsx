@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { SafeVideo } from "@/components/shared/safe-video";
 import { signIn } from "@/lib/auth";
 
 type AuthPanelProps = {
@@ -52,17 +53,11 @@ export function AuthPanel({ mode, intent, callbackUrl }: AuthPanelProps) {
       <div className="grid min-h-[calc(100dvh-7.5rem)] lg:grid-cols-2">
         {/* ---- Panel visual: video + propuesta de valor ---- */}
         <aside className="relative flex min-h-[15rem] flex-col justify-end overflow-hidden border-b border-white/10 p-6 sm:min-h-[18rem] sm:p-8 lg:min-h-full lg:justify-between lg:border-b-0 lg:border-r lg:p-12">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden
+          <SafeVideo
+            src="/videos/dataflow.mp4"
             poster="/videos/dataflow.jpg"
             className="absolute inset-0 h-full w-full object-cover opacity-40"
-          >
-            <source src="/videos/dataflow.mp4" type="video/mp4" />
-          </video>
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-[#080b12] via-[#080b12]/85 to-[#080b12]/40 lg:bg-gradient-to-r lg:from-[#080b12]/45 lg:via-[#080b12]/75 lg:to-[#080b12]" />
 
           {/* ticks blueprint */}
