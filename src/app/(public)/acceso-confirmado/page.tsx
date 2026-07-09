@@ -28,15 +28,15 @@ const steps = [
 export default function AccesoConfirmadoPage() {
   return (
     <div className="mx-auto max-w-2xl py-8 text-white sm:py-12">
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-900/70 p-7 shadow-2xl shadow-black/30 sm:p-9">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-teal-400/30 bg-teal-400/10 text-2xl">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7 shadow-2xl shadow-black/40 backdrop-blur sm:p-9">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-sky-400/30 bg-sky-400/10 text-2xl">
           ✉️
         </div>
 
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">
+        <p className="mt-6 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-sky-300">
           Enlace enviado
         </p>
-        <h1 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-4xl">
+        <h1 className="mt-3 text-3xl font-light leading-tight tracking-tight text-white sm:text-4xl">
           Revisa tu correo para entrar
         </h1>
         <p className="mt-4 text-base leading-7 text-neutral-300">
@@ -48,9 +48,9 @@ export default function AccesoConfirmadoPage() {
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="flex gap-4 rounded-xl border border-neutral-800 bg-neutral-950 p-4"
+              className="flex gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4"
             >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-300 text-sm font-bold text-neutral-950">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-400 text-sm font-bold text-neutral-950">
                 {index + 1}
               </span>
               <div>
@@ -66,13 +66,13 @@ export default function AccesoConfirmadoPage() {
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link
             href="/login"
-            className="inline-flex justify-center rounded-md border border-neutral-700 bg-neutral-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:border-teal-400/50"
+            className="inline-flex justify-center rounded-lg border border-white/15 bg-white/[0.04] px-4 py-2.5 text-sm font-semibold text-white transition hover:border-sky-400/60 hover:bg-sky-400/10"
           >
             Volver a intentar
           </Link>
           <Link
             href="/"
-            className="inline-flex justify-center rounded-md border border-neutral-800 px-4 py-2.5 text-sm font-semibold text-neutral-300 transition hover:text-white"
+            className="inline-flex justify-center rounded-lg border border-white/10 px-4 py-2.5 text-sm font-semibold text-neutral-300 transition hover:text-white"
           >
             Ir al inicio
           </Link>
