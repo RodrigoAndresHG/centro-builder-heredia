@@ -490,6 +490,30 @@
   opacity: 1;
 }
 
+/* Ajustes finos para teléfonos (≤600px): hero más contenido para que no se
+   sienta apretado en pantallas angostas, y la franja proof en columna para
+   que las tecnologías fluyan en horizontal en vez de apilarse verticales. */
+@media (max-width: 600px) {
+  .theme-elevated .hero h1 {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+  }
+  .theme-elevated .hero__meta {
+    gap: 0.6rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .theme-elevated .proof__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .theme-elevated .proof__logos {
+    gap: 0.7rem 1.4rem;
+  }
+  .theme-elevated .proof__logos span {
+    font-size: 0.95rem;
+  }
+}
+
 /* ---- encabezado de sección ---- */
 .theme-elevated .shead {
   max-width: 760px;
