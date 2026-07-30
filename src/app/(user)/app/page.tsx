@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { CheckoutButton } from "@/components/app/checkout-button";
 import { CommunityCard } from "@/components/app/community-card";
 import { NextStepUpsell } from "@/components/app/next-step-upsell";
+import { PendingPurchaseCard } from "@/components/app/pending-purchase-card";
 import { ProfileNamePrompt } from "@/components/app/profile-name-prompt";
 import { ProgressMeter } from "@/components/app/progress-meter";
 import { StreakCard } from "@/components/app/streak-card";
@@ -14,6 +15,7 @@ import {
   WorkspaceMetric,
 } from "@/components/app/workspace-card";
 import { SignOutButton } from "@/components/shared/sign-out-button";
+import { normalizeProductSlug } from "@/lib/attribution";
 import { auth } from "@/lib/auth";
 import {
   getLessonCompletionDates,
@@ -45,13 +47,19 @@ const activationReinforcements = [
 ];
 
 type UserDashboardPageProps = {
-  searchParams: Promise<{ checkout?: string; intent?: string }>;
+  searchParams: Promise<{
+    checkout?: string;
+    intent?: string;
+    product?: string;
+  }>;
 };
 
 export default async function UserDashboardPage({
   searchParams,
 }: UserDashboardPageProps) {
-  const { checkout, intent } = await searchParams;
+  const { checkout, intent, product } = await searchParams;
+  // Producto que el usuario venía a comprar desde /bio (saneado).
+  const requestedProduct = normalizeProductSlug(product);
   const session = await auth();
   const user = session?.user;
 
@@ -104,6 +112,15 @@ export default async function UserDashboardPage({
       ) : null}
 
       {!user.name ? <ProfileNamePrompt /> : null}
+
+      {/* Retoma la compra que venía de /bio, sin importar qué rama del
+          dashboard se renderice abajo. */}
+      {requestedProduct ? (
+        <PendingPurchaseCard
+          viewer={{ id: user.id, role: user.role }}
+          productSlug={requestedProduct}
+        />
+      ) : null}
 
       <CommunityCard />
 
@@ -236,9 +253,11 @@ export default async function UserDashboardPage({
                 estructura, conecta y convierte una app Multi-IA en un producto
                 real.
               </p>
-              <p className="mt-4 rounded-xl border border-neutral-800 bg-neutral-950/70 p-4 text-sm leading-7 text-neutral-300">
-                Build IdeaCash — Founder Access
-              </p>
+              {lockedProgram.product?.name ? (
+                <p className="mt-4 rounded-xl border border-neutral-800 bg-neutral-950/70 p-4 text-sm leading-7 text-neutral-300">
+                  {lockedProgram.product.name}
+                </p>
+              ) : null}
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 {lockedProgram.product?.slug ? (
                   <CheckoutButton

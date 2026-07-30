@@ -10,7 +10,11 @@ export const metadata: Metadata = {
 };
 
 type RegistroPageProps = {
-  searchParams: Promise<{ callbackUrl?: string; intent?: string }>;
+  searchParams: Promise<{
+    callbackUrl?: string;
+    intent?: string;
+    product?: string;
+  }>;
 };
 
 function normalizeIntent(intent?: string, callbackUrl?: string) {
@@ -32,7 +36,7 @@ function normalizeIntent(intent?: string, callbackUrl?: string) {
 }
 
 export default async function RegistroPage({ searchParams }: RegistroPageProps) {
-  const { callbackUrl, intent } = await searchParams;
+  const { callbackUrl, intent, product } = await searchParams;
 
   return (
     <>
@@ -41,6 +45,7 @@ export default async function RegistroPage({ searchParams }: RegistroPageProps) 
         mode="registro"
         intent={normalizeIntent(intent, callbackUrl)}
         callbackUrl={callbackUrl}
+        productSlug={product}
       />
     </>
   );

@@ -65,6 +65,22 @@ export async function listProgramsForViewer(viewer: LearningViewer) {
   };
 }
 
+// Programa que corresponde a un slug de PRODUCTO concreto y que el visitante
+// todavía NO puede abrir (es decir: pendiente de compra). Se usa para no
+// perder la intención de compra que viene de /bio (?product=...): si el
+// usuario ya tiene acceso, o el slug no existe, devuelve null.
+export async function findPendingProgramByProductSlug(
+  viewer: LearningViewer,
+  productSlug: string,
+) {
+  const { lockedPrograms } = await listProgramsForViewer(viewer);
+
+  return (
+    lockedPrograms.find((program) => program.product?.slug === productSlug) ??
+    null
+  );
+}
+
 export async function getPrimaryProgram(viewer: LearningViewer) {
   const { availablePrograms } = await listProgramsForViewer(viewer);
 

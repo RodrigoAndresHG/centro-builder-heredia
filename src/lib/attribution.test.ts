@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildRegistroHref,
   computeAttributionUpdate,
+  normalizeProductSlug,
   normalizeSrc,
   parseAttributionCookie,
 } from "./attribution";
@@ -43,6 +44,65 @@ describe("buildRegistroHref", () => {
     expect(buildRegistroHref("buy", "bad src")).toBe(
       "/registro?intent=buy&utm_source=bio&utm_medium=bio&utm_campaign=empieza",
     );
+  });
+
+  it("arrastra el producto en intent=buy (cada tarjeta su propio slug)", () => {
+    const href = buildRegistroHref("buy", "tiktok", {
+      productSlug: "agente-noticias-ia-1-hora",
+      utmContent: "agente-noticias-ia-1-hora",
+    });
+    const params = new URL(href, "https://x.test").searchParams;
+
+    expect(params.get("intent")).toBe("buy");
+    expect(params.get("product")).toBe("agente-noticias-ia-1-hora");
+    expect(params.get("utm_content")).toBe("agente-noticias-ia-1-hora");
+  });
+
+  it("dos productos distintos generan URLs DISTINTAS (regresión del bug)", () => {
+    const tripwire = buildRegistroHref("buy", "tiktok", {
+      productSlug: "agente-noticias-ia-1-hora",
+      utmContent: "agente-noticias-ia-1-hora",
+    });
+    const flagship = buildRegistroHref("buy", "tiktok", {
+      productSlug: "build-ideacash-founder-access",
+      utmContent: "build-ideacash-founder-access",
+    });
+
+    expect(tripwire).not.toBe(flagship);
+  });
+
+  it("NO arrastra producto cuando la intención es explorar (curso gratis)", () => {
+    const href = buildRegistroHref("explore", "tiktok", {
+      productSlug: "build-ideacash-founder-access",
+    });
+
+    expect(href).not.toContain("product=");
+  });
+
+  it("ignora un productSlug inválido en vez de reflejarlo", () => {
+    const href = buildRegistroHref("buy", "tiktok", {
+      productSlug: "../../evil?x=1",
+    });
+
+    expect(href).not.toContain("product=");
+  });
+});
+
+describe("normalizeProductSlug", () => {
+  it("acepta slugs válidos", () => {
+    expect(normalizeProductSlug("agente-noticias-ia-1-hora")).toBe(
+      "agente-noticias-ia-1-hora",
+    );
+    expect(normalizeProductSlug(" Build_IdeaCash ")).toBe("build_ideacash");
+  });
+
+  it("rechaza vacío, nulo y entradas peligrosas", () => {
+    expect(normalizeProductSlug(undefined)).toBeNull();
+    expect(normalizeProductSlug("")).toBeNull();
+    expect(normalizeProductSlug("a/b")).toBeNull();
+    expect(normalizeProductSlug("<script>")).toBeNull();
+    expect(normalizeProductSlug("//evil.com")).toBeNull();
+    expect(normalizeProductSlug("x".repeat(81))).toBeNull();
   });
 });
 

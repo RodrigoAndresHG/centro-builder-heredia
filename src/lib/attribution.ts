@@ -22,14 +22,48 @@ export function normalizeSrc(raw?: string | null): string {
 
 export type RegistroIntent = "explore" | "buy";
 
+// Nombre del query param que transporta QUÉ producto quiere comprar el
+// visitante, desde /bio hasta el checkout (sobrevive el registro/login).
+export const PRODUCT_PARAM = "product";
+
+// Sanea un slug de producto que viaja por la URL (y termina en un redirect):
+// solo minúsculas, dígitos, guion y guion bajo. Devuelve null si no es válido,
+// para no reflejar entrada arbitraria del usuario en un redirect.
+export function normalizeProductSlug(raw?: string | null): string | null {
+  if (!raw) {
+    return null;
+  }
+
+  const cleaned = raw.trim().toLowerCase();
+  return /^[a-z0-9_-]{1,80}$/.test(cleaned) ? cleaned : null;
+}
+
 // Construye el link a /registro con la atribución UTM incrustada.
-export function buildRegistroHref(intent: RegistroIntent, src: string): string {
+// `productSlug` conserva la intención de compra concreta (cuál de los
+// programas de pago se tocó) y `utmContent` permite distinguir en analítica
+// qué tarjeta generó el clic.
+export function buildRegistroHref(
+  intent: RegistroIntent,
+  src: string,
+  options?: { productSlug?: string | null; utmContent?: string | null },
+): string {
   const params = new URLSearchParams({
     intent,
     utm_source: normalizeSrc(src),
     utm_medium: UTM_MEDIUM,
     utm_campaign: UTM_CAMPAIGN,
   });
+
+  const utmContent = normalizeProductSlug(options?.utmContent);
+  if (utmContent) {
+    params.set("utm_content", utmContent);
+  }
+
+  // Solo tiene sentido arrastrar el producto cuando la intención es comprar.
+  const productSlug = normalizeProductSlug(options?.productSlug);
+  if (intent === "buy" && productSlug) {
+    params.set(PRODUCT_PARAM, productSlug);
+  }
 
   return `/registro?${params.toString()}`;
 }
