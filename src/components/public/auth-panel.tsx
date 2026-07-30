@@ -1,20 +1,39 @@
 import Link from "next/link";
 
 import { SafeVideo } from "@/components/shared/safe-video";
+import { normalizeProductSlug, PRODUCT_PARAM } from "@/lib/attribution";
 import { signIn } from "@/lib/auth";
 
 type AuthPanelProps = {
   mode: "login" | "registro";
   intent?: "buy" | "explore";
   callbackUrl?: string;
+  // Producto que el visitante quiere comprar (viene de /bio). Se arrastra al
+  // destino post-login para no perder QUÉ programa eligió.
+  productSlug?: string;
 };
 
-function getRedirectTo(intent?: "buy" | "explore", callbackUrl?: string) {
+function getRedirectTo(
+  intent?: "buy" | "explore",
+  callbackUrl?: string,
+  productSlug?: string,
+) {
   if (callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")) {
     return callbackUrl;
   }
 
-  return intent ? `/app?intent=${intent}` : "/app";
+  if (!intent) {
+    return "/app";
+  }
+
+  const params = new URLSearchParams({ intent });
+  // Saneado: este valor termina en un redirect.
+  const safeProduct = normalizeProductSlug(productSlug);
+  if (intent === "buy" && safeProduct) {
+    params.set(PRODUCT_PARAM, safeProduct);
+  }
+
+  return `/app?${params.toString()}`;
 }
 
 const asideBullets = [
@@ -23,10 +42,15 @@ const asideBullets = [
   "Te llevas el agente funcionando, no solo teoría.",
 ];
 
-export function AuthPanel({ mode, intent, callbackUrl }: AuthPanelProps) {
+export function AuthPanel({
+  mode,
+  intent,
+  callbackUrl,
+  productSlug,
+}: AuthPanelProps) {
   const isBuyIntent = intent === "buy";
   const isRegistro = mode === "registro";
-  const redirectTo = getRedirectTo(intent, callbackUrl);
+  const redirectTo = getRedirectTo(intent, callbackUrl, productSlug);
 
   const eyebrow = isBuyIntent
     ? "Acceso fundador"

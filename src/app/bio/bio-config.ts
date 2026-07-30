@@ -19,6 +19,12 @@ export type BioCourse = {
   // intent=explore para el curso gratis; intent=buy para los de pago.
   // El link real (con UTMs) lo arma /bio según el ?src= de la visita.
   intent: RegistroIntent;
+  // Slug del PRODUCTO (el de /admin/productos, no el del programa) que se debe
+  // comprar al tocar esta tarjeta. Obligatorio en las tarjetas de pago: sin
+  // esto, todas mandaban al mismo sitio y se perdía qué producto quería el
+  // visitante. Si el slug no coincide con ningún producto, el LMS cae al
+  // comportamiento anterior (ofrece el primer programa bloqueado).
+  productSlug?: string;
   cta: string;
   // true = tarjeta destacada (héroe).
   highlight?: boolean;
@@ -59,6 +65,7 @@ export const bioConfig = {
       note: "El programa de mi Live · paso a paso",
       price: "USD 9.99",
       intent: "buy",
+      productSlug: "agente-noticias-ia-1-hora",
       cta: "Obtener →",
     },
     {
@@ -67,6 +74,7 @@ export const bioConfig = {
       note: "El recorrido completo, módulo a módulo",
       price: "USD 47",
       intent: "buy",
+      productSlug: "build-ideacash-founder-access",
       cta: "Activar →",
     },
   ] satisfies BioCourse[],

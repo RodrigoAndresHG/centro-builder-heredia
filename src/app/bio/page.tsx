@@ -234,7 +234,11 @@ export default async function BioPage({ searchParams }: BioPageProps) {
             <CourseCard
               key={course.name}
               course={course}
-              href={buildRegistroHref(course.intent, src)}
+              href={buildRegistroHref(course.intent, src, {
+                productSlug: course.productSlug,
+                // Permite distinguir en analítica qué tarjeta generó el clic.
+                utmContent: course.productSlug ?? "gratis",
+              })}
             />
           ))}
         </div>

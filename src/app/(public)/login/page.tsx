@@ -9,7 +9,11 @@ export const metadata: Metadata = {
 };
 
 type LoginPageProps = {
-  searchParams: Promise<{ callbackUrl?: string; intent?: string }>;
+  searchParams: Promise<{
+    callbackUrl?: string;
+    intent?: string;
+    product?: string;
+  }>;
 };
 
 function normalizeIntent(intent?: string, callbackUrl?: string) {
@@ -31,13 +35,14 @@ function normalizeIntent(intent?: string, callbackUrl?: string) {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { callbackUrl, intent } = await searchParams;
+  const { callbackUrl, intent, product } = await searchParams;
 
   return (
     <AuthPanel
       mode="login"
       intent={normalizeIntent(intent, callbackUrl)}
       callbackUrl={callbackUrl}
+      productSlug={product}
     />
   );
 }
