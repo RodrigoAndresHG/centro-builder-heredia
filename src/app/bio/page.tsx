@@ -127,7 +127,7 @@ function AppDestacadaCard({ href }: { href: string }) {
       className="group flex items-center gap-4 rounded-2xl border border-violet-400/40 bg-gradient-to-r from-violet-500/20 to-fuchsia-500/5 p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-violet-300/70"
     >
       <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-400/15 text-2xl">
-        🧠
+        🧭
       </span>
       <div className="min-w-0 flex-1">
         <span className="inline-flex rounded-full bg-violet-400/20 px-2 py-0.5 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-violet-200">
