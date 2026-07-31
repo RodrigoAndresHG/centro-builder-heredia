@@ -5,7 +5,7 @@ import { BlueprintFrame } from "@/components/marketing/blueprint-frame";
 import { buildRegistroHref, normalizeSrc } from "@/lib/attribution";
 import { inter, jetbrainsMono } from "../fonts";
 import {
-  MUNDIAL_ACTIVO,
+  APP_DESTACADA_ACTIVA,
   bioConfig,
   type BioCourse,
   type BioSocial,
@@ -119,27 +119,29 @@ function CourseCard({ course, href }: { course: BioCourse; href: string }) {
   );
 }
 
-function MundialCard({ href }: { href: string }) {
-  const { mundial } = bioConfig;
+function AppDestacadaCard({ href }: { href: string }) {
+  const { appDestacada } = bioConfig;
   return (
     <a
       href={href}
-      className="group flex items-center gap-4 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-orange-500/5 p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-amber-300/70"
+      className="group flex items-center gap-4 rounded-2xl border border-violet-400/40 bg-gradient-to-r from-violet-500/20 to-fuchsia-500/5 p-4 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-violet-300/70"
     >
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-400/15 text-2xl">
-        ⚽
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-400/15 text-2xl">
+        🧠
       </span>
       <div className="min-w-0 flex-1">
-        <span className="inline-flex rounded-full bg-amber-400/20 px-2 py-0.5 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-amber-200">
-          {mundial.tag}
+        <span className="inline-flex rounded-full bg-violet-400/20 px-2 py-0.5 font-mono text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-violet-200">
+          {appDestacada.tag}
         </span>
         <p className="mt-1 truncate text-sm font-semibold text-white">
-          {mundial.title}
+          {appDestacada.title}
         </p>
-        <p className="truncate text-xs text-amber-100/80">{mundial.note}</p>
+        <p className="truncate text-xs text-violet-100/80">
+          {appDestacada.note}
+        </p>
       </div>
-      <span className="shrink-0 rounded-md bg-amber-400 px-3 py-2 text-xs font-semibold text-neutral-950 transition group-hover:bg-amber-300">
-        {mundial.cta}
+      <span className="shrink-0 rounded-md bg-violet-400 px-3 py-2 text-xs font-semibold text-[#05070c] transition group-hover:bg-violet-300">
+        {appDestacada.cta}
       </span>
     </a>
   );
@@ -188,15 +190,15 @@ type BioPageProps = {
 };
 
 export default async function BioPage({ searchParams }: BioPageProps) {
-  const { profile, courses, socials, upcoming, mundial } = bioConfig;
+  const { profile, courses, socials, upcoming, appDestacada } = bioConfig;
   const { src: rawSrc } = await searchParams;
   const src = normalizeSrc(rawSrc);
 
   // El canal de WhatsApp no acepta UTMs → redirect interno /go/whatsapp que
   // registra el clic por fuente y luego 302 al canal.
   const whatsappHref = `/go/whatsapp?src=${encodeURIComponent(src)}`;
-  // PronostiGol es externo; le pasamos UTMs por si su lado los lee.
-  const mundialHref = `${mundial.href}?utm_source=${encodeURIComponent(
+  // La app destacada es externa; le pasamos UTMs por si su lado los lee.
+  const appDestacadaHref = `${appDestacada.href}?utm_source=${encodeURIComponent(
     src,
   )}&utm_medium=bio`;
 
@@ -243,10 +245,10 @@ export default async function BioPage({ searchParams }: BioPageProps) {
           ))}
         </div>
 
-        {/* Tarjeta Mundial (PronostiGol) — solo en temporada */}
-        {MUNDIAL_ACTIVO ? (
+        {/* App destacada (Consejo Estratégico) */}
+        {APP_DESTACADA_ACTIVA ? (
           <div className="mt-5">
-            <MundialCard href={mundialHref} />
+            <AppDestacadaCard href={appDestacadaHref} />
           </div>
         ) : null}
 

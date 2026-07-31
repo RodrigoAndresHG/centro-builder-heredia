@@ -7,9 +7,9 @@ import type { RegistroIntent } from "@/lib/attribution";
 
 export type BrandKey = "tiktok" | "instagram" | "whatsapp";
 
-// ¿Está activa la temporada del Mundial? Pon en false después del 19-jul-2026
-// para ocultar la tarjeta de PronostiGol sin tocar nada más.
-export const MUNDIAL_ACTIVO = true;
+// ¿Mostrar la tarjeta de app destacada? Pon en false para ocultarla sin
+// tocar nada más.
+export const APP_DESTACADA_ACTIVA = true;
 
 export type BioCourse = {
   tag: string;
@@ -79,13 +79,13 @@ export const bioConfig = {
     },
   ] satisfies BioCourse[],
 
-  // Tarjeta destacada de PronostiGol (solo visible si MUNDIAL_ACTIVO).
-  mundial: {
-    tag: "Mundial 2026",
-    title: "PronostiGol · Predice el Mundial",
-    note: "Juega gratis, predice los partidos y compite. En vivo durante el Mundial.",
-    cta: "Jugar",
-    href: "https://pronostigol.rodriheredia.com",
+  // Tarjeta de app destacada (solo visible si APP_DESTACADA_ACTIVA).
+  appDestacada: {
+    tag: "App · Decisiones con IA",
+    title: "Consejo Estratégico",
+    note: "3 IAs analizan tu decisión y te dan una recomendación clara.",
+    cta: "Abrir",
+    href: "https://consejoia.rodriheredia.com",
   },
 
   // Canal de WhatsApp destacado (tarjeta propia, antes de las redes).
